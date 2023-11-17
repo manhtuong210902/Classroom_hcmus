@@ -1,12 +1,12 @@
-import { Column, Model, DataType, Table, HasMany, BelongsToMany} from 'sequelize-typescript';
-import { UserRole } from '../user-role/user-role.entity';
-import { User } from '../user/user.entity';
+import { Column, Model, DataType, Table, HasMany, BelongsToMany } from 'sequelize-typescript';
+import { UserRole } from '../user/entities/user-role.entity';
+import { User } from '../user/entities/user.entity';
 
 @Table({
-    "tableName": "roles",
-    "timestamps": false
+    tableName: "roles",
+    timestamps: false
 })
-export class Role extends Model{
+export class Role extends Model {
     @Column({
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,
@@ -19,6 +19,6 @@ export class Role extends Model{
     })
     role_name: string;
 
-    @BelongsToMany(()=>User,() => UserRole)
+    @BelongsToMany(() => User, () => UserRole)
     roles: Role[];
 }

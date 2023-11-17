@@ -4,8 +4,6 @@ import { Request, Response } from 'express';
 import { JwtService } from '../jwt/jwt.service';
 import { RoleType, TokenType } from 'src/lib/util/constant';
 import { UserService } from 'src/modules/user/user.service';
-import { UserRoleService } from 'src/modules/user-role/user-role.service';
-import { RoleService } from 'src/modules/role/role.service';
 
 /** The AuthMiddleware is used to
  * (1) read the request header bearer token/user access token
@@ -25,7 +23,8 @@ export class AuthMiddleware implements NestMiddleware {
         let roles;
 
         if (!bearerHeader || !accessToken || bearerHeader.split(' ')[0] !== 'Bearer') {
-            throw new ForbiddenException('Please register or sign in.');
+            // throw new ForbiddenException('Please register or sign in.');
+            next();
         }
 
         try {

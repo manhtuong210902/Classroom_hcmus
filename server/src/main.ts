@@ -8,6 +8,7 @@ import {
     HttpStatus,
     UnprocessableEntityException,
     ValidationPipe,
+    Logger,
 } from '@nestjs/common';
 import { HttpExceptionFilter } from './lib/filters/bad-request.filter';
 import { BadRequestExceptionFilter } from './lib/filters/bad-request.exception';
@@ -51,7 +52,7 @@ async function bootstrap() {
     const PORT: string = configService.get<string>('PORT');
 
     await app.listen(PORT,()=>{
-        console.log(`Server is running on http://127.0.0.1:${PORT}`);
+        Logger.log(`Server is running on http://127.0.0.1:${PORT}`);
     });
 }
 bootstrap();

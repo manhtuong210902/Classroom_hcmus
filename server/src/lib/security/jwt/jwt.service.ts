@@ -22,7 +22,7 @@ export class JwtService {
 
     async verifyToken(token:string,tokenType: TokenType,roleName:string) : Promise<Boolean>{
         try {
-            const verified = await verify(token,this.configService.get<string>('JWT_SECRET_KEY'))
+            const verified = await verify(token, this.configService.get<string>('JWT_SECRET_KEY'))
             if(
                 verified.tokenType === tokenType 
                 && roleName === verified.roleName

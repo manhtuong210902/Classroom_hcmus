@@ -1,12 +1,12 @@
 import { Column, Model, DataType, Table, ForeignKey } from 'sequelize-typescript';
-import { User } from '../user/user.entity';
-import { Role } from '../role/role.entity';
+import { User } from './user.entity';
+import { Role } from '../../role/role.entity';
 
 @Table({
     "tableName": "user_roles",
     "timestamps": false
 })
-export class UserRole extends Model{
+export class UserRole extends Model {
     @Column({
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,
@@ -14,11 +14,11 @@ export class UserRole extends Model{
     })
     id: string;
 
-    @ForeignKey(()=>User)
+    @ForeignKey(() => User)
     @Column
     user_id: string;
 
-    @ForeignKey(()=>Role)
+    @ForeignKey(() => Role)
     @Column
     role_id: string;
 }

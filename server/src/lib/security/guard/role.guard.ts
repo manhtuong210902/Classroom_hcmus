@@ -1,7 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-const matchRoles = (role, userRoles) => {
+const matchRoles = (role: string, userRoles: string[]) => {
   return userRoles.some(userRole => role === userRole);
 };
 
@@ -10,7 +10,7 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const role = this.reflector.get<string[]>('role', context.getHandler());
+    const role = this.reflector.get<string>('role', context.getHandler());
     if (!role) {
       return true;
     }

@@ -1,6 +1,6 @@
-import { Column, Model, DataType, Table, BelongsToMany, BeforeUpdate} from 'sequelize-typescript';
-import { UserRole } from '../user-role/user-role.entity';
-import { Role } from '../role/role.entity';
+import { Column, Model, DataType, Table, BelongsToMany, BeforeUpdate } from 'sequelize-typescript';
+import { UserRole } from './user-role.entity';
+import { Role } from '../../role/role.entity';
 
 @Table({
     "tableName": "users",
@@ -30,7 +30,7 @@ export class User extends Model<User>{
     email: string;
 
     @Column({
-        defaultValue: DataType.NOW, 
+        defaultValue: DataType.NOW,
         allowNull: false,
     })
     created_at: Date;
@@ -43,7 +43,7 @@ export class User extends Model<User>{
     @Column({
         allowNull: true,
     })
-    img_url : string;
+    img_url: string;
 
     @Column({
         allowNull: true,
@@ -55,7 +55,7 @@ export class User extends Model<User>{
     })
     refresh_token: string;
 
-    @BelongsToMany(()=>Role,() => UserRole)
+    @BelongsToMany(() => Role, () => UserRole)
     roles: Role[];
 
     @BeforeUpdate

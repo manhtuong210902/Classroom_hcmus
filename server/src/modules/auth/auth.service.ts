@@ -14,21 +14,21 @@ export class AuthService {
         private readonly userService: UserService,
         private readonly roleService: RoleService,
         private readonly jwtService: JwtService
-    ){}
+    ) { }
 
-    async register(registerDto: RegisterDto) : Promise<AuthResponse|string>{
+    async register(registerDto: RegisterDto): Promise<AuthResponse | string> {
         try {
-            const isExistedusername = await this.userService.findOne({"username":registerDto.username});
-            if(isExistedusername){
+            const isExistedusername = await this.userService.findOne({ username: registerDto.username });
+            if (isExistedusername) {
                 return "Username already exists";
             }
             const newUser = await this.userService.createUser(registerDto);
             const userRole = await this.roleService.findOrCreate(RoleType.USER);
             await newUser.$add('roles', userRole[0].id)
-            
+
             const tokens = await this.assignTokens(newUser.id, RoleType.USER);
 
-            const authResponse : AuthResponse ={
+            const authResponse: AuthResponse = {
                 accessToken: tokens.accessToken,
                 refreshToken: tokens.refreshToken,
                 imgUrl: null,
@@ -41,19 +41,19 @@ export class AuthService {
         }
     }
 
-    async login(loginDto: LoginDto):Promise<AuthResponse|string>{
+    async login(loginDto: LoginDto): Promise<AuthResponse | string> {
         try {
-            const hasUser = await this.userService.findOne({"username":loginDto.username});
-            if (!hasUser){
+            const hasUser = await this.userService.findOne({ username: loginDto.username });
+            if (!hasUser) {
                 return "no user found"
             }
             const isRightPassword = await validateHash(loginDto.password, hasUser.password)
-            if(!isRightPassword){
+            if (!isRightPassword) {
                 return "username or password is incorrect"
             }
             const tokens = await this.assignTokens(hasUser.id, RoleType.USER);
 
-            const authResponse : AuthResponse ={
+            const authResponse: AuthResponse = {
                 accessToken: tokens.accessToken,
                 refreshToken: tokens.refreshToken,
                 imgUrl: null,
@@ -66,18 +66,18 @@ export class AuthService {
         }
     }
 
-    async assignTokens(userId:string,roleName:string){
-        const accessToken = await this.jwtService.generateToken(TokenType.ACCESS_TOKEN,userId,roleName)
-        const refreshToken = await this.jwtService.generateToken(TokenType.REFRESH_TOKEN,userId,roleName);
-    
+    async assignTokens(userId: string, roleName: string) {
+        const accessToken = await this.jwtService.generateToken(TokenType.ACCESS_TOKEN, userId, roleName)
+        const refreshToken = await this.jwtService.generateToken(TokenType.REFRESH_TOKEN, userId, roleName);
+
         this.userService.updateUser({
             access_token: accessToken,
             refresh_token: refreshToken
-        },userId)
+        }, userId)
 
         return {
             accessToken,
             refreshToken
         }
-    }   
+    }
 }
