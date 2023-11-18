@@ -1,5 +1,12 @@
+import ListClass from "@src/components/ClassRoom/ListClass";
+import HomeLayout from "@src/layouts/HomeLayout";
+
 const HomePage = () => {
-    return <div>HomePage</div>;
+    return (
+        <HomeLayout>
+            <ListClass />
+        </HomeLayout>
+    );
 };
 
 export default HomePage;
