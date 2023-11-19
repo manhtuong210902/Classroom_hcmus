@@ -1,3 +1,3 @@
-export interface UpdateAvatarResponse {
+export class UpdateAvatarResponse {
     imgUrl: string;
 }
