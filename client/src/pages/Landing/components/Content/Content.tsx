@@ -1,8 +1,8 @@
 import { ArrowDown, Clock2Icon, Terminal, Tv2Icon, User2Icon } from "lucide-react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../../../../components/ui/accordion";
 import LearningAmicoSVG from "@image/svg_learning_amico.svg";
 import DesignerSVG from "@image/svg_designer.svg";
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "../../../../components/ui/alert";
 import { Link } from "react-router-dom";
 
 const Content = () => {

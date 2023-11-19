@@ -6,14 +6,14 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
 } from "@src/components/ui/navigation-menu";
-import { Button } from "../ui/button";
+import { Button } from "@src/components/ui/button";
 import BookImg from "@image/img_book.png";
 import { Link } from "react-router-dom";
-import { navigationMenuTriggerStyle } from "../ui/navigation-menu";
+import { navigationMenuTriggerStyle } from "@src/components/ui/navigation-menu";
 import React from "react";
 import { cn } from "@src/utils/lib";
 
-const HeaderLanding = () => {
+const Header = () => {
     const components: { title: string; description: string }[] = [
         {
             title: "Mathematics",
@@ -110,4 +110,4 @@ const ListItem = React.forwardRef<React.ElementRef<"a">, React.ComponentPropsWit
     }
 );
 
-export default HeaderLanding;
+export default Header;
