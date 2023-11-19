@@ -1,4 +1,6 @@
 import HomeLayout from "@src/layouts/HomeLayout";
+import Login from "@src/pages/Auth/Login/Login";
+import Signup from "@src/pages/Auth/Signup/Signup";
 import HomePage from "@src/pages/HomePage";
 import LandingPage from "@src/pages/LandingPage";
 import settingRoutes from "@src/pages/Setting/routes";
@@ -12,6 +14,8 @@ type routeInfo = {
 const publicRoutes: routeInfo[] = [
     { path: "/", component: LandingPage },
     { path: "/home", component: HomePage, layout: HomeLayout },
+    { path: "/login", component: Login },
+    { path: "/signup", component: Signup },
     ...settingRoutes,
 ];
 
