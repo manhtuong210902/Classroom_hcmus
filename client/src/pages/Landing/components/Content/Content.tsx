@@ -3,7 +3,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "..
 import LearningAmicoSVG from "@image/svg_learning_amico.svg";
 import DesignerSVG from "@image/svg_designer.svg";
 import { Alert, AlertDescription, AlertTitle } from "../../../../components/ui/alert";
-import { Link } from "react-router-dom";
 
 const Content = () => {
     const contentFeatures = [
@@ -44,15 +43,14 @@ const Content = () => {
                     <div className="flex flex-col md:flex-row items-center px-3 md:px-0 justify-between gap-5 mt-8">
                         {contentFeatures.map((item) => {
                             return (
-                                <Link
+                                <div
                                     key={item.id}
-                                    to="#persionalize"
                                     className="rounded-md flex-1 w-full md:w-fit border border-primary flex flex-col items-center gap-6 p-6 group cursor-pointer hover:bg-primary/90 text-primary hover:text-secondary"
                                 >
                                     {item.icon}
                                     <p className="text-sm md:text-base font-medium">{item.title}</p>
                                     <ArrowDown />
-                                </Link>
+                                </div>
                             );
                         })}
                     </div>

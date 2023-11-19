@@ -1,5 +1,8 @@
 import { Calendar, GraduationCapIcon, HomeIcon, ListTodo, SettingsIcon } from "lucide-react";
 import { AccordionContent, Accordion, AccordionItem, AccordionTrigger } from "../ui/accordion";
+import SettingSidebar from "@src/pages/Setting/components/SettingSidebar/SettingSidebar";
+import routes from "@src/configs/router";
+import { Link } from "react-router-dom";
 
 const Sicebar = ({ isShowSideBar }: { isShowSideBar: boolean }) => {
     const topContents = [
@@ -7,20 +10,14 @@ const Sicebar = ({ isShowSideBar }: { isShowSideBar: boolean }) => {
             id: 1,
             icon: <HomeIcon />,
             title: "Home",
+            path: routes.HOME,
         },
 
         {
             id: 2,
             icon: <Calendar />,
             title: "Calendar",
-        },
-    ];
-
-    const botttomContents = [
-        {
-            id: 1,
-            icon: <SettingsIcon />,
-            title: "Settings",
+            path: routes.HOME,
         },
     ];
 
@@ -33,13 +30,17 @@ const Sicebar = ({ isShowSideBar }: { isShowSideBar: boolean }) => {
             <div className="border-b border-border py-3">
                 {topContents.map((item) => {
                     return (
-                        <div
-                            key={item.id}
-                            className="flex items-center gap-2 text-base font-semibold px-6 py-3 group cursor-pointer hover:bg-muted max-w-[300px] truncate mr-3 rounded-e-full"
-                        >
-                            {item.icon}
-                            <span className={`group-hover:underline ${!isShowSideBar && "hidden"}`}>{item.title}</span>
-                        </div>
+                        <Link key={item.id} to={item.path}>
+                            <div
+                                key={item.id}
+                                className="flex items-center gap-2 text-base font-semibold px-6 py-3 group cursor-pointer hover:bg-muted max-w-[300px] truncate mr-3 rounded-e-full"
+                            >
+                                {item.icon}
+                                <span className={`group-hover:underline ${!isShowSideBar && "hidden"}`}>
+                                    {item.title}
+                                </span>
+                            </div>
+                        </Link>
                     );
                 })}
             </div>
@@ -62,17 +63,19 @@ const Sicebar = ({ isShowSideBar }: { isShowSideBar: boolean }) => {
                 </Accordion>
             </div>
             <div className="py-3">
-                {botttomContents.map((item) => {
-                    return (
-                        <div
-                            key={item.id}
-                            className="flex items-center gap-2 text-base font-semibold px-6 py-3 group cursor-pointer hover:bg-muted max-w-[300px] truncate mr-3 rounded-e-full"
-                        >
-                            {item.icon}
-                            <span className={`group-hover:underline ${!isShowSideBar && "hidden"}`}>{item.title}</span>
-                        </div>
-                    );
-                })}
+                <Accordion type="single" collapsible>
+                    <AccordionItem value="item-1" className="border-transparent">
+                        <AccordionTrigger className="text-base font-semibold px-6 py-3 group cursor-pointer hover:bg-muted max-w-[300px] truncate mr-3 rounded-e-full border-transparent">
+                            <div className="flex items-center gap-2">
+                                <SettingsIcon />
+                                <span className={`${!isShowSideBar && "hidden"}`}>Settings</span>
+                            </div>
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            <SettingSidebar isShowSideBar={isShowSideBar} />
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
             </div>
         </div>
     );
