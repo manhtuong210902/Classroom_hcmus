@@ -22,7 +22,7 @@ export class RegisterDto {
     readonly email: string;
 
     @IsString()
-    @Matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/, {message: 'password too weak'})
+    @Matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, {message: 'password too weak'})
     @ApiProperty()
     readonly password: string;
 
