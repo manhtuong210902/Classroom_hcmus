@@ -25,7 +25,7 @@ const DefaultAuth = () => {
 
 const AuthLayout = ({ children }: Props) => {
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 w-screen h-screen overflow-x-hidden">
+        <div className="lg:grid lg:grid-cols-2 flex justify-center h-screen">
             <DefaultAuth />
             {children}
         </div>
