@@ -21,7 +21,7 @@ const HeaderHome = ({ setIsShowSideBar, isShowSideBar }: { setIsShowSideBar: any
                         <MenuIcon width={32} />
                     </div>
                     <img src={BookImg} alt="" className="w-8 h-8 object-cover select-none" />
-                    <h1 className="font-bold text-2xl text-primary select-none">Education</h1>
+                    <h1 className="font-bold texl-xl md:text-2xl text-primary select-none">Education</h1>
                 </div>
 
                 <div className="flex items-center gap-3">

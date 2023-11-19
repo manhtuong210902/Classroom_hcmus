@@ -26,9 +26,9 @@ const Sicebar = ({ isShowSideBar }: { isShowSideBar: boolean }) => {
 
     return (
         <div
-            className={`h-[calc(100vh_-60px)] ${
-                isShowSideBar ? "w-[300px]" : "w-[86px]"
-            }  border-r border-border overflow-hidden transition-all duration-300`}
+            className={`h-[calc(100vh_-60px)] absolute md:relative bg-white z-10 ${
+                isShowSideBar ? "w-[300px]" : "w-[0px] md:w-[86px]"
+            }  border-r border-t border-border overflow-hidden transition-all duration-300`}
         >
             <div className="border-b border-border py-3">
                 {topContents.map((item) => {
