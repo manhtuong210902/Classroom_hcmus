@@ -1,5 +1,5 @@
 import Header from "@src/components/Header/Header";
-import Sicebar from "@src/components/Sidebar/Sicebar";
+import Sicebar from "@src/components/Sidebar/Sidebar";
 import { useState } from "react";
 
 type Props = {
@@ -13,7 +13,7 @@ const HomeLayout = ({ children }: Props) => {
             <Header setIsShowSideBar={setIsShowSideBar} isShowSideBar={isShowSideBar} />
             <div className="flex">
                 <Sicebar isShowSideBar={isShowSideBar} />
-                <div className="h-[calc(100vh_-60px)] p-6 overflow-y-auto">{children}</div>
+                <div className="h-[calc(100vh_-60px)] p-6 overflow-y-auto flex-1">{children}</div>
             </div>
         </div>
     );
