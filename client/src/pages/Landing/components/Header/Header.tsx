@@ -43,13 +43,13 @@ const Header = () => {
 
     return (
         <div className="h-[60px] shadow-md">
-            <div className="w-full h-full flex items-center justify-between max-w-[1200px] mx-auto">
+            <div className="w-full h-full flex items-center justify-between max-w-[1200px] mx-auto px-3 md:px-0">
                 <div className="flex items-center gap-2">
-                    <img src={BookImg} alt="" className="w-9 h-9 object-cover" />
-                    <h1 className="font-extrabold text-2xl text-primary">Education</h1>
+                    <img src={BookImg} alt="" className="w-8 h-8     md:w-9 md:h-9 object-cover" />
+                    <h1 className="font-extrabold text-xl md:text-2xl text-primary">Education</h1>
                 </div>
 
-                <NavigationMenu>
+                <NavigationMenu className="hidden md:block">
                     <NavigationMenuList>
                         <NavigationMenuItem>
                             <Link to={"/home"}>
