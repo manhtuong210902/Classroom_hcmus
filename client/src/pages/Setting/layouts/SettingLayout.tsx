@@ -3,7 +3,7 @@ import { useState } from "react";
 import SettingSidebar from "../components/SettingSidebar/SettingSidebar";
 
 type Props = {
-    children: JSX.Element;
+    children?: JSX.Element;
 };
 
 const SettingLayout = ({ children }: Props) => {
@@ -13,7 +13,7 @@ const SettingLayout = ({ children }: Props) => {
             <HeaderHome setIsShowSideBar={setIsShowSideBar} isShowSideBar={isShowSideBar} />
             <div className="flex">
                 <SettingSidebar isShowSideBar={isShowSideBar} />
-                <div className="h-[calc(100vh_-60px)] p-6 overflow-y-auto">{children}</div>
+                <div className="h-[calc(100vh_-60px)] p-6 overflow-y-auto flex-1">{children}</div>
             </div>
         </div>
     );
