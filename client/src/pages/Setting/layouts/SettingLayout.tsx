@@ -1,4 +1,4 @@
-import HeaderHome from "@src/components/Header/Header.home";
+import HeaderHome from "@src/components/Header/Header";
 import { useState } from "react";
 import SettingSidebar from "../components/SettingSidebar/SettingSidebar";
 

@@ -1,6 +1,6 @@
 import { MoreVertical } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
+import { Popover, PopoverContent, PopoverTrigger } from "../../../../components/ui/popover";
 
 const ListClass = () => {
     return (
