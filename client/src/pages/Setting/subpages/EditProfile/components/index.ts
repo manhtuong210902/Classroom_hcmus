@@ -1,3 +1,4 @@
 import EditAvatar from "./EditAvatar/EditAvatar";
+import BasicInfo from "./BasicInfo/BasicInfo";
 
-export default {EditAvatar};
+export {EditAvatar, BasicInfo};
