@@ -1,9 +1,9 @@
 import { BASE_URL_API } from "@src/utils/constants";
 import { LocalStorage } from "@src/utils/LocalStorage";
 import axios, { AxiosResponse } from "axios";
-import { PREFIX, USER } from "./endpoints";
+import { AUTH, PREFIX } from "./endpoints";
 
-const ROUTE = "api";
+export const ROUTE = "api";
 let isRefreshing: boolean = false;
 let refreshPromise: any = null;
 
@@ -17,7 +17,6 @@ const handleError = (error: AxiosResponse<any>) => {
 
 const axiosClient = axios.create({
     baseURL: BASE_URL_API,
-    // adapter:fetchAdapter
 });
 
 //config access token
@@ -68,7 +67,7 @@ axiosClient.interceptors.response.use(
 async function refreshToken() {
     try {
         const refreshToken = LocalStorage.getRefreshToken();
-        const response = await axiosClient.post(`${PREFIX}/${ROUTE}/${USER}/auth/request-token`, {
+        const response = await axiosClient.post(`${ROUTE}/${PREFIX}/${AUTH}/request-token`, {
             refresh_token: refreshToken,
         });
 

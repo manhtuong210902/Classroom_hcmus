@@ -6,7 +6,6 @@ export type routeInfo = {
 
 export interface userInfo {
     id: string;
-    name: string;
-    fullname: string;
-    email: string;
+    username: string;
+    imgUrl: string;
 }

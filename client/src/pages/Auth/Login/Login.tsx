@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Link } from "react-router-dom";
 import { loginSchema } from "@src/utils/schema";
-import { BASE_URL_API } from "@src/utils/constants";
 
 export default function Login() {
     const form = useForm<z.infer<typeof loginSchema>>({
@@ -17,8 +16,6 @@ export default function Login() {
             password: "",
         },
     });
-
-    console.log(BASE_URL_API);
 
     function onSubmit(values: z.infer<typeof loginSchema>) {
         //
