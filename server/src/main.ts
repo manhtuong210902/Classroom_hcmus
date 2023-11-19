@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { HttpExceptionFilter } from './lib/filters/bad-request.filter';
 import { BadRequestExceptionFilter } from './lib/filters/bad-request.exception';
+import { swaggerConfig } from './lib/configs/swagger/swagger.config';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
@@ -49,8 +50,10 @@ async function bootstrap() {
         }),
     );
 
+    swaggerConfig(app);
+    
     const PORT: string = configService.get<string>('PORT');
-
+    
     await app.listen(PORT,()=>{
         Logger.log(`Server is running on http://127.0.0.1:${PORT}`);
     });

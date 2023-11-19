@@ -7,6 +7,7 @@ import { AuthResponse } from './response/auth-response';
 import { ResponseTemplate } from 'src/lib/interfaces/response.template';
 import { RequestTokenDto } from './dto/request-token.dto';
 import { RequestTokenResponse } from './response/request-token-response';
+import { ApiResponse } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -17,6 +18,11 @@ export class AuthController {
 
     @HttpCode(HttpStatus.CREATED)
     @Post("/register")
+    @ApiResponse({
+        status: HttpStatus.CREATED,
+        description: "",
+        type: ""
+    })
     async register(@Body() registerDto: RegisterDto) : Promise<ResponseTemplate>{
         const authResponse: AuthResponse | string = await this.authService.register(registerDto);
         
