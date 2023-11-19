@@ -10,6 +10,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import {  UpdateUserDto } from './dto/update.dto';
 import { CloudinaryService } from 'src/lib/configs/cloudinary/cloudinary.service';
 import { omit } from 'lodash';
+import { CloudinaryResponse } from 'src/lib/configs/cloudinary/cloudinary-response';
+import { UpdateAvatarResponse } from './response/update-avatar.response';
 
 @Controller('user')
 export class UserController {
@@ -23,12 +25,26 @@ export class UserController {
     @UseInterceptors(FileInterceptor('file'))
     @Role(RoleType.USER)
     async updateAvatar(
-        @Body() userId :string,
         @UploadedFile() file: Express.Multer.File,
     ){
         try {
-            console.log(file);
-            return this.cloudinaryService.uploadFile(file); 
+            
+            if (!file){
+                throw new BadRequestException("Upload image failed");
+            }
+
+            const fileResponse : CloudinaryResponse = await  this.cloudinaryService.uploadFile(file); 
+            
+            const dataResponse : UpdateAvatarResponse = {
+                imgUrl: fileResponse.url
+            } 
+            const response : ResponseTemplate = {
+                data: dataResponse,
+                statusCode: HttpStatus.OK,
+                message: "upload image successfully"
+            }
+
+            return response;
             
         } catch (error) {
             throw new BadRequestException(error.message)

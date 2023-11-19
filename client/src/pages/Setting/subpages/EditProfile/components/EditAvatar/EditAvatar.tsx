@@ -3,13 +3,19 @@ import { profileService } from "@src/services/setting/profile.service";
 
 
 const EditAvatar = ()=>{
-    const [imgUrl] = useState("https://png.pngtree.com/element_our/20200610/ourmid/pngtree-character-default-avatar-image_2237203.jpg")
+    const [imgUrl,setImgUrl] = useState("https://png.pngtree.com/element_our/20200610/ourmid/pngtree-character-default-avatar-image_2237203.jpg")
     const [hover,setHover] = useState("hidden")
 
     const handleUpdateAvatar = async (e : any)=>{
         const formData = new FormData();
         formData.append('file', e.target.files[0]);
-        await profileService.updateAvatar({file:formData, userId: "f15228e1-4df8-455d-918e-7abdb1e3c645"});
+        const response = await profileService.updateAvatar(formData);
+        if(response.data.statusCode !== 200){
+
+        }
+        else {
+            setImgUrl(response.data.data.imgUrl);
+        }
     }
 
     return (

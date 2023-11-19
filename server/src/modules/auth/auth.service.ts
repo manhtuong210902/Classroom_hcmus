@@ -7,6 +7,8 @@ import { AuthResponse } from './response/auth-response';
 import { LoginDto } from './dto/login.dto';
 import { convertCamelToSnake, validateHash } from 'src/lib/util/func';
 import { JwtService } from 'src/lib/security/jwt/jwt.service';
+import { RequestTokenDto } from './dto/request-token.dto';
+import { RequestTokenResponse } from './response/request-token-response';
 
 @Injectable()
 export class AuthService {
@@ -61,6 +63,21 @@ export class AuthService {
                 userId: hasUser.id
             }
             return authResponse
+        } catch (error) {
+            return error.message;
+        }
+    }
+
+    async requestToken(requestTokenDto: RequestTokenDto): Promise<RequestTokenResponse | string>{
+        try {
+            const isVerified : Boolean 
+                = await this.jwtService.verifyToken(requestTokenDto.refreshToken,TokenType.REFRESH_TOKEN,RoleType.USER); 
+            if(!isVerified){
+                return "Invalid refresh token"
+            }   
+            const requestTokenResponse :RequestTokenResponse = await this.assignTokens(requestTokenDto.userId,RoleType.USER);
+            
+            return requestTokenResponse;
         } catch (error) {
             return error.message;
         }
