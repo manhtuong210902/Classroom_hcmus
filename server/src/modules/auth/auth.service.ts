@@ -5,7 +5,7 @@ import { RegisterDto } from './dto/register.dto';
 import { RoleType, TokenType } from 'src/lib/util/constant';
 import { AuthResponse } from './response/auth-response';
 import { LoginDto } from './dto/login.dto';
-import { validateHash } from 'src/lib/util/func';
+import { convertCamelToSnake, validateHash } from 'src/lib/util/func';
 import { JwtService } from 'src/lib/security/jwt/jwt.service';
 
 @Injectable()

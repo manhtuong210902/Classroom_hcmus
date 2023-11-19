@@ -18,6 +18,8 @@ import { JwtModule } from './lib/security/jwt/jwt.module';
 import { UserController } from './modules/user/user.controller';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './lib/security/guard/role.guard';
+import { CloudinaryModule } from './lib/configs/cloudinary/cloudinary.module';
+import { MulterModule } from '@nestjs/platform-express/multer';
 
 @Module({
     imports: [
@@ -29,11 +31,13 @@ import { RolesGuard } from './lib/security/guard/role.guard';
             useClass: SequelizeConfigService,
         }),
         SequelizeModule.forFeature([User, Role, UserRole]),
+        MulterModule.register(),
         LoggerModule,
         UserModule,
         JwtModule,
         AuthModule,
         RoleModule,
+        CloudinaryModule,
     ],
     controllers: [AppController],
     providers: [

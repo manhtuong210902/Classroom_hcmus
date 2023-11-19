@@ -29,14 +29,15 @@ export class UserService {
         const newUser = await this.userModel.create({
             username: registerDto.username,
             password: generateHash(registerDto.password),
-            email: registerDto.email
+            email: registerDto.email,
+            fullname: registerDto.fullname,
         })
 
         return newUser;
     }
 
     async updateUser(updateData: Object, userId: string) {
-        await this.userModel.update(
+        return await this.userModel.update(
             updateData,
             {
                 where: {

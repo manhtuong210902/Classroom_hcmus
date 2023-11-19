@@ -20,6 +20,21 @@ export class User extends Model<User>{
     username: string;
 
     @Column({
+        allowNull: false,                
+    })
+    fullname: string;
+
+    @Column({
+        allowNull: true,
+    })
+    gender: string;
+
+    @Column({
+        allowNull: true,
+    })
+    address: string;
+
+    @Column({
         allowNull: false,
     })
     password: string;
@@ -63,3 +78,4 @@ export class User extends Model<User>{
         instance.updated_at = new Date();
     }
 }
+

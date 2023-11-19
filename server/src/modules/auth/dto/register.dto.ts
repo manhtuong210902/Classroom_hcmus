@@ -24,4 +24,8 @@ export class RegisterDto {
 
     @Match('password',{"message":"Password not match"})
     readonly confirmPassword: string;
+
+    @IsString()
+    @IsNotEmpty({"message":"Fullname is required"})
+    readonly fullname: string;
 }

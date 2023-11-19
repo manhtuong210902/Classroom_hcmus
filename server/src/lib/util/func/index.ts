@@ -62,3 +62,19 @@ export function convertCamelToSnake(obj: any): any {
     return acc;
   }, {});
 }
+
+export function removeNullValues(obj: Object): Object {
+  const newObj: Object = {};
+  
+  for (const [key, value] of Object.entries(obj)) {
+    if (value !== null && value !== undefined) {
+      if (typeof value === 'object' && !Array.isArray(value)) {
+        newObj[key] = removeNullValues(value);
+      } else {
+        newObj[key] = value;
+      }
+    }
+  }
+
+  return newObj;
+}

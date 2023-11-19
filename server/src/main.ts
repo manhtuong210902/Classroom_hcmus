@@ -22,7 +22,7 @@ async function bootstrap() {
         path: NODE_ENV === 'prod' ? '.env.prod' : `.env.${NODE_ENV}`,
     });
 
-
+    app.enableCors();
     app.use(helmet());
 
     app.enableVersioning({
