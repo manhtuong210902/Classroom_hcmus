@@ -1,7 +1,7 @@
 import HomeLayout from "@src/layouts/HomeLayout";
 import HomePage from "@src/pages/HomePage";
 import LandingPage from "@src/pages/LandingPage";
-import { EditProfilePage } from "@src/pages/Profile/index";
+import settingRoutes from "@src/pages/Setting/routes";
 
 type routeInfo = {
     path: string;
@@ -12,7 +12,7 @@ type routeInfo = {
 const publicRoutes: routeInfo[] = [
     { path: "/", component: LandingPage },
     { path: "/home", component: HomePage, layout: HomeLayout },
-    { path: "/profile", component: EditProfilePage, layout: HomeLayout },
+    ...settingRoutes,
 ];
 
 export { publicRoutes };
