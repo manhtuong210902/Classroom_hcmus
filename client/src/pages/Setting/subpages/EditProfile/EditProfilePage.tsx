@@ -1,15 +1,14 @@
 import SettingLayout from "../../layouts/SettingLayout";
 import EditAvatar from "./components/EditAvatar/EditAvatar";
 
-const EditProfilePage = () =>{
+const EditProfilePage = () => {
     return (
         <div className="">
             <SettingLayout>
-                <EditAvatar/>
-
+                <EditAvatar />
             </SettingLayout>
         </div>
-    )
-}
+    );
+};
 
 export default EditProfilePage;

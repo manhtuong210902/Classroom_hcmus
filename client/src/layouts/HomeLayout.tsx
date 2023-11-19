@@ -3,7 +3,7 @@ import Sicebar from "@src/components/Sidebar/Sicebar";
 import { useState } from "react";
 
 type Props = {
-    children: JSX.Element;
+    children?: JSX.Element;
 };
 
 const HomeLayout = ({ children }: Props) => {
