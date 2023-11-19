@@ -1,4 +1,4 @@
-import { BasicInfo, EditAvatar } from "./components";
+import { BasicInfo, ContactInfo, EditAvatar } from "./components";
 
 const EditProfilePage = () => {
     return (
@@ -24,6 +24,10 @@ const EditProfilePage = () => {
                     </div>
                 </div>
                 <BasicInfo />
+            </div>
+            <div className="flex flex-col p-4 m-10 border max-w-[800px]  mx-auto rounded-md">
+            <h2 className="text-3xl font-semibold text-primary mb-20">Contact information</h2>
+                <ContactInfo/>
             </div>
         </div>
     );
