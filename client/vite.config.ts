@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import { resolve } from "path";
 import autoprefixer from "autoprefixer";
 import tailwindcss from "tailwindcss";
+import EnvironmentPlugin from "vite-plugin-environment";
 
 const root = resolve(__dirname, "src");
 const icon = resolve(__dirname, "src/assets/icon");
@@ -23,5 +24,5 @@ export default defineConfig({
             plugins: [tailwindcss, autoprefixer],
         },
     },
-    plugins: [react()],
+    plugins: [react(), EnvironmentPlugin("all")],
 });

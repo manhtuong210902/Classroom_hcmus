@@ -1,33 +1,49 @@
-import img_auth from '../assets/imgs/img_auth.png';
+import ClassRoomImg from "@image/svg_classroom.svg";
+import BookImg from "@image/img_book.png";
+import LoginImg from "@image/img_login.svg";
+import { BookOpen } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
 type Props = {
     children?: JSX.Element;
 };
 
 const DefaultAuth = () => {
-    return <div className="lg:flex flex-col py-4 px-4 lg:px-16 xl:px-24 hidden bg-accent">
-        <div className="font-semibold text-5xl text-[#939cac]">
-            Classroom
-        </div>
-        <div className="mt-8 text-[#262626] xl:text-6xl md:text-5xl">
-            Get started with<br /> Classroom
-        </div>
-        <div className="text-[#595959] text-xl mt-8">
-            Smart Classroom Management System
-        </div>
-        <div className="mt-8 h-200px flex mx-auto">
-            <div>
-                <img className="w-[400px] h-auto" src={img_auth} />
+    const location = useLocation();
+    console.log("Log check location: ", location);
+
+    return (
+        <div className="grid-cols-1 hidden md:flex flex-col py-5 px-4 lg:px-16 xl:px-24 bg-accent">
+            <div className="flex items-center gap-3 cursor-pointer">
+                <div>
+                    <img src={BookImg} alt="" className="w-9 h-9 object-cover" />
+                </div>
+                <div className="font-bold text-3xl text-primary">Education</div>
+            </div>
+            <div className=" mt-10 text-[#262626] text-5xl font-bold">
+                <span>Get started with</span>
+                <br /> <span className="text-lime-600">Education</span>
+            </div>
+            <div className="text-muted-foreground text-lg mt-3 flex items-center gap-2 underline">
+                Smart Classroom Management System <BookOpen />
+            </div>
+            <div className="mt-8 h-200px flex mx-auto">
+                <div>
+                    <img
+                        className="w-[400px] h-auto"
+                        src={location.pathname.includes("login") ? LoginImg : ClassRoomImg}
+                    />
+                </div>
             </div>
         </div>
-    </div>
-}
+    );
+};
 
 const AuthLayout = ({ children }: Props) => {
     return (
-        <div className="lg:grid lg:grid-cols-2 flex justify-center h-screen">
+        <div className="md:grid-cols-2 grid">
             <DefaultAuth />
-            {children}
+            <div className="h-screen grid-cols-1 overflow-y-auto">{children}</div>
         </div>
     );
 };
