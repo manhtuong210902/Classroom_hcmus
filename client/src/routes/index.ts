@@ -5,8 +5,6 @@ import LandingPage from "@src/pages/LandingPage";
 
 import settingRoutes from "@src/pages/Setting/routes";
 
-
-
 const publicRoutes: routeInfo[] = [
     { path: "/", component: LandingPage },
     { path: "/home", component: HomePage },
