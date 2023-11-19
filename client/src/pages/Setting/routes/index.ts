@@ -1,7 +1,11 @@
-import { EditProfilePage } from "..";
+import { EditProfilePage, PrivacyPage } from ".."
+
 
 const prefix = "setting";
 
-const settingRoutes: routeInfo[] = [{ path: `${prefix}/profile`, component: EditProfilePage }];
+const settingRoutes : routeInfo[] = [
+    { path: `${prefix}/profile`, component: EditProfilePage},
+    { path: `${prefix}/privacy`, component: PrivacyPage}
+]
 
 export default settingRoutes;

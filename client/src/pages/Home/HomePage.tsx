@@ -1,4 +1,4 @@
-import ListClass from "@src/components/ClassRoom/ListClass";
+import ListClass from "@src/pages/Home/components/ClassRoom/ListClass";
 
 const HomePage = () => {
     return <ListClass />;
