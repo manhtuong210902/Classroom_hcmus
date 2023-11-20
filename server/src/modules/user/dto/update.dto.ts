@@ -29,5 +29,9 @@ export class UpdateUserDto{
     @ApiProperty()
     readonly address: string;
      
+    @IsOptional()
+    @IsString()
+    @ApiProperty()
+    readonly imgUrl: string;
 }
 
