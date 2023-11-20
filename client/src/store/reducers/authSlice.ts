@@ -1,10 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { userInfo } from "@src/utils/types";
+import { UserInfo } from "@src/utils/types";
 import { RootState } from "../store";
 
 interface AuthState {
     isAuthenticated: boolean;
-    user: userInfo | null;
+    user: UserInfo | null;
 }
 
 const initialState = {

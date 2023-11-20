@@ -5,14 +5,10 @@ import Signup from "@src/pages/Auth/Signup/Signup";
 import HomePage from "@src/pages/Home/HomePage";
 import LandingPage from "@src/pages/Landing/LandingPage";
 import settingRoutes from "@src/pages/Setting/routes";
+import { RouteInfo } from "@src/utils/types";
 
-type routeInfo = {
-    path: string;
-    component: React.FC;
-    layout?: React.FC;
-};
 
-const publicRoutes: routeInfo[] = [
+const publicRoutes: RouteInfo[] = [
     { path: "/", component: LandingPage },
     { path: "/home", component: HomePage, layout: HomeLayout },
     { path: "/login", component: Login, layout: AuthLayout },

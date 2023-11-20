@@ -1,8 +1,8 @@
-import { Controller, Body, BadRequestException} from '@nestjs/common';
+import { Controller, Body, BadRequestException, ParseUUIDPipe} from '@nestjs/common';
 import { UserService } from './user.service';
 import { Role } from 'src/lib/security/decorators/role.decorator';
 import { HttpStatus } from '@nestjs/common/enums';
-import { HttpCode, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common/decorators';
+import { Get, HttpCode, Param, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common/decorators';
 import { ResponseTemplate } from 'src/lib/interfaces/response.template';
 import { convertCamelToSnake } from "../../lib/util/func"
 import { RoleType } from 'src/lib/util/constant';
@@ -13,11 +13,12 @@ import { omit } from 'lodash';
 import { CloudinaryResponse } from 'src/lib/configs/cloudinary/cloudinary-response';
 import { UpdateAvatarResponse } from './response/update-avatar.response';
 import { ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
-import { AuthResponse } from '../auth/response/auth-response';
+import { UUID } from 'crypto';
+import { UserProfileResponse } from './response/user-profile.response';
 
 @Controller('user')
 @ApiTags('user')
-@ApiExtraModels(ResponseTemplate, AuthResponse)
+@ApiExtraModels(ResponseTemplate, UserProfileResponse)
 export class UserController {
     constructor(
         private readonly userService: UserService,
@@ -67,7 +68,12 @@ export class UserController {
     @HttpCode(HttpStatus.OK)
     @Put('/profile')
     @Role(RoleType.USER)
-    
+    @ApiResponse({
+        status: HttpStatus.OK,
+        schema: {
+            $ref: getSchemaPath(null),
+        },
+    })
     async updateUser(@Body() updateDto : UpdateUserDto)
         : Promise<ResponseTemplate<null>>
     {
@@ -87,6 +93,43 @@ export class UserController {
         } 
 
         return response;
+    }
+
+    @HttpCode(HttpStatus.OK)
+    @Get('/profile/:id')
+    @Role(RoleType.USER)
+    @ApiResponse({
+        status: HttpStatus.OK,
+        schema: {
+            $ref: getSchemaPath(UserProfileResponse),
+        },
+    })
+    async getProfile(@Param('id') userId: UUID )
+        : Promise<ResponseTemplate<UserProfileResponse>>
+    {
+        try {
+            const hasUser = await this.userService.findOne({id: userId});
+            if (!hasUser){
+                throw new BadRequestException("User not found");
+            }
+            const profileData : UserProfileResponse = {
+                address: hasUser.address,
+                id: hasUser.id,
+                username: hasUser.username,
+                fullname: hasUser.fullname,
+                email: hasUser.email,
+                gender: hasUser.gender,
+                imgUrl: hasUser.img_url
+            }
+            const response : ResponseTemplate<UserProfileResponse> = {
+                data : profileData,
+                statusCode: HttpStatus.OK,
+                message: "success"
+            }
+            return response;
+        } catch (error) {
+            throw new BadRequestException(error.message);
+        }   
     }
 
 }

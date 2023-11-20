@@ -1,4 +1,4 @@
-import { UPDATE_AVATAR } from "./api";
+import { UPDATE_AVATAR, USER_PROFILE } from "./api";
 import axiosClient from "../axiosClient";
 
 export const profileService = {
@@ -9,5 +9,9 @@ export const profileService = {
             }
         });
     },
+
+    getProfile: (userId : string) =>{
+        return axiosClient.get(`${USER_PROFILE}/${userId}`);
+    }
 };
 
