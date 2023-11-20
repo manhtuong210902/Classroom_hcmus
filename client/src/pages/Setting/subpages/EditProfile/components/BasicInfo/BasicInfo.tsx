@@ -1,79 +1,60 @@
-import {ChevronRight  } from "lucide-react";
-import { 
-    AlertDialog,
-    AlertDialogContent,
-    AlertDialogTrigger,
-    AlertDialogTitle,
-    AlertDialogDescription,
-    AlertDialogAction,
-    AlertDialogCancel,
-    
-} 
-from "@src/components/ui/alert-dialog";
-import { AlertDialogFooter, AlertDialogHeader } from "@src/components/ui/alert-dialog";
-import { UserProfile } from "@src/utils/types";
+import { ChevronRight } from "lucide-react";
+import { AlertDialog, AlertDialogContent, AlertDialogTrigger } from "@src/components/ui/alert-dialog";
+import { useAppSelector } from "@src/hooks/appHook";
+import { selectUserInfo } from "@src/store/reducers/authSlice";
+import FormAddFullName from "../FormUpdate/FormAddFullName";
+import { useState } from "react";
 
-type Props = {
-    userProfile:  UserProfile
-}
-
-const BasicInfo : React.FC<Props> = ({userProfile})=>{
-
-
+const BasicInfo = () => {
+    const user = useAppSelector(selectUserInfo);
+    const [showModalAddFullName, setShowModalAddFullName] = useState(false);
 
     return (
         <div className="flex flex-col mb-30">
-            <AlertDialog >
+            <AlertDialog open={showModalAddFullName} onOpenChange={setShowModalAddFullName}>
                 <AlertDialogTrigger asChild>
                     <div className="flex flex-col">
-                        <div className="flex flex row p-5 hover:bg-sky-700 cursor-pointer">
+                        <div className="flex row p-5 hover:bg-accent cursor-pointer">
                             <div className="flex-1 text-left">Full name</div>
-                            <div className="flex-1 text-left">{userProfile.fullname}</div>
+                            <div className="flex-1 text-left">{user?.fullname}</div>
                             <div>
-                                <ChevronRight/>
+                                <ChevronRight />
                             </div>
                         </div>
-                        <div className="w-100 h-[1px] border"></div>
+                        <div className="w-full border-b border-border"></div>
                     </div>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Fullname</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            <div></div>
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction>Continue</AlertDialogAction>
-                    </AlertDialogFooter>
-
+                    <FormAddFullName
+                        fullNameDefault={user?.fullname || ""}
+                        onClose={() => {
+                            setShowModalAddFullName(false);
+                        }}
+                    />
                 </AlertDialogContent>
             </AlertDialog>
 
             <div className="flex flex-col">
-                <div className="flex flex row p-5 hover:bg-sky-700 cursor-pointer">
+                <div className="flex flex-row p-5 hover:bg-accent cursor-pointer">
                     <div className="flex-1">Date of birth</div>
-                    <div className="flex-1">24/08/2002</div>
+                    <div className="flex-1">---</div>
                     <div>
-                        <ChevronRight/>
+                        <ChevronRight />
                     </div>
                 </div>
-                <div className="w-100 h-[1px] border"></div>
+                <div className="w-100 border-b"></div>
             </div>
             <div className="flex flex-col">
-                <div className="flex flex row p-5 hover:bg-sky-700 cursor-pointer">
+                <div className="flex flex-row p-5 hover:bg-accent cursor-pointer">
                     <div className="flex-1">Gender</div>
-                    <div className="flex-1">{userProfile.gender}</div>
+                    <div className="flex-1">{user?.gender || "---"}</div>
                     <div>
-                        <ChevronRight/>
+                        <ChevronRight />
                     </div>
                 </div>
-                <div className="w-100 h-[1px] border"></div>
             </div>
-            
         </div>
-    )
-}
+    );
+};
 
-export default BasicInfo
+export default BasicInfo;

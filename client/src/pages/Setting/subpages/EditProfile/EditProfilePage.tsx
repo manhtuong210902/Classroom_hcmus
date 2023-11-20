@@ -1,23 +1,7 @@
-import { UserProfile } from "@src/utils/types";
 import { BasicInfo, ContactInfo, EditAvatar } from "./components";
-import React, { useEffect, useState } from "react";
-import { profileService } from "@src/services/setting/profile.service";
+import React from "react";
 
-const EditProfilePage : React.FC = () => {
-
-    const defaultValue : UserProfile ={
-        id: "",
-        address: "",
-        username: "",
-        imgUrl: "",
-        fullname:"",
-        email: "",
-        gender: ""
-
-    } 
-    const [userProfile, setUserProfile] =useState(defaultValue);
-
-
+const EditProfilePage: React.FC = () => {
     return (
         <div>
             <div className="flex flex-col items-center">
@@ -33,18 +17,18 @@ const EditProfilePage : React.FC = () => {
             </div>
 
             <div className="flex flex-col p-4 m-10 border max-w-[800px]  mx-auto rounded-md">
-                <h2 className="text-3xl font-semibold text-primary">Basic information</h2>
+                <h2 className="text-3xl font-bold text-primary">Basic information</h2>
                 <div className="flex flex-row items-center mt-4 p-5">
                     <div className="flex-1">Profile photo</div>
                     <div>
                         <EditAvatar />
                     </div>
                 </div>
-                <BasicInfo userProfile={userProfile}/>
+                <BasicInfo />
             </div>
             <div className="flex flex-col p-4 m-10 border max-w-[800px]  mx-auto rounded-md">
-            <h2 className="text-3xl font-semibold text-primary mb-20">Contact information</h2>
-                <ContactInfo/>
+                <h2 className="text-3xl font-bold text-primary mb-20">Contact information</h2>
+                <ContactInfo />
             </div>
         </div>
     );

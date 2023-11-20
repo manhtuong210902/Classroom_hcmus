@@ -1,6 +1,6 @@
 import { loadUserFail, loadUserSuccess } from "@src/store/reducers/authSlice";
 import { LocalStorage } from "@src/utils/LocalStorage";
-import { profileService } from "../setting/profile.service";
+import { profileService } from "../profile/profile.service";
 import { UserInfo } from "@src/utils/types";
 import { authService } from "./auth.service";
 

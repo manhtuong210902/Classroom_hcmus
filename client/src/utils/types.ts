@@ -10,15 +10,6 @@ export interface UserInfo {
     imgUrl: string;
     fullname?: string;
     email?: string;
+    address?: string;
     gender?: string;
-}
-
-export interface UserProfile {
-    id: string;
-    address: string;
-    fullname: string;
-    username: string;
-    email: string;
-    gender: string;
-    imgUrl: string;
 }

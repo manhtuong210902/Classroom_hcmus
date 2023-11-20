@@ -23,11 +23,14 @@ const authSlice = createSlice({
         loadUserFail: (state) => {
             state.isAuthenticated = false;
         },
+        updateUser: (state, action) => {
+            state.user = action.payload;
+        },
     },
 });
 
 const { actions, reducer } = authSlice;
-export const { loadUserSuccess, loadUserFail } = actions;
+export const { loadUserSuccess, loadUserFail, updateUser } = actions;
 export default reducer;
 
 export const selectUserInfo = (state: RootState) => state.auth.user;
