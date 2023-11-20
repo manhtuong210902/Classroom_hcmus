@@ -54,7 +54,7 @@ export default function Login() {
                     </Button>
                 </div>
 
-                <div className="mt-4 flex justify-center text-[12px] text-[#BFBFBF]">Or log in with email</div>
+                <div className="mt-4 flex justify-center text-[12px] text-[#BFBFBF]">Or log in with username</div>
 
                 {error && <div className="text-destructive text-sm text-center font-medium mt-3">{error}</div>}
 
