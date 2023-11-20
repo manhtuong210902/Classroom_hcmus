@@ -55,12 +55,12 @@ const Header = () => {
                 <NavigationMenu className="hidden md:block">
                     <NavigationMenuList>
                         <NavigationMenuItem>
-                            <Link to={"/home"}>
+                            <Link to={routes.HOME}>
                                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>Home</NavigationMenuLink>
                             </Link>
                         </NavigationMenuItem>
                         <NavigationMenuItem>
-                            <Link to={"/home"}>
+                            <Link to={routes.HOME}>
                                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
                                     About us
                                 </NavigationMenuLink>

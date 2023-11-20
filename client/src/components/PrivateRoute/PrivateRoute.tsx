@@ -1,21 +1,29 @@
 import routes from "@src/configs/router";
 import { useAppDispatch, useAppSelector } from "@src/hooks/appHook";
 import { loaderUser } from "@src/services/auth/apiRequest";
-import { selectIsAuthenticated } from "@src/store/reducers/authSlice";
+import { selectIsAuthenticated, selectUserInfo } from "@src/store/reducers/authSlice";
 import { LocalStorage } from "@src/utils/LocalStorage";
 import { useEffect } from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 const PrivateRoute = () => {
-    const userId = LocalStorage.getUserId();
     const dispatch = useAppDispatch();
     const isAuthenticated = useAppSelector(selectIsAuthenticated);
+    const user = useAppSelector(selectUserInfo);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        loaderUser(dispatch);
-    }, [userId]);
+        const accessToken = LocalStorage.getAccessToken();
+        if (!user) {
+            loaderUser(dispatch);
+        }
 
-    return isAuthenticated ? <Outlet /> : <Navigate to={routes.LANDINGPAGE} />;
+        if (!accessToken) {
+            navigate(routes.LANDINGPAGE);
+        }
+    }, [isAuthenticated]);
+
+    return isAuthenticated ? <Outlet /> : null;
 };
 
 export default PrivateRoute;

@@ -6,13 +6,15 @@ import { authService } from "./auth.service";
 
 export const loaderUser = async (dispatch: any) => {
     const userId = LocalStorage.getUserId();
+    console.log("Log check userId: ", userId);
     if (!userId) {
         dispatch(loadUserFail());
+        return;
     }
 
     try {
         const res = await profileService.getProfile(userId || "");
-        const user: UserInfo = res.data;
+        const user: UserInfo = res.data.data;
 
         dispatch(loadUserSuccess(user));
     } catch (error) {
@@ -24,14 +26,15 @@ export const loaderUser = async (dispatch: any) => {
 export const registerUser = async (dispatch: any, params: any) => {
     try {
         const res = await authService.register(params);
-        LocalStorage.setToken(res.data.accessToken);
-        LocalStorage.setRefreshToken(res.data.refreshToken);
-        LocalStorage.setUserId(res.data.userId);
+        const data = res.data.data;
+        LocalStorage.setToken(data.accessToken);
+        LocalStorage.setRefreshToken(data.refreshToken);
+        LocalStorage.setUserId(data.userId);
 
         const user: UserInfo = {
-            id: res.data.userId,
-            username: res.data.username,
-            imgUrl: res.data.imgUrl,
+            id: data.userId,
+            username: data.username,
+            imgUrl: data.imgUrl,
         };
 
         dispatch(loadUserSuccess(user));
@@ -46,14 +49,15 @@ export const registerUser = async (dispatch: any, params: any) => {
 export const loginUser = async (dispatch: any, params: any) => {
     try {
         const res = await authService.login(params);
-        LocalStorage.setToken(res.data.accessToken);
-        LocalStorage.setRefreshToken(res.data.refreshToken);
-        LocalStorage.setUserId(res.data.userId);
+        const data = res.data.data;
+        LocalStorage.setToken(data.accessToken);
+        LocalStorage.setRefreshToken(data.refreshToken);
+        LocalStorage.setUserId(data.userId);
 
         const user: UserInfo = {
-            id: res.data.userId,
-            username: res.data.username,
-            imgUrl: res.data.imgUrl,
+            id: data.userId,
+            username: data.username,
+            imgUrl: data.imgUrl,
         };
 
         dispatch(loadUserSuccess(user));
@@ -63,4 +67,9 @@ export const loginUser = async (dispatch: any, params: any) => {
         dispatch(loadUserFail());
         return error.response.data;
     }
+};
+
+export const logoutUser = (dispatch: any) => {
+    LocalStorage.clearToken();
+    dispatch(loadUserFail());
 };

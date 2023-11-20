@@ -5,10 +5,17 @@ import { Github, Mail } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { loginSchema } from "@src/utils/schema";
+import { useAppDispatch } from "@src/hooks/appHook";
+import { useState } from "react";
+import { loginUser } from "@src/services/auth/apiRequest";
+import routes from "@src/configs/router";
 
 export default function Login() {
+    const dispatch = useAppDispatch();
+    const [error, setError] = useState<string>("");
+    const navigate = useNavigate();
     const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
@@ -17,9 +24,14 @@ export default function Login() {
         },
     });
 
-    function onSubmit(values: z.infer<typeof loginSchema>) {
-        //
-        console.log(values);
+    async function onSubmit(values: z.infer<typeof loginSchema>) {
+        const res = await loginUser(dispatch, values);
+        if (res.error) {
+            setError(res.message[0].message);
+            return;
+        }
+
+        navigate(routes.HOME);
     }
     return (
         <div className="max-w-2xl xl:px-[80px] lg:px-[40px] py-[40px] px-3">
@@ -43,6 +55,8 @@ export default function Login() {
                 </div>
 
                 <div className="mt-4 flex justify-center text-[12px] text-[#BFBFBF]">Or log in with email</div>
+
+                {error && <div className="text-destructive text-sm text-center font-medium mt-3">{error}</div>}
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 flex flex-col gap-6">
