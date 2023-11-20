@@ -68,7 +68,7 @@ export class AuthService {
             const authResponse: AuthResponse = {
                 accessToken: tokens.accessToken,
                 refreshToken: tokens.refreshToken,
-                imgUrl: null,
+                imgUrl: hasUser.img_url,
                 username: hasUser.username,
                 userId: hasUser.id,
                 fullname: hasUser.fullname,

@@ -11,7 +11,6 @@ type Props = {
 
 const DefaultAuth = () => {
     const location = useLocation();
-    console.log("Log check location: ", location);
 
     return (
         <div className="grid-cols-1 hidden md:flex flex-col py-5 px-4 lg:px-16 xl:px-24 bg-accent">

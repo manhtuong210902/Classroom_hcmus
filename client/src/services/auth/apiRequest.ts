@@ -35,6 +35,7 @@ export const registerUser = async (dispatch: any, params: any) => {
             id: data.userId,
             username: data.username,
             imgUrl: data.imgUrl,
+            ...data,
         };
 
         dispatch(loadUserSuccess(user));
@@ -58,6 +59,7 @@ export const loginUser = async (dispatch: any, params: any) => {
             id: data.userId,
             username: data.username,
             imgUrl: data.imgUrl,
+            ...data,
         };
 
         dispatch(loadUserSuccess(user));

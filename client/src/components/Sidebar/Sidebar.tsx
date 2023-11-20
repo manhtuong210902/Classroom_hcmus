@@ -2,7 +2,7 @@ import { Calendar, GraduationCapIcon, HomeIcon, ListTodo, SettingsIcon } from "l
 import { AccordionContent, Accordion, AccordionItem, AccordionTrigger } from "../ui/accordion";
 import SettingSidebar from "@src/pages/Setting/components/SettingSidebar/SettingSidebar";
 import routes from "@src/configs/router";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const Sicebar = ({ isShowSideBar }: { isShowSideBar: boolean }) => {
     const topContents = [
@@ -17,9 +17,11 @@ const Sicebar = ({ isShowSideBar }: { isShowSideBar: boolean }) => {
             id: 2,
             icon: <Calendar />,
             title: "Calendar",
-            path: routes.HOME,
+            path: "#Calendar",
         },
     ];
+
+    const location = useLocation();
 
     return (
         <div
@@ -32,8 +34,9 @@ const Sicebar = ({ isShowSideBar }: { isShowSideBar: boolean }) => {
                     return (
                         <Link key={item.id} to={item.path}>
                             <div
-                                key={item.id}
-                                className="flex items-center gap-2 text-base font-semibold px-6 py-3 group cursor-pointer hover:bg-muted max-w-[300px] truncate mr-3 rounded-e-full"
+                                className={`${
+                                    location.pathname === item.path && "bg-muted"
+                                } flex items-center gap-2 text-base font-semibold px-6 py-3 group cursor-pointer hover:bg-muted max-w-[300px] truncate mr-3 rounded-e-full`}
                             >
                                 {item.icon}
                                 <span className={`group-hover:underline ${!isShowSideBar && "hidden"}`}>
