@@ -11,8 +11,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { sigupSchema } from "@src/utils/schema";
+import { register } from "@src/services/auth/auth.service";
+import { LocalStorage } from "@src/utils/LocalStorage";
+import { useAppDispatch } from "@src/hooks/appHook";
+import { loadUserSuccess } from "@src/store/reducers/authSlice";
+import { userInfo } from "@src/utils/types";
 
 export default function Signup() {
+    const dispatch = useAppDispatch();
+
     const form = useForm<z.infer<typeof sigupSchema>>({
         resolver: zodResolver(sigupSchema),
         defaultValues: {
@@ -24,9 +31,24 @@ export default function Signup() {
         },
     });
 
-    function onSubmit(values: z.infer<typeof sigupSchema>) {
-        //
-        console.log(values);
+    async function onSubmit(values: z.infer<typeof sigupSchema>) {
+        try {
+            const res = await register(values);
+            console.log("Log check res: ", res.data);
+
+            LocalStorage.setToken(res.data.accessToken);
+            LocalStorage.setRefreshToken(res.data.refreshToken);
+
+            const user: userInfo = {
+                id: res.data.userId,
+                username: res.data.username,
+                imgUrl: res.data.imgUrl,
+            };
+
+            dispatch(loadUserSuccess(user));
+        } catch (error) {
+            console.log("Log check error: ", error);
+        }
     }
     return (
         <div className="max-w-2xl xl:px-[80px] lg:px-[40px] pt-[40px] pb-[20px] px-3">
