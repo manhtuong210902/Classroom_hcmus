@@ -5,20 +5,21 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 
 import { Github, Mail } from "lucide-react";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { sigupSchema } from "@src/utils/schema";
-import { register } from "@src/services/auth/auth.service";
-import { LocalStorage } from "@src/utils/LocalStorage";
 import { useAppDispatch } from "@src/hooks/appHook";
-import { loadUserSuccess } from "@src/store/reducers/authSlice";
-import { userInfo } from "@src/utils/types";
+import { registerUser } from "@src/services/auth/apiRequest";
+import { useState } from "react";
+import routes from "@src/configs/router";
 
 export default function Signup() {
     const dispatch = useAppDispatch();
+    const [error, setError] = useState<string>("");
+    const navigate = useNavigate();
 
     const form = useForm<z.infer<typeof sigupSchema>>({
         resolver: zodResolver(sigupSchema),
@@ -32,23 +33,13 @@ export default function Signup() {
     });
 
     async function onSubmit(values: z.infer<typeof sigupSchema>) {
-        try {
-            const res = await register(values);
-            console.log("Log check res: ", res.data);
-
-            LocalStorage.setToken(res.data.accessToken);
-            LocalStorage.setRefreshToken(res.data.refreshToken);
-
-            const user: userInfo = {
-                id: res.data.userId,
-                username: res.data.username,
-                imgUrl: res.data.imgUrl,
-            };
-
-            dispatch(loadUserSuccess(user));
-        } catch (error) {
-            console.log("Log check error: ", error);
+        const res = await registerUser(dispatch, values);
+        if (res.error) {
+            setError(res.message[0].message);
+            return;
         }
+
+        navigate(routes.HOME);
     }
     return (
         <div className="max-w-2xl xl:px-[80px] lg:px-[40px] pt-[40px] pb-[20px] px-3">
@@ -62,6 +53,8 @@ export default function Signup() {
                         </span>
                     </div>
                 </div>
+
+                {error && <div className="text-destructive text-sm text-center font-medium mt-3">{error}</div>}
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 flex flex-col gap-6">

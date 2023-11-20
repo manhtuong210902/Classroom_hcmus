@@ -2,7 +2,8 @@ import ClassRoomImg from "@image/svg_classroom.svg";
 import BookImg from "@image/img_book.png";
 import LoginImg from "@image/img_login.svg";
 import { BookOpen } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import routes from "@src/configs/router";
 
 type Props = {
     children?: JSX.Element;
@@ -14,12 +15,14 @@ const DefaultAuth = () => {
 
     return (
         <div className="grid-cols-1 hidden md:flex flex-col py-5 px-4 lg:px-16 xl:px-24 bg-accent">
-            <div className="flex items-center gap-3 cursor-pointer">
-                <div>
-                    <img src={BookImg} alt="" className="w-9 h-9 object-cover" />
+            <Link to={routes.LANDINGPAGE}>
+                <div className="flex items-center gap-3 cursor-pointer">
+                    <div>
+                        <img src={BookImg} alt="" className="w-9 h-9 object-cover" />
+                    </div>
+                    <div className="font-bold text-3xl text-primary">Education</div>
                 </div>
-                <div className="font-bold text-3xl text-primary">Education</div>
-            </div>
+            </Link>
             <div className=" mt-10 text-[#262626] text-5xl font-bold">
                 <span>Get started with</span>
                 <br /> <span className="text-lime-600">Education</span>

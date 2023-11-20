@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { navigationMenuTriggerStyle } from "@src/components/ui/navigation-menu";
 import React from "react";
 import { cn } from "@src/utils/lib";
+import routes from "@src/configs/router";
 
 const Header = () => {
     const components: { title: string; description: string }[] = [
@@ -44,10 +45,12 @@ const Header = () => {
     return (
         <div className="h-[60px] shadow-md">
             <div className="w-full h-full flex items-center justify-between max-w-[1200px] mx-auto px-3 md:px-0">
-                <div className="flex items-center gap-2">
-                    <img src={BookImg} alt="" className="w-8 h-8     md:w-9 md:h-9 object-cover" />
-                    <h1 className="font-extrabold text-xl md:text-2xl text-primary">Education</h1>
-                </div>
+                <Link to={routes.LANDINGPAGE}>
+                    <div className="flex items-center gap-2">
+                        <img src={BookImg} alt="" className="w-8 h-8 md:w-9 md:h-9 object-cover" />
+                        <h1 className="font-extrabold text-xl md:text-2xl text-primary">Education</h1>
+                    </div>
+                </Link>
 
                 <NavigationMenu className="hidden md:block">
                     <NavigationMenuList>
@@ -79,8 +82,12 @@ const Header = () => {
                 </NavigationMenu>
 
                 <div className="flex items-center gap-3">
-                    <Button>Sign Up</Button>
-                    <Button variant="outline">Log In</Button>
+                    <Link to={routes.SIGNUP}>
+                        <Button>Sign Up</Button>
+                    </Link>
+                    <Link to={routes.LOGIN}>
+                        <Button variant="outline">Log In</Button>
+                    </Link>
                 </div>
             </div>
         </div>

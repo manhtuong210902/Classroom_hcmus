@@ -19,6 +19,16 @@ export const LocalStorage = (function () {
         return localStorage.getItem("refreshToken");
     }
 
+    function _setUserId(userId: string) {
+        if (userId) {
+            localStorage.setItem("userId", userId);
+        }
+    }
+
+    function _getUserId() {
+        return localStorage.getItem("userId");
+    }
+
     function _clearToken() {
         localStorage.clear();
     }
@@ -28,6 +38,8 @@ export const LocalStorage = (function () {
         getAccessToken: _getAccessToken,
         getRefreshToken: _getRefreshToken,
         setRefreshToken: _setRefreshToken,
+        setUserId: _setUserId,
+        getUserId: _getUserId,
         clearToken: _clearToken,
     };
 })();

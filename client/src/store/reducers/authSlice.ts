@@ -31,4 +31,4 @@ export const { loadUserSuccess, loadUserFail } = actions;
 export default reducer;
 
 export const selectUserInfo = (state: RootState) => state.auth.user;
-export const selectUserInfosAuthenticated = (state: RootState) => state.auth.isAuthenticated;
+export const selectIsAuthenticated = (state: RootState) => state.auth.isAuthenticated;
