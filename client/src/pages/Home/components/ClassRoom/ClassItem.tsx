@@ -11,7 +11,7 @@ export type ClassInfo = {
 
 const ClassItem = ({ item }: { item: ClassInfo }) => {
     return (
-        <div className="mb-6 rounded-md border border-border shadow-sm w-[300px] overflow-hidden">
+        <div className="mb-6 rounded-md border border-border shadow-md w-[300px] overflow-hidden cursor-pointer hover:shadow-lg">
             <div className="bg-primary p-4 flex flex-col text-base text-white relative">
                 <div className="flex justify-between items-center">
                     <h3 className="font-semibold text-lg capitalize truncate">{item.name}</h3>

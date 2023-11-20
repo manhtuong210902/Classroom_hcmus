@@ -1,11 +1,10 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 
-export class UpdateUserDto{
-
+export class UpdateUserDto {
     @IsString()
     @IsNotEmpty()
-    @IsUUID("all",{"message":"Invalid uuid"})
+    @IsUUID('all', { message: 'Invalid uuid' })
     @ApiProperty()
     readonly userId: string;
 
@@ -22,16 +21,20 @@ export class UpdateUserDto{
     @IsOptional()
     @IsString()
     @ApiProperty()
-    readonly gender: string;    
+    readonly gender: string;
+
+    @IsOptional()
+    @IsString()
+    @ApiProperty()
+    readonly email: string;
 
     @IsOptional()
     @IsString()
     @ApiProperty()
     readonly address: string;
-     
+
     @IsOptional()
     @IsString()
     @ApiProperty()
     readonly imgUrl: string;
 }
-

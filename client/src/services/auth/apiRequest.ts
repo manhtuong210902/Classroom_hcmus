@@ -13,7 +13,7 @@ export const loaderUser = async (dispatch: any) => {
     }
 
     try {
-        const res = await profileService.getProfile(userId || "");
+        const res = await profileService.getProfile();
         const user: UserInfo = res.data.data;
 
         dispatch(loadUserSuccess(user));

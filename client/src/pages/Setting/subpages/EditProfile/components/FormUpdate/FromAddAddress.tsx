@@ -10,30 +10,28 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 export const formSchema = z.object({
-    fullname: z.string().min(1, { message: "Fullname is required field" }).min(6, {
-        message: "Full name must be at least 6 characters.",
-    }),
+    address: z.string().min(1, { message: "Address is required field" }),
 });
 
-const FormAddFullName = ({ onClose }: { onClose: any }) => {
+const FormAddAddress = ({ onClose }: { onClose: any }) => {
     const user = useAppSelector(selectUserInfo);
-    const fullNameDefault = user?.fullname || "";
+    const addressDefault = user?.address || "";
     const dipatch = useAppDispatch();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            fullname: fullNameDefault,
+            address: addressDefault,
         },
     });
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        if (values.fullname.trim() !== fullNameDefault.trim()) {
+        if (values.address.trim() !== addressDefault.trim()) {
             const res = await profileService.updateProfile(values);
             if (res.data.statusCode === 200) {
                 dipatch(
                     updateUser({
                         ...user,
-                        fullname: values.fullname,
+                        address: values.address,
                     })
                 );
             }
@@ -47,14 +45,14 @@ const FormAddFullName = ({ onClose }: { onClose: any }) => {
             <form onSubmit={form.handleSubmit(onSubmit)}>
                 <FormField
                     control={form.control}
-                    name="fullname"
+                    name="address"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel className="text-primary">Full name</FormLabel>
+                            <FormLabel className="text-primary">Address</FormLabel>
                             <FormControl>
                                 <Input
                                     className="focus:border-primary focus-visible:ring-transparent"
-                                    placeholder="Enter your full name"
+                                    placeholder="Enter your address"
                                     {...field}
                                 />
                             </FormControl>
@@ -71,4 +69,4 @@ const FormAddFullName = ({ onClose }: { onClose: any }) => {
     );
 };
 
-export default FormAddFullName;
+export default FormAddAddress;

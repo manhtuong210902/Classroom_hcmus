@@ -19,12 +19,15 @@ const EditAvatar = () => {
         const response = await profileService.updateAvatar(formData);
         if (response.data.statusCode !== 200) {
         } else {
-            dipatch(
-                updateUser({
-                    ...user,
-                    imgUrl: response.data.data.imgUrl,
-                })
-            );
+            const res = await profileService.updateProfile({ imgUrl: response.data.data.imgUrl });
+            if (res.data.statusCode === 200) {
+                dipatch(
+                    updateUser({
+                        ...user,
+                        imgUrl: response.data.data.imgUrl,
+                    })
+                );
+            }
         }
 
         setLoading(false);
