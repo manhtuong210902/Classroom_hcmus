@@ -12,6 +12,7 @@ import { RequestTokenResponse } from './response/request-token-response';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { RESET_PASSWORD, VERIFY_EMAIL } from 'src/lib/util/constant/hash-type';
+import { RESET_PASSWORD_TEMPLATE } from 'src/lib/configs/mailer/mailer.template';
 
 @Injectable()
 export class AuthService {
@@ -149,7 +150,7 @@ export class AuthService {
         this.mailerService.sendMail({
             to: email,
             subject: 'Testing Mailer ✅',
-            html: `<h1>Welcome</h1><br/><h4>Click here 👉 to reset password: <a href=${callbackUrl}>Click here</a></h4>`
+            html: RESET_PASSWORD_TEMPLATE(callbackUrl)
         })
     }
 
