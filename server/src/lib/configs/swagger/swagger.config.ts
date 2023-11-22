@@ -3,10 +3,9 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 export const swaggerConfig = (app) => {
   const config = new DocumentBuilder()
-    .setTitle('Your API Title')
-    .setDescription('Your API Description')
+    .setTitle('Google classroom')
+    .setDescription('API documentation for developers')
     .setVersion('1.0')
-    .addTag('your-tag')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

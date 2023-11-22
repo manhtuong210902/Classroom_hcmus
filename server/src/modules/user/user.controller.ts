@@ -12,13 +12,14 @@ import { CloudinaryService } from 'src/lib/configs/cloudinary/cloudinary.service
 import { omit } from 'lodash';
 import { CloudinaryResponse } from 'src/lib/configs/cloudinary/cloudinary-response';
 import { UpdateAvatarResponse } from './response/update-avatar.response';
-import { ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { ApiConsumes, ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { UUID } from 'crypto';
 import { UserProfileResponse } from './response/user-profile.response';
+import { multerOptions } from 'src/lib/configs/multer/multer.config';
 
 @Controller('user')
 @ApiTags('user')
-@ApiExtraModels(ResponseTemplate, UserProfileResponse)
+@ApiExtraModels(ResponseTemplate, UserProfileResponse, UpdateAvatarResponse)
 export class UserController {
     constructor(
         private readonly userService: UserService,
@@ -35,19 +36,22 @@ export class UserController {
             $ref: getSchemaPath(UpdateAvatarResponse),
         },
     })
+    @ApiConsumes('multipart/form-data')
     async updateAvatar(
         @UploadedFile() file: Express.Multer.File,
+        @Body() updateUserDto : UpdateUserDto 
     )
         : Promise<ResponseTemplate<UpdateAvatarResponse>>
     {
         try {
-            
             if (!file){
                 throw new BadRequestException("Upload image failed");
             }
 
             const fileResponse : CloudinaryResponse = await  this.cloudinaryService.uploadFile(file); 
             
+            await this.userService.updateUser({img_url : fileResponse.url}, updateUserDto.userId);
+
             const dataResponse : UpdateAvatarResponse = {
                 imgUrl: fileResponse.url
             } 
@@ -84,7 +88,7 @@ export class UserController {
         
         const isSuccess = await this.userService.updateUser(convertedData, updateDto.userId);
         if (isSuccess[0] === 0){
-            throw new BadRequestException("Invalid user");
+            throw new BadRequestException("UpdateFailed");
         }
         const response : ResponseTemplate<null> ={
             data: null,
