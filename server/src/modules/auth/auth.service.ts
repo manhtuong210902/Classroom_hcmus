@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { RoleService } from '../role/role.service';
 import { RegisterDto } from './dto/register.dto';
@@ -11,6 +11,7 @@ import { RequestTokenDto } from './dto/request-token.dto';
 import { RequestTokenResponse } from './response/request-token-response';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
+import { RESET_PASSWORD, VERIFY_EMAIL } from 'src/lib/util/constant/hash-type';
 
 @Injectable()
 export class AuthService {
@@ -132,8 +133,8 @@ export class AuthService {
         };
     }
 
-    async sendValidateEmail(userId: string, email: string) {
-        const token = generateHash(userId + email);
+    async sendVerifyEmail(userId: string, email: string) {
+        const token = generateHash(VERIFY_EMAIL + userId + email);
         const callbackUrl = this.configService.get<string>('SERVER_URL') + `/api/v1/auth/verify?email=${email}&user_id=${userId}&token=${token}`
         this.mailerService.sendMail({
             to: email,
@@ -142,10 +143,31 @@ export class AuthService {
         })
     }
 
-    async verifyEmail(userId: string, email: string, hash: string) {
-        const isValid = await validateHash(userId + email, hash);
-        if(isValid)
+    async sendResetPassword(userId: string, email: string) {
+        const token = generateHash(RESET_PASSWORD + userId + email);
+        const callbackUrl = this.configService.get<string>('SERVER_URL') + `/api/v1/auth/reset-password?email=${email}&user_id=${userId}&token=${token}`
+        this.mailerService.sendMail({
+            to: email,
+            subject: 'Testing Mailer ✅',
+            html: `<h1>Welcome</h1><br/><h4>Click here 👉 to reset password: <a href=${callbackUrl}>Click here</a></h4>`
+        })
+    }
+
+    async resetPassword(userId: string, email: string, token: string, newPassword: string) {
+        const isValid = await validateHash(RESET_PASSWORD + userId + email, token);
+        if (isValid) {
+            await this.userService.updateUser({ password: generateHash(newPassword) }, userId);
             return true;
-        return false;
+        }
+
+        throw new BadRequestException({ "message": "Invalid verification" });
+    }
+
+    async verifyEmail(userId: string, email: string, hash: string) {
+        const isValid = await validateHash(VERIFY_EMAIL + userId + email, hash);
+        if (isValid)
+            return true;
+
+        throw new BadRequestException({ "message": "Invalid verification" });
     }
 }
