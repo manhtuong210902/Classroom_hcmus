@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './modules/user/user.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { SequelizeConfigService } from './lib/configs/database/database.config';
 import { LoggerModule } from './lib/configs/logger/logger.module';
@@ -20,6 +20,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './lib/security/guard/role.guard';
 import { CloudinaryModule } from './lib/configs/cloudinary/cloudinary.module';
 import { MulterModule } from '@nestjs/platform-express/multer';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { MailerConfigService } from './lib/configs/mailer/mailer.config';
 
 @Module({
     imports: [
@@ -31,6 +33,9 @@ import { MulterModule } from '@nestjs/platform-express/multer';
             useClass: SequelizeConfigService,
         }),
         SequelizeModule.forFeature([User, Role, UserRole]),
+        MailerModule.forRootAsync({
+            useClass: MailerConfigService,
+        }),
         MulterModule.register(),
         LoggerModule,
         UserModule,
@@ -52,6 +57,6 @@ export class AppModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
             .apply(AuthMiddleware)
-            // .forRoutes(UserController);
+        // .forRoutes(UserController);
     }
 }

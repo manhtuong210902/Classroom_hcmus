@@ -1,5 +1,5 @@
 import { Controller, HttpStatus, HttpCode, BadRequestException} from '@nestjs/common';
-import { Post,Body } from '@nestjs/common/decorators';
+import { Post,Body, Get, Req, Query } from '@nestjs/common/decorators';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
@@ -17,6 +17,20 @@ export class AuthController {
     constructor(
         private readonly authService: AuthService,
     ) {}
+
+    @HttpCode(HttpStatus.OK)
+    @Get('/mail')
+    async sendEMail(@Query() query) {
+        this.authService.sendValidateEmail(query.user_id, query.email);
+        return 'ok';
+    }
+
+    @HttpCode(HttpStatus.OK)
+    @Get('/verify')
+    async verifyEmail(@Query() query) {
+        const isValid = this.authService.verifyEmail(query.user_id, query.email, query.token);
+        return isValid;
+    }
 
     @HttpCode(HttpStatus.CREATED)
     @Post("/register")

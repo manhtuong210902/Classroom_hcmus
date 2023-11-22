@@ -5,10 +5,12 @@ import { RegisterDto } from './dto/register.dto';
 import { RoleType, TokenType } from 'src/lib/util/constant';
 import { AuthResponse } from './response/auth-response';
 import { LoginDto } from './dto/login.dto';
-import { validateHash } from 'src/lib/util/func';
+import { generateHash, validateHash } from 'src/lib/util/func';
 import { JwtService } from 'src/lib/security/jwt/jwt.service';
 import { RequestTokenDto } from './dto/request-token.dto';
 import { RequestTokenResponse } from './response/request-token-response';
+import { MailerService } from '@nestjs-modules/mailer';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +18,9 @@ export class AuthService {
         private readonly userService: UserService,
         private readonly roleService: RoleService,
         private readonly jwtService: JwtService,
-    ) {}
+        private readonly mailerService: MailerService,
+        private readonly configService: ConfigService,
+    ) { }
 
     async register(registerDto: RegisterDto): Promise<AuthResponse | string> {
         try {
@@ -126,5 +130,22 @@ export class AuthService {
             accessToken,
             refreshToken,
         };
+    }
+
+    async sendValidateEmail(userId: string, email: string) {
+        const token = generateHash(userId + email);
+        const callbackUrl = this.configService.get<string>('SERVER_URL') + `/api/v1/auth/verify?email=${email}&user_id=${userId}&token=${token}`
+        this.mailerService.sendMail({
+            to: email,
+            subject: 'Testing Mailer ✅',
+            html: `<h1>Welcome</h1><br/><h4>Click here 👉 to verify email: <a href=${callbackUrl}>Click here</a></h4>`
+        })
+    }
+
+    async verifyEmail(userId: string, email: string, hash: string) {
+        const isValid = await validateHash(userId + email, hash);
+        if(isValid)
+            return true;
+        return false;
     }
 }
