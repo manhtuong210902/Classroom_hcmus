@@ -1,8 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { RegisterDto } from '../auth/dto/register.dto';
-import { generateHash } from 'src/lib/util/func';
 import { Role } from '../role/role.entity';
+import { omit } from 'lodash';
+import { convertCamelToSnake } from 'src/lib/util/func';
 
 @Injectable()
 export class UserService {
@@ -24,14 +25,15 @@ export class UserService {
         })
     }
 
-    async createUser(registerDto: RegisterDto): Promise<User> {
+    async createUser(newUserData: Object, authProvider: string): Promise<User> {
 
-        const newUser = await this.userModel.create({
-            username: registerDto.username,
-            password: generateHash(registerDto.password),
-            email: registerDto.email,
-            fullname: registerDto.fullname,
-        })
+        const userData = omit(newUserData,"confirmPassword")
+        
+        const convertedData = convertCamelToSnake(userData);
+        
+        convertedData.auth_provider = authProvider;
+
+        const newUser = await this.userModel.create(convertedData);
 
         return newUser;
     }

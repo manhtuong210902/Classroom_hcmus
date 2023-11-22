@@ -24,7 +24,7 @@ export class RegisterDto {
     @IsString()
     @Matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, {message: 'password too weak'})
     @ApiProperty()
-    readonly password: string;
+    password: string;
 
     @Match('password',{"message":"Password not match"})
     @ApiProperty()

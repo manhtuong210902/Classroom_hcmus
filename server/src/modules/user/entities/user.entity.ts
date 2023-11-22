@@ -15,7 +15,7 @@ export class User extends Model<User>{
     id: string;
 
     @Column({
-        allowNull: false,
+        allowNull: true,
     })
     username: string;
 
@@ -35,14 +35,34 @@ export class User extends Model<User>{
     address: string;
 
     @Column({
-        allowNull: false,
+        allowNull: true,
     })
     password: string;
 
     @Column({
-        allowNull: false
+        allowNull: true
     })
     email: string;
+
+    @Column({
+        allowNull: true
+    })
+    google: string;
+
+    @Column({
+        allowNull: true
+    })
+    facebook: string;
+
+    @Column({
+        allowNull: false
+    })
+    auth_provider: string;
+
+    @Column({
+        allowNull: true
+    })
+    is_verified: boolean;
 
     @Column({
         defaultValue: DataType.NOW,

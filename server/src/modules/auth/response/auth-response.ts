@@ -24,4 +24,6 @@ export class AuthResponse {
 
     @ApiProperty()
     gender: string;
+
+    
 }

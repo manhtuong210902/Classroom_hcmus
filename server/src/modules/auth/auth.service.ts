@@ -5,10 +5,14 @@ import { RegisterDto } from './dto/register.dto';
 import { RoleType, TokenType } from 'src/lib/util/constant';
 import { AuthResponse } from './response/auth-response';
 import { LoginDto } from './dto/login.dto';
-import { validateHash } from 'src/lib/util/func';
+import { generateHash, validateHash } from 'src/lib/util/func';
 import { JwtService } from 'src/lib/security/jwt/jwt.service';
 import { RequestTokenDto } from './dto/request-token.dto';
 import { RequestTokenResponse } from './response/request-token-response';
+import { GoogleAuthResponse } from './interfaces/google-auth';
+import { User } from '../user/entities/user.entity';
+import { AuthProviderType } from 'src/lib/util/constant/auth-provider';
+import { FacebookAuthResponse } from './interfaces/facebook-auth';
 
 @Injectable()
 export class AuthService {
@@ -18,15 +22,27 @@ export class AuthService {
         private readonly jwtService: JwtService,
     ) {}
 
+
+    async checkIsExistedAccount(field: string, value: any) : Promise<Boolean | User>{
+        const isExisted = await this.userService.findOne({
+            [field]: value
+        })
+
+        if(isExisted){
+            return isExisted;
+        }
+        return false;
+    }
+
     async register(registerDto: RegisterDto): Promise<AuthResponse | string> {
         try {
-            const isExistedusername = await this.userService.findOne({
-                username: registerDto.username,
-            });
+            const isExistedusername = await this.checkIsExistedAccount("username",registerDto.username);
+
             if (isExistedusername) {
                 return 'Username already exists';
             }
-            const newUser = await this.userService.createUser(registerDto);
+            registerDto.password = generateHash(registerDto.password);
+            const newUser = await this.userService.createUser(registerDto, AuthProviderType.DEFAULT);
             const userRole = await this.roleService.findOrCreate(RoleType.USER);
             await newUser.$add('roles', userRole[0].id);
 
@@ -79,6 +95,78 @@ export class AuthService {
         } catch (error) {
             return error.message;
         }
+    }
+
+
+    async googleAuth(
+        googleAuthResponse: GoogleAuthResponse, isExisted: Boolean | User
+    )
+        : Promise<AuthResponse | string>
+    {
+        let user : User;
+
+        if(isExisted  instanceof User){
+            user = isExisted;
+        }
+        else {
+            const newUser = await this.userService.createUser({
+                google: googleAuthResponse.email,
+                fullname: googleAuthResponse.firstName + ' ' + googleAuthResponse.lastName,
+                imgUrl: googleAuthResponse.picture
+            }, AuthProviderType.GOOGLE)
+
+            user = newUser;
+        }
+        const tokens = await this.assignTokens(user.id, RoleType.USER);
+
+        const authResponse : AuthResponse = {
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
+            imgUrl: user.img_url,
+            username: user.username,
+            userId: user.id,
+            fullname: user.fullname,
+            gender: user.gender || '',
+            email: user.email 
+        }
+
+        return authResponse;
+    }
+
+    async facebookAuth(
+        authFacebookResponse : FacebookAuthResponse,
+        isExisted: User | Boolean
+    ) 
+        : Promise<AuthResponse | string>
+    {
+        let user : User;
+
+        if(isExisted  instanceof User){
+            user = isExisted;
+        }
+        else {
+            const newUser = await this.userService.createUser({
+                facebook: authFacebookResponse.facebookId,
+                fullname: authFacebookResponse.firstName + ' ' + authFacebookResponse.lastName,
+                imgUrl : authFacebookResponse.photo
+            }, AuthProviderType.FACEBOOK)
+
+            user = newUser;
+        }
+        const tokens = await this.assignTokens(user.id, RoleType.USER);
+
+        const authResponse : AuthResponse = {
+            accessToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
+            imgUrl: user.img_url,
+            username: user.username,
+            userId: user.id,
+            fullname: user.fullname,
+            gender: user.gender || '',
+            email: user.email 
+        }
+
+        return authResponse;
     }
 
     async requestToken(
