@@ -57,10 +57,6 @@ export class AppModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
             .apply(AuthMiddleware)
-<<<<<<< HEAD
-            .forRoutes(UserController);
-=======
-        // .forRoutes(UserController);
->>>>>>> 775dcea8db5de5304be0becce3985b9aa9759729
+         .forRoutes(UserController);
     }
 }
