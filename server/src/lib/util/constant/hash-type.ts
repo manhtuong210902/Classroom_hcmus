@@ -1,0 +1,2 @@
+export const VERIFY_EMAIL = 'VERIFY_EMAIL';
+export const RESET_PASSWORD = 'RESET_PASSWORD';

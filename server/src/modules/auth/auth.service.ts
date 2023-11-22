@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { RoleService } from '../role/role.service';
 import { RegisterDto } from './dto/register.dto';
@@ -13,6 +13,10 @@ import { GoogleAuthResponse } from './interfaces/google-auth';
 import { User } from '../user/entities/user.entity';
 import { AuthProviderType } from 'src/lib/util/constant/auth-provider';
 import { FacebookAuthResponse } from './interfaces/facebook-auth';
+import { MailerService } from '@nestjs-modules/mailer';
+import { ConfigService } from '@nestjs/config';
+import { RESET_PASSWORD, VERIFY_EMAIL } from 'src/lib/util/constant/hash-type';
+import { RESET_PASSWORD_TEMPLATE } from 'src/lib/configs/mailer/mailer.template';
 
 @Injectable()
 export class AuthService {
@@ -20,7 +24,9 @@ export class AuthService {
         private readonly userService: UserService,
         private readonly roleService: RoleService,
         private readonly jwtService: JwtService,
-    ) {}
+        private readonly mailerService: MailerService,
+        private readonly configService: ConfigService,
+    ) { }
 
 
     async checkIsExistedAccount(field: string, value: any) : Promise<Boolean | User>{
@@ -214,5 +220,43 @@ export class AuthService {
             accessToken,
             refreshToken,
         };
+    }
+
+    async sendVerifyEmail(userId: string, email: string) {
+        const token = generateHash(VERIFY_EMAIL + userId + email);
+        const callbackUrl = this.configService.get<string>('SERVER_URL') + `/api/v1/auth/verify?email=${email}&user_id=${userId}&token=${token}`
+        this.mailerService.sendMail({
+            to: email,
+            subject: 'Testing Mailer ✅',
+            html: `<h1>Welcome</h1><br/><h4>Click here 👉 to verify email: <a href=${callbackUrl}>Click here</a></h4>`
+        })
+    }
+
+    async sendResetPassword(userId: string, email: string) {
+        const token = generateHash(RESET_PASSWORD + userId + email);
+        const callbackUrl = this.configService.get<string>('SERVER_URL') + `/api/v1/auth/reset-password?email=${email}&user_id=${userId}&token=${token}`
+        this.mailerService.sendMail({
+            to: email,
+            subject: 'Testing Mailer ✅',
+            html: RESET_PASSWORD_TEMPLATE(callbackUrl)
+        })
+    }
+
+    async resetPassword(userId: string, email: string, token: string, newPassword: string) {
+        const isValid = await validateHash(RESET_PASSWORD + userId + email, token);
+        if (isValid) {
+            await this.userService.updateUser({ password: generateHash(newPassword) }, userId);
+            return true;
+        }
+
+        throw new BadRequestException({ "message": "Invalid verification" });
+    }
+
+    async verifyEmail(userId: string, email: string, hash: string) {
+        const isValid = await validateHash(VERIFY_EMAIL + userId + email, hash);
+        if (isValid)
+            return true;
+
+        throw new BadRequestException({ "message": "Invalid verification" });
     }
 }
