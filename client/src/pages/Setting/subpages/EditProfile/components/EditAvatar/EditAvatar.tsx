@@ -16,18 +16,18 @@ const EditAvatar = () => {
         setLoading(true);
         const formData = new FormData();
         formData.append("file", e.target.files[0]);
+        if(user?.username){
+            formData.append("userId", user.id);
+        }
         const response = await profileService.updateAvatar(formData);
-        if (response.data.statusCode !== 200) {
-        } else {
-            const res = await profileService.updateProfile({ imgUrl: response.data.data.imgUrl });
-            if (res.data.statusCode === 200) {
+        
+        if (response.data.statusCode === 200) {
                 dipatch(
                     updateUser({
                         ...user,
                         imgUrl: response.data.data.imgUrl,
                     })
                 );
-            }
         }
 
         setLoading(false);
