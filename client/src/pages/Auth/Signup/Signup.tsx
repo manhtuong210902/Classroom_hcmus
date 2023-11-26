@@ -1,9 +1,8 @@
 import { Button } from "@src/components/ui/button";
 import { Input } from "@src/components/ui/input";
+import { toast } from "react-toastify";
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@src/components/ui/form";
-
-import { Github, Mail } from "lucide-react";
 
 import { Link, useNavigate } from "react-router-dom";
 
@@ -13,12 +12,11 @@ import * as z from "zod";
 import { sigupSchema } from "@src/utils/schema";
 import { useAppDispatch } from "@src/hooks/appHook";
 import { registerUser } from "@src/services/auth/apiRequest";
-import { useState } from "react";
 import routes from "@src/configs/router";
+import LoginSocial from "../components/LoginSoical/LoginSocial";
 
 export default function Signup() {
     const dispatch = useAppDispatch();
-    const [error, setError] = useState<string>("");
     const navigate = useNavigate();
 
     const form = useForm<z.infer<typeof sigupSchema>>({
@@ -35,10 +33,9 @@ export default function Signup() {
     async function onSubmit(values: z.infer<typeof sigupSchema>) {
         const res = await registerUser(dispatch, values);
         if (res.error) {
-            setError(res.message[0].message);
+            toast.error(res.message);
             return;
         }
-
         navigate(routes.HOME);
     }
     return (
@@ -53,8 +50,6 @@ export default function Signup() {
                         </span>
                     </div>
                 </div>
-
-                {error && <div className="text-destructive text-sm text-center font-medium mt-3">{error}</div>}
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 flex flex-col gap-6">
@@ -151,16 +146,7 @@ export default function Signup() {
                     </form>
                 </Form>
 
-                <div className="mt-6 text-primary flex flex-col gap-4">
-                    <Button className="w-full text-base border-[2px]" variant="outline">
-                        <Mail className="mr-2" size={16} />
-                        Log in with Google
-                    </Button>
-                    <Button className="w-full text-base border-[2px]" variant="outline">
-                        <Github className="mr-2" size={16} />
-                        Log in with Github
-                    </Button>
-                </div>
+                <LoginSocial />
             </div>
         </div>
     );

@@ -1,20 +1,19 @@
 import { Button } from "@src/components/ui/button";
 import { Input } from "@src/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@src/components/ui/form";
-import { Github, Mail } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Link, useNavigate } from "react-router-dom";
 import { loginSchema } from "@src/utils/schema";
 import { useAppDispatch } from "@src/hooks/appHook";
-import { useState } from "react";
 import { loginUser } from "@src/services/auth/apiRequest";
 import routes from "@src/configs/router";
+import LoginSocial from "../components/LoginSoical/LoginSocial";
+import { toast } from "react-toastify";
 
 export default function Login() {
     const dispatch = useAppDispatch();
-    const [error, setError] = useState<string>("");
     const navigate = useNavigate();
     const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema),
@@ -27,7 +26,8 @@ export default function Login() {
     async function onSubmit(values: z.infer<typeof loginSchema>) {
         const res = await loginUser(dispatch, values);
         if (res.error) {
-            setError(res.message[0].message);
+            console.log("Log check message: ", res.message);
+            toast.error(res.message);
             return;
         }
 
@@ -43,20 +43,9 @@ export default function Login() {
                     </span>
                 </div>
 
-                <div className="mt-6 text-primary flex flex-col gap-4">
-                    <Button className="w-full text-base border-[2px]" variant="outline">
-                        <Mail className="mr-2" size={16} />
-                        Log in with Google
-                    </Button>
-                    <Button className="w-full text-base border-[2px]" variant="outline">
-                        <Github className="mr-2" size={16} />
-                        Log in with Github
-                    </Button>
-                </div>
+                <LoginSocial />
 
                 <div className="mt-4 flex justify-center text-[12px] text-[#BFBFBF]">Or log in with username</div>
-
-                {error && <div className="text-destructive text-sm text-center font-medium mt-3">{error}</div>}
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 flex flex-col gap-6">

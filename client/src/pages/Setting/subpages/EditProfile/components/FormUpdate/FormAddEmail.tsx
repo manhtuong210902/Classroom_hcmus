@@ -4,8 +4,8 @@ import { Button } from "@src/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@src/components/ui/form";
 import { Input } from "@src/components/ui/input";
 import { useAppDispatch, useAppSelector } from "@src/hooks/appHook";
-import { profileService } from "@src/services/profile/profile.service";
-import { selectUserInfo, updateUser } from "@src/store/reducers/authSlice";
+import { updateProfileUser } from "@src/services/profile/apiRequest";
+import { selectUserInfo } from "@src/store/reducers/authSlice";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -16,7 +16,7 @@ export const formSchema = z.object({
 const FormAddEmail = ({ onClose }: { onClose: any }) => {
     const user = useAppSelector(selectUserInfo);
     const emailDefault = user?.email || "";
-    const dipatch = useAppDispatch();
+    const dispatch = useAppDispatch();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -26,15 +26,7 @@ const FormAddEmail = ({ onClose }: { onClose: any }) => {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         if (values.email.trim() !== emailDefault.trim()) {
-            const res = await profileService.updateProfile(values);
-            if (res.data.statusCode === 200) {
-                dipatch(
-                    updateUser({
-                        ...user,
-                        email: values.email,
-                    })
-                );
-            }
+            updateProfileUser(dispatch, user, values);
         }
 
         onClose();

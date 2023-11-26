@@ -3,6 +3,7 @@ import { privateRoutes, publicRoutes } from "./routes";
 import "./App.css";
 import React from "react";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
     return (
