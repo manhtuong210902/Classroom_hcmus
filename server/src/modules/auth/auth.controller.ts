@@ -31,10 +31,12 @@ export class AuthController {
     // }
 
     @HttpCode(HttpStatus.OK)
-    @Get('/reset-password')
-    async sendMailResetPassword(@Query() query) {
-        this.authService.sendResetPassword(query.user_id, query.email);
-        return 'ok'
+    @Post('/send-reset-password')
+    async sendMailResetPassword(@Body() body) {
+        await this.authService.sendResetPassword(body.userId, body.email);
+        return {
+            "message": "Send mail for reset password successfully"
+        }
     }
 
     @HttpCode(HttpStatus.OK)
