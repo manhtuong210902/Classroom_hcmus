@@ -29,20 +29,20 @@ export class AuthService {
     ) { }
 
 
-    async checkIsExistedAccount(field: string, value: any) : Promise<Boolean | User>{
+    async checkIsExistedAccount(field: string, value: any): Promise<Boolean | User> {
         const isExisted = await this.userService.findOne({
             [field]: value
         })
 
-        if(isExisted){
+        if (isExisted) {
             return isExisted;
         }
         return false;
     }
 
-    async register(registerDto: RegisterDto): Promise<AuthResponse | string> {
+    async register(registerDto: RegisterDto): Promise<string | Object> {
         try {
-            const isExistedusername = await this.checkIsExistedAccount("username",registerDto.username);
+            const isExistedusername = await this.checkIsExistedAccount("username", registerDto.username);
 
             if (isExistedusername) {
                 return 'Username already exists';
@@ -51,20 +51,12 @@ export class AuthService {
             const newUser = await this.userService.createUser(registerDto, AuthProviderType.DEFAULT);
             const userRole = await this.roleService.findOrCreate(RoleType.USER);
             await newUser.$add('roles', userRole[0].id);
+            await this.sendVerifyEmail(newUser.id, registerDto.email);
 
-            const tokens = await this.assignTokens(newUser.id, RoleType.USER);
+            return {
+                message: "Please verify your email"
+            }
 
-            const authResponse: AuthResponse = {
-                accessToken: tokens.accessToken,
-                refreshToken: tokens.refreshToken,
-                imgUrl: null,
-                username: newUser.username,
-                userId: newUser.id,
-                fullname: newUser.fullname,
-                gender: newUser.gender || '',
-                email: newUser.email,
-            };
-            return authResponse;
         } catch (error) {
             return error.message;
         }
@@ -107,11 +99,10 @@ export class AuthService {
     async googleAuth(
         googleAuthResponse: GoogleAuthResponse, isExisted: Boolean | User
     )
-        : Promise<AuthResponse | string>
-    {
-        let user : User;
+        : Promise<AuthResponse | string> {
+        let user: User;
 
-        if(isExisted  instanceof User){
+        if (isExisted instanceof User) {
             user = isExisted;
         }
         else {
@@ -125,7 +116,7 @@ export class AuthService {
         }
         const tokens = await this.assignTokens(user.id, RoleType.USER);
 
-        const authResponse : AuthResponse = {
+        const authResponse: AuthResponse = {
             accessToken: tokens.accessToken,
             refreshToken: tokens.refreshToken,
             imgUrl: user.img_url,
@@ -133,35 +124,34 @@ export class AuthService {
             userId: user.id,
             fullname: user.fullname,
             gender: user.gender || '',
-            email: user.email 
+            email: user.email
         }
 
         return authResponse;
     }
 
     async facebookAuth(
-        authFacebookResponse : FacebookAuthResponse,
+        authFacebookResponse: FacebookAuthResponse,
         isExisted: User | Boolean
-    ) 
-        : Promise<AuthResponse | string>
-    {
-        let user : User;
+    )
+        : Promise<AuthResponse | string> {
+        let user: User;
 
-        if(isExisted  instanceof User){
+        if (isExisted instanceof User) {
             user = isExisted;
         }
         else {
             const newUser = await this.userService.createUser({
                 facebook: authFacebookResponse.facebookId,
                 fullname: authFacebookResponse.firstName + ' ' + authFacebookResponse.lastName,
-                imgUrl : authFacebookResponse.photo
+                imgUrl: authFacebookResponse.photo
             }, AuthProviderType.FACEBOOK)
 
             user = newUser;
         }
         const tokens = await this.assignTokens(user.id, RoleType.USER);
 
-        const authResponse : AuthResponse = {
+        const authResponse: AuthResponse = {
             accessToken: tokens.accessToken,
             refreshToken: tokens.refreshToken,
             imgUrl: user.img_url,
@@ -169,7 +159,7 @@ export class AuthService {
             userId: user.id,
             fullname: user.fullname,
             gender: user.gender || '',
-            email: user.email 
+            email: user.email
         }
 
         return authResponse;
@@ -254,8 +244,12 @@ export class AuthService {
 
     async verifyEmail(userId: string, email: string, hash: string) {
         const isValid = await validateHash(VERIFY_EMAIL + userId + email, hash);
-        if (isValid)
+        if (isValid) {
+            try {
+                await this.userService.updateUser({ is_verified: true }, userId);
+            } catch(err) {console.log(err);}
             return true;
+        }
 
         throw new BadRequestException({ "message": "Invalid verification" });
     }
