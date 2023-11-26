@@ -245,9 +245,7 @@ export class AuthService {
     async verifyEmail(userId: string, email: string, hash: string) {
         const isValid = await validateHash(VERIFY_EMAIL + userId + email, hash);
         if (isValid) {
-            try {
-                await this.userService.updateUser({ is_verified: true }, userId);
-            } catch(err) {console.log(err);}
+            await this.userService.updateUser({ is_verified: true }, userId);
             return true;
         }
 
