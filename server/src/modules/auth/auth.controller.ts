@@ -1,4 +1,4 @@
-import { Controller, HttpStatus, HttpCode, BadRequestException, UseGuards} from '@nestjs/common';
+import { Controller, HttpStatus, HttpCode, BadRequestException, UseGuards } from '@nestjs/common';
 import { Post, Body, Get, Req, Query } from '@nestjs/common/decorators';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -23,25 +23,27 @@ export class AuthController {
     ) { }
 
     // testing
-    @HttpCode(HttpStatus.OK)
-    @Get('/mail')
-    async sendEMail(@Query() query) {
-        this.authService.sendVerifyEmail(query.user_id, query.email);
-        return 'ok';
-    }
+    // @HttpCode(HttpStatus.OK)
+    // @Get('/mail')
+    // async sendEMail(@Query() query) {
+    //     this.authService.sendVerifyEmail(query.user_id, query.email);
+    //     return 'ok';
+    // }
 
     @HttpCode(HttpStatus.OK)
-    @Get('/reset-password')
-    async sendMailResetPassword(@Query() query) {
-        this.authService.sendResetPassword(query.user_id, query.email);
-        return 'ok'
+    @Post('/send-reset-password')
+    async sendMailResetPassword(@Body() body) {
+        await this.authService.sendResetPassword(body.userId, body.email);
+        return {
+            "message": "Send mail for reset password successfully"
+        }
     }
 
     @HttpCode(HttpStatus.OK)
     @Post('/reset-password')
     async resetPassword(@Body() resetPassword: ResetPasswordDto) {
-        const result = this.authService.resetPassword(resetPassword.userId, resetPassword.email, resetPassword.token, resetPassword.newPassword);
-        if(result)
+        const result = await this.authService.resetPassword(resetPassword.userId, resetPassword.email, resetPassword.token, resetPassword.newPassword);
+        if (result)
             return 'ok';
     }
 
@@ -49,14 +51,19 @@ export class AuthController {
     @Get('/verify')
     async verifyEmail(@Query() query) {
         const isValid = this.authService.verifyEmail(query.user_id, query.email, query.token);
-        if(isValid)
-            return 'ok';
+        if (isValid)
+            return {
+                "message": "Verify success"
+            };
+        return {
+            "message": "Verify fail"
+        }
     }
 
 
     @Get('facebook')
     @UseGuards(AuthGuard('facebook'))
-    async facebookLogin(@Req() req){
+    async facebookLogin(@Req() req) {
 
     }
 
@@ -68,28 +75,28 @@ export class AuthController {
             $ref: getSchemaPath(AuthResponse),
         },
     })
-    async facebookCallback(@Req() req): Promise<ResponseTemplate<AuthResponse>>{
-        const isExisted : Boolean | User = await this.authService.checkIsExistedAccount("facebook", req.user.facebookId);
+    async facebookCallback(@Req() req): Promise<ResponseTemplate<AuthResponse>> {
+        const isExisted: Boolean | User = await this.authService.checkIsExistedAccount("facebook", req.user.facebookId);
 
         const authResponse: AuthResponse | string = await this.authService.facebookAuth(req.user, isExisted);
         if (typeof authResponse === 'string') {
-            throw new BadRequestException({"message": authResponse});
+            throw new BadRequestException({ "message": authResponse });
         }
 
-        const response : ResponseTemplate<AuthResponse> ={
+        const response: ResponseTemplate<AuthResponse> = {
             data: authResponse,
             message: isExisted ? "Login by facebook successfully" : "Register by facebook successfully",
             statusCode: isExisted ? HttpStatus.OK : HttpStatus.CREATED
-        } 
-        return response;     
+        }
+        return response;
     }
 
     @Get('google')
     @UseGuards(AuthGuard('google'))
-    async googleLogin(@Req() req){
-        
+    async googleLogin(@Req() req) {
+
     }
-  
+
     @Get('google/callback')
     @UseGuards(AuthGuard('google'))
     @ApiResponse({
@@ -99,20 +106,20 @@ export class AuthController {
         },
     })
     async googleLoginCallback(@Req() req): Promise<ResponseTemplate<AuthResponse>> {
-        
-        const isExisted : Boolean | User = await this.authService.checkIsExistedAccount("google", req.user.email)
+
+        const isExisted: Boolean | User = await this.authService.checkIsExistedAccount("google", req.user.email)
 
         const authResponse: AuthResponse | string = await this.authService.googleAuth(req.user, isExisted);
         if (typeof authResponse === 'string') {
-            throw new BadRequestException({"message": authResponse});
+            throw new BadRequestException({ "message": authResponse });
         }
 
-        const response : ResponseTemplate<AuthResponse> ={
+        const response: ResponseTemplate<AuthResponse> = {
             data: authResponse,
             message: isExisted ? "Login by google successfully" : "Register by google successfully",
             statusCode: isExisted ? HttpStatus.OK : HttpStatus.CREATED
-        } 
-        return response;      
+        }
+        return response;
     }
 
     @HttpCode(HttpStatus.CREATED)
@@ -123,14 +130,14 @@ export class AuthController {
             $ref: getSchemaPath(AuthResponse),
         },
     })
-    async register(@Body() registerDto: RegisterDto): Promise<ResponseTemplate<AuthResponse>> {
-        const authResponse: AuthResponse | string = await this.authService.register(registerDto);
+    async register(@Body() registerDto: RegisterDto): Promise<string | Object> {
+        const authResponse: string | Object = await this.authService.register(registerDto);
 
         if (typeof authResponse === 'string') {
             throw new BadRequestException({ "message": authResponse });
         }
 
-        const response: ResponseTemplate<AuthResponse> = {
+        const response: ResponseTemplate<Object> = {
             data: authResponse,
             message: "Register successfully",
             statusCode: HttpStatus.CREATED

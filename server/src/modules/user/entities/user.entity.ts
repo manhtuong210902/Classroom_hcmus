@@ -60,7 +60,8 @@ export class User extends Model<User>{
     auth_provider: string;
 
     @Column({
-        allowNull: true
+        allowNull: true,
+        defaultValue: false
     })
     is_verified: boolean;
 
