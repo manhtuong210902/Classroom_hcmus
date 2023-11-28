@@ -11,7 +11,7 @@ import { ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swa
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '../user/entities/user.entity';
 
-import { ResetPasswordDto } from './dto/resetPassword.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -21,14 +21,6 @@ export class AuthController {
     constructor(
         private readonly authService: AuthService,
     ) { }
-
-    // testing
-    // @HttpCode(HttpStatus.OK)
-    // @Get('/mail')
-    // async sendEMail(@Query() query) {
-    //     this.authService.sendVerifyEmail(query.user_id, query.email);
-    //     return 'ok';
-    // }
 
     @HttpCode(HttpStatus.OK)
     @Post('/send-reset-password')
