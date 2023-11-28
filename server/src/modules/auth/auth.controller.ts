@@ -1,5 +1,5 @@
 import { Controller, HttpStatus, HttpCode, BadRequestException, UseGuards } from '@nestjs/common';
-import { Post, Body, Get, Req, Query } from '@nestjs/common/decorators';
+import { Post, Body, Get, Req, Query, Res } from '@nestjs/common/decorators';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { AuthService } from './auth.service';
@@ -12,6 +12,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { User } from '../user/entities/user.entity';
 
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -20,6 +21,7 @@ export class AuthController {
 
     constructor(
         private readonly authService: AuthService,
+        private readonly configService: ConfigService
     ) { }
 
     @HttpCode(HttpStatus.OK)
@@ -61,13 +63,7 @@ export class AuthController {
 
     @Get('facebook/callback')
     @UseGuards(AuthGuard('facebook'))
-    @ApiResponse({
-        status: HttpStatus.CREATED,
-        schema: {
-            $ref: getSchemaPath(AuthResponse),
-        },
-    })
-    async facebookCallback(@Req() req): Promise<ResponseTemplate<AuthResponse>> {
+    async facebookCallback(@Req() req,@Res() res){
         const isExisted: Boolean | User = await this.authService.checkIsExistedAccount("facebook", req.user.facebookId);
 
         const authResponse: AuthResponse | string = await this.authService.facebookAuth(req.user, isExisted);
@@ -75,12 +71,10 @@ export class AuthController {
             throw new BadRequestException({ "message": authResponse });
         }
 
-        const response: ResponseTemplate<AuthResponse> = {
-            data: authResponse,
-            message: isExisted ? "Login by facebook successfully" : "Register by facebook successfully",
-            statusCode: isExisted ? HttpStatus.OK : HttpStatus.CREATED
-        }
-        return response;
+        const redirectUrl 
+            = `${this.configService.get<String>('CLIENT_URL')}/login/facebook?access_token=${authResponse.accessToken}&refresh_token=${authResponse.refreshToken}&user_id=${authResponse.userId}` 
+
+        return res.redirect(redirectUrl);
     }
 
     @Get('google')
@@ -91,13 +85,7 @@ export class AuthController {
 
     @Get('google/callback')
     @UseGuards(AuthGuard('google'))
-    @ApiResponse({
-        status: HttpStatus.CREATED,
-        schema: {
-            $ref: getSchemaPath(AuthResponse),
-        },
-    })
-    async googleLoginCallback(@Req() req): Promise<ResponseTemplate<AuthResponse>> {
+    async googleLoginCallback(@Req() req,@Res() res){
 
         const isExisted: Boolean | User = await this.authService.checkIsExistedAccount("google", req.user.email)
 
@@ -105,13 +93,11 @@ export class AuthController {
         if (typeof authResponse === 'string') {
             throw new BadRequestException({ "message": authResponse });
         }
+        const redirectUrl 
+            = `${this.configService.get<String>('CLIENT_URL')}/login/google?access_token=${authResponse.accessToken}&refresh_token=${authResponse.refreshToken}&user_id=${authResponse.userId}` 
 
-        const response: ResponseTemplate<AuthResponse> = {
-            data: authResponse,
-            message: isExisted ? "Login by google successfully" : "Register by google successfully",
-            statusCode: isExisted ? HttpStatus.OK : HttpStatus.CREATED
-        }
-        return response;
+        return res.redirect(redirectUrl);
+        
     }
 
     @HttpCode(HttpStatus.CREATED)
