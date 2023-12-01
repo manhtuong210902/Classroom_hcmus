@@ -111,7 +111,8 @@ export class AuthService {
                 fullname: googleAuthResponse.firstName + ' ' + googleAuthResponse.lastName,
                 imgUrl: googleAuthResponse.picture
             }, AuthProviderType.GOOGLE)
-
+            const userRole = await this.roleService.findOrCreate(RoleType.USER);
+            await newUser.$add('roles', userRole[0].id);
             user = newUser;
         }
         const tokens = await this.assignTokens(user.id, RoleType.USER);
@@ -145,8 +146,9 @@ export class AuthService {
                 facebook: authFacebookResponse.facebookId,
                 fullname: authFacebookResponse.firstName + ' ' + authFacebookResponse.lastName,
                 imgUrl: authFacebookResponse.photo
-            }, AuthProviderType.FACEBOOK)
-
+            }, AuthProviderType.FACEBOOK)   
+            const userRole = await this.roleService.findOrCreate(RoleType.USER);
+            await newUser.$add('roles', userRole[0].id);
             user = newUser;
         }
         const tokens = await this.assignTokens(user.id, RoleType.USER);

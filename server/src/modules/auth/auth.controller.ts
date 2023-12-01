@@ -19,10 +19,14 @@ import { ConfigService } from '@nestjs/config';
 @ApiExtraModels(AuthResponse, ResponseTemplate, RequestTokenResponse)
 export class AuthController {
 
+    private clientUrl : String;
+
     constructor(
         private readonly authService: AuthService,
         private readonly configService: ConfigService
-    ) { }
+    ) { 
+        this.clientUrl = this.configService.get<String>('CLIENT_URL');
+    }
 
     @HttpCode(HttpStatus.OK)
     @Post('/send-reset-password')
@@ -72,7 +76,7 @@ export class AuthController {
         }
 
         const redirectUrl 
-            = `${this.configService.get<String>('CLIENT_URL')}/login/facebook?access_token=${authResponse.accessToken}&refresh_token=${authResponse.refreshToken}&user_id=${authResponse.userId}` 
+            = `${this.clientUrl}/login/facebook?access_token=${authResponse.accessToken}&refresh_token=${authResponse.refreshToken}&user_id=${authResponse.userId}` 
 
         return res.redirect(redirectUrl);
     }
@@ -94,7 +98,7 @@ export class AuthController {
             throw new BadRequestException({ "message": authResponse });
         }
         const redirectUrl 
-            = `${this.configService.get<String>('CLIENT_URL')}/login/google?access_token=${authResponse.accessToken}&refresh_token=${authResponse.refreshToken}&user_id=${authResponse.userId}` 
+            = `${this.clientUrl}/login/google?access_token=${authResponse.accessToken}&refresh_token=${authResponse.refreshToken}&user_id=${authResponse.userId}` 
 
         return res.redirect(redirectUrl);
         
