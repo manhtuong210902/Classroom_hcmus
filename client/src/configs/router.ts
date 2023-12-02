@@ -8,6 +8,7 @@ const routes = {
     LOGIN_FB_SUCCESS: "/login/facebook",
     VERIFY: "/auth/verify",
     REQUEST_RESET_PASSWORD: "/request-reset-password",
+    REST_PASSWORD: "/reset-password",
 };
 
 export default routes;

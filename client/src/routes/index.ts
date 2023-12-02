@@ -4,6 +4,7 @@ import HomeLayout from "@src/layouts/HomeLayout";
 import Login from "@src/pages/Auth/Login/Login";
 import LoginSuccess from "@src/pages/Auth/Login/LoginSuccess";
 import RequestResetPassword from "@src/pages/Auth/RequestResetPassword/RequestResetPassword";
+import ResetPassword from "@src/pages/Auth/ResetPassword/ResetPassword";
 import Signup from "@src/pages/Auth/Signup/Signup";
 import VerifyEmail from "@src/pages/Auth/Verify/VerifyEmail";
 import HomePage from "@src/pages/Home/HomePage";
@@ -18,6 +19,7 @@ const publicRoutes: RouteInfo[] = [
     { path: routes.LOGIN_GG_SUCCESS, component: LoginSuccess, layout: null },
     { path: routes.LOGIN_FB_SUCCESS, component: LoginSuccess, layout: null },
     { path: routes.REQUEST_RESET_PASSWORD, component: RequestResetPassword, layout: AuthLayout },
+    { path: routes.REST_PASSWORD, component: ResetPassword, layout: AuthLayout },
     { path: routes.VERIFY, component: VerifyEmail, layout: null },
 ];
 

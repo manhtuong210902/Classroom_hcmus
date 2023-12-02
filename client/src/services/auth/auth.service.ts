@@ -1,4 +1,4 @@
-import { LOGIN_API, REGISTER_API, REQUEST_REST_PASSWORD, VERIFY_ENAIL } from "./api";
+import { LOGIN_API, REGISTER_API, REQUEST_REST_PASSWORD, RESET_PASSWORD, VERIFY_ENAIL } from "./api";
 import axiosClient from "../axiosClient";
 
 export const authService = {
@@ -16,5 +16,9 @@ export const authService = {
 
     requestReset: (params: any) => {
         return axiosClient.post(REQUEST_REST_PASSWORD, params);
+    },
+
+    reset: (params: any) => {
+        return axiosClient.post(RESET_PASSWORD, params);
     },
 };

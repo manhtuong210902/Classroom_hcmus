@@ -74,6 +74,15 @@ export const requestResetPassword = async (params: any) => {
     }
 };
 
+export const resetPassword = async (params: any) => {
+    try {
+        const res = await authService.reset(params);
+        return res.data;
+    } catch (error: any) {
+        return error?.response?.data;
+    }
+};
+
 export const logoutUser = (dispatch: any) => {
     LocalStorage.clearToken();
     dispatch(loadUserFail());

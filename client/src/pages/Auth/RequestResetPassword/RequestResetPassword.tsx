@@ -4,12 +4,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { useNavigate } from "react-router-dom";
-import { useAppDispatch } from "@src/hooks/appHook";
-import { loginUser, requestResetPassword } from "@src/services/auth/apiRequest";
-import routes from "@src/configs/router";
-import { toast } from "react-toastify";
+import { requestResetPassword } from "@src/services/auth/apiRequest";
 import { emailSchema } from "@src/pages/Setting/subpages/EditProfile/components/FormUpdate/FormAddEmail";
+import { toast } from "react-toastify";
 
 export default function RequestResetPassword() {
     const form = useForm<z.infer<typeof emailSchema>>({
@@ -22,7 +19,11 @@ export default function RequestResetPassword() {
     async function onSubmit(values: z.infer<typeof emailSchema>) {
         const res = await requestResetPassword(values);
 
-        console.log("Log check res: ", res);
+        if (res?.error) {
+            toast.error(res.message);
+        }
+
+        toast.info(res.message);
     }
     return (
         <div className="max-w-2xl xl:px-[80px] lg:px-[40px] py-[40px] px-3">

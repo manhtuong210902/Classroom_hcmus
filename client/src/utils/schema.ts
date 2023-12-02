@@ -49,3 +49,41 @@ export const loginSchema = z.object({
     username: z.string().min(1, { message: "Username is required field" }),
     password: z.string().min(1, { message: "Password is required field" }),
 });
+
+export const resetPasswordSchema = z
+    .object({
+        password: z
+            .string()
+            .min(1, { message: "Password is required" })
+            .min(8, { message: "Password must be at least 8 characters" })
+            .regex(
+                /[A-Z]/,
+                "Password must be include a mix of letters (uppercase and lowercase), numbers and special characters"
+            )
+            .regex(
+                /[a-z]/,
+                "Password must be include a mix of letters (uppercase and lowercase), numbers and special characters"
+            )
+            .regex(
+                /[0-9]/,
+                "Password must be include a mix of letters (uppercase and lowercase), numbers and special characters"
+            )
+            .regex(/^[^\s]+$/, "Password must not contain white spaces")
+            .regex(
+                /[!@#$%&*]/,
+                "Password must be include a mix of letters (uppercase and lowercase), numbers and special characters"
+            ),
+        confirmPassword: z
+            .string()
+            .min(1, { message: "Confrim password is required" })
+            .min(8, { message: "Confrim password must be at least 8 characters" }),
+    })
+    .refine(
+        (values) => {
+            return values.password === values.confirmPassword;
+        },
+        {
+            message: "Passwords must match!",
+            path: ["confirmPassword"],
+        }
+    );
