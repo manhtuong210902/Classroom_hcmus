@@ -216,7 +216,7 @@ export class AuthService {
 
     async sendVerifyEmail(userId: string, email: string) {
         const token = generateHash(VERIFY_EMAIL + userId + email);
-        const callbackUrl = this.configService.get<string>('SERVER_URL') + `/api/v1/auth/verify?email=${email}&user_id=${userId}&token=${token}`
+        const callbackUrl = this.configService.get<string>('CLIENT_URL') + `/auth/verify?email=${email}&user_id=${userId}&token=${token}`
         this.mailerService.sendMail({
             to: email,
             subject: 'Testing Mailer ✅',
@@ -245,12 +245,38 @@ export class AuthService {
     }
 
     async verifyEmail(userId: string, email: string, hash: string) {
-        const isValid = await validateHash(VERIFY_EMAIL + userId + email, hash);
-        if (isValid) {
+        try {
+
+            const isValid = await validateHash(VERIFY_EMAIL + userId + email, hash);
+            if (!isValid) {
+                throw new BadRequestException({ "message": "Invalid verification" });
+            }
             await this.userService.updateUser({ is_verified: true }, userId);
-            return true;
+
+            const hasUser = await this.userService.findOne({
+                email: email,
+            });
+            if (!hasUser) {
+                throw new BadRequestException({ "message": "Cannot found user with this Email" });
+            }
+
+            const tokens = await this.assignTokens(hasUser.id, RoleType.USER);
+
+            const authResponse: AuthResponse = {
+                accessToken: tokens.accessToken,
+                refreshToken: tokens.refreshToken,
+                imgUrl: hasUser.img_url,
+                username: hasUser.username,
+                userId: hasUser.id,
+                fullname: hasUser.fullname,
+                gender: hasUser.gender || '',
+                email: hasUser.email,
+            };
+            return authResponse;
+
+        } catch (error) {
+            throw new BadRequestException({ "message": error.message });
         }
 
-        throw new BadRequestException({ "message": "Invalid verification" });
     }
 }
