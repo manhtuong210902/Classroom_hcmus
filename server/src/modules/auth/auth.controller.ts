@@ -13,6 +13,8 @@ import { User } from '../user/entities/user.entity';
 
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ConfigService } from '@nestjs/config';
+import { ErrorMessage, isErrorMessage } from 'src/utils/types';
+import { RegisterResponse } from './response/register-reponse';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -66,10 +68,7 @@ export class AuthController {
     async facebookCallback(@Req() req,@Res() res){
         const isExisted: Boolean | User = await this.authService.checkIsExistedAccount("facebook", req.user.facebookId);
 
-        const authResponse: AuthResponse | string = await this.authService.facebookAuth(req.user, isExisted);
-        if (typeof authResponse === 'string') {
-            throw new BadRequestException({ "message": authResponse });
-        }
+        const authResponse: AuthResponse  = await this.authService.facebookAuth(req.user, isExisted);
 
         const redirectUrl 
             = `${this.clientUrl}/login/facebook?access_token=${authResponse.accessToken}&refresh_token=${authResponse.refreshToken}&user_id=${authResponse.userId}` 
@@ -89,12 +88,12 @@ export class AuthController {
 
         const isExisted: Boolean | User = await this.authService.checkIsExistedAccount("google", req.user.email)
 
-        const authResponse: AuthResponse | string = await this.authService.googleAuth(req.user, isExisted);
-        if (typeof authResponse === 'string') {
-            throw new BadRequestException({ "message": authResponse });
-        }
-        const redirectUrl 
-            = `${this.clientUrl}/login/google?access_token=${authResponse.accessToken}&refresh_token=${authResponse.refreshToken}&user_id=${authResponse.userId}` 
+        const authResponse: AuthResponse = await this.authService.googleAuth(req.user, isExisted);
+        
+        const queryParams = 
+            `access_token=${authResponse.accessToken}&refresh_token=${authResponse.refreshToken}&user_id=${authResponse.userId}`
+
+        const redirectUrl = `${this.clientUrl}/login/google?${queryParams}` 
 
         return res.redirect(redirectUrl);
         
@@ -105,19 +104,19 @@ export class AuthController {
     @ApiResponse({
         status: HttpStatus.CREATED,
         schema: {
-            $ref: getSchemaPath(AuthResponse),
+            $ref: getSchemaPath(RegisterResponse),
         },
     })
-    async register(@Body() registerDto: RegisterDto): Promise<string | Object> {
-        const authResponse: string | Object = await this.authService.register(registerDto);
-
-        if (typeof authResponse === 'string') {
-            throw new BadRequestException({ "message": authResponse });
+    async register(@Body() registerDto: RegisterDto): Promise<ResponseTemplate<ErrorMessage | RegisterResponse>> {
+        const authResponse: ErrorMessage | RegisterResponse = await this.authService.register(registerDto);
+        
+        if (isErrorMessage(authResponse)) {
+            throw new BadRequestException(authResponse);
         }
 
-        const response: ResponseTemplate<Object> = {
+        const response: ResponseTemplate<RegisterResponse> = {
             data: authResponse,
-            message: "Register successfully",
+            message: "Register successfully, Please verify your email.",
             statusCode: HttpStatus.CREATED
         }
         return response;
@@ -133,8 +132,8 @@ export class AuthController {
     })
     async login(@Body() loginDto: LoginDto): Promise<ResponseTemplate<AuthResponse>> {
 
-        const authResponse: AuthResponse | string = await this.authService.login(loginDto);
-        if (typeof authResponse === 'string') {
+        const authResponse: AuthResponse | ErrorMessage = await this.authService.login(loginDto);
+        if (isErrorMessage(authResponse)) {
             throw new BadRequestException({ "message": authResponse });
         }
         const response: ResponseTemplate<AuthResponse> = {
@@ -155,8 +154,8 @@ export class AuthController {
     })
     async requestToken(@Body() requestTokenDto: RequestTokenDto)
         : Promise<ResponseTemplate<RequestTokenResponse>> {
-        const requestTokenResponse: RequestTokenResponse | string = await this.authService.requestToken(requestTokenDto);
-        if (typeof requestTokenResponse === 'string') {
+        const requestTokenResponse: RequestTokenResponse | ErrorMessage = await this.authService.requestToken(requestTokenDto);
+        if (isErrorMessage(requestTokenResponse)) {
             throw new BadRequestException({ "message": requestTokenResponse });
         }
         const response: ResponseTemplate<RequestTokenResponse> = {

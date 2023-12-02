@@ -17,6 +17,9 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { RESET_PASSWORD, VERIFY_EMAIL } from 'src/lib/util/constant/hash-type';
 import { RESET_PASSWORD_TEMPLATE } from 'src/lib/configs/mailer/mailer.template';
+import { ErrorMessage } from 'src/utils/types';
+import {ERROR_CODE, ERROR_MSG} from "src/utils/project-constants";
+import { RegisterResponse } from './response/register-reponse';
 
 @Injectable()
 export class AuthService {
@@ -40,42 +43,59 @@ export class AuthService {
         return false;
     }
 
-    async register(registerDto: RegisterDto): Promise<string | Object> {
+    async register(registerDto: RegisterDto): Promise<ErrorMessage | RegisterResponse> {
         try {
             const isExistedusername = await this.checkIsExistedAccount("username", registerDto.username);
-
+            
             if (isExistedusername) {
-                return 'Username already exists';
+                const response : ErrorMessage = {
+                    errorCode: ERROR_CODE.USERNAME_IS_USED,
+                    message: ERROR_MSG.USERNAME_IS_USED
+                } 
+                return response;
             }
             registerDto.password = generateHash(registerDto.password);
             const newUser = await this.userService.createUser(registerDto, AuthProviderType.DEFAULT);
             const userRole = await this.roleService.findOrCreate(RoleType.USER);
             await newUser.$add('roles', userRole[0].id);
             await this.sendVerifyEmail(newUser.id, registerDto.email);
-
-            return {
-                message: "Please verify your email"
-            }
+            
+            const response : RegisterResponse= {
+                isSuccess: true
+            } 
+            return response;
 
         } catch (error) {
-            return error.message;
+            const response : ErrorMessage = {
+                errorCode: ERROR_CODE.BAD_REQUEST,
+                message: error.message
+            } 
+            return  response;
         }
     }
 
-    async login(loginDto: LoginDto): Promise<AuthResponse | string> {
+    async login(loginDto: LoginDto): Promise<AuthResponse | ErrorMessage> {
         try {
             const hasUser = await this.userService.findOne({
                 username: loginDto.username,
             });
             if (!hasUser) {
-                return 'no user found';
+                const response: ErrorMessage ={
+                    errorCode: ERROR_CODE.USER_NOT_FOUND,
+                    message: ERROR_CODE.USER_NOT_FOUND
+                } 
+                return response;
             }
             const isRightPassword = await validateHash(
                 loginDto.password,
                 hasUser.password,
             );
             if (!isRightPassword) {
-                return 'username or password is incorrect';
+                const response : ErrorMessage = {
+                    errorCode: ERROR_CODE.WRONG_PASSWORD,
+                    message: ERROR_CODE.WRONG_PASSWORD
+                }
+                return response;
             }
             const tokens = await this.assignTokens(hasUser.id, RoleType.USER);
 
@@ -91,7 +111,11 @@ export class AuthService {
             };
             return authResponse;
         } catch (error) {
-            return error.message;
+            const response : ErrorMessage= {
+                errorCode: ERROR_CODE.BAD_REQUEST,
+                message: ERROR_MSG.BAD_REQUEST
+            } 
+            return response;
         }
     }
 
@@ -99,7 +123,7 @@ export class AuthService {
     async googleAuth(
         googleAuthResponse: GoogleAuthResponse, isExisted: Boolean | User
     )
-        : Promise<AuthResponse | string> {
+        : Promise<AuthResponse> {
         let user: User;
 
         if (isExisted instanceof User) {
@@ -135,7 +159,7 @@ export class AuthService {
         authFacebookResponse: FacebookAuthResponse,
         isExisted: User | Boolean
     )
-        : Promise<AuthResponse | string> {
+        : Promise<AuthResponse> {
         let user: User;
 
         if (isExisted instanceof User) {
@@ -169,7 +193,7 @@ export class AuthService {
 
     async requestToken(
         requestTokenDto: RequestTokenDto,
-    ): Promise<RequestTokenResponse | string> {
+    ): Promise<RequestTokenResponse | ErrorMessage> {
         try {
             const isVerified: Boolean = await this.jwtService.verifyToken(
                 requestTokenDto.refreshToken,
@@ -177,14 +201,22 @@ export class AuthService {
                 RoleType.USER,
             );
             if (!isVerified) {
-                return 'Invalid refresh token';
+                const response : ErrorMessage = {
+                    errorCode: ERROR_CODE.INVALID_TOKEN,
+                    message: ERROR_MSG.INVALID_TOKEN
+                }
+                return response;
             }
             const requestTokenResponse: RequestTokenResponse =
                 await this.assignTokens(requestTokenDto.userId, RoleType.USER);
 
             return requestTokenResponse;
         } catch (error) {
-            return error.message;
+            const response : ErrorMessage = {
+                errorCode : ERROR_CODE.BAD_REQUEST,
+                message: error.message
+            }
+            return response;
         }
     }
 
