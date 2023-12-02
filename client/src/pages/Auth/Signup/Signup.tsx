@@ -10,13 +10,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { sigupSchema } from "@src/utils/schema";
-import { useAppDispatch } from "@src/hooks/appHook";
 import { registerUser } from "@src/services/auth/apiRequest";
 import routes from "@src/configs/router";
 import LoginSocial from "../components/LoginSoical/LoginSocial";
 
 export default function Signup() {
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const form = useForm<z.infer<typeof sigupSchema>>({
@@ -31,12 +29,20 @@ export default function Signup() {
     });
 
     async function onSubmit(values: z.infer<typeof sigupSchema>) {
-        const res = await registerUser(dispatch, values);
-        if (res.error) {
+        const res = await registerUser(values);
+        if (res?.error) {
             toast.error(res.message);
             return;
         }
-        navigate(routes.HOME);
+
+        if (res.statusCode === 201) {
+            toast.success(res.data.message);
+            navigate(routes.LOGIN);
+            return;
+        } else {
+            toast.error(res.data.message);
+            return;
+        }
     }
     return (
         <div className="max-w-2xl xl:px-[80px] lg:px-[40px] pt-[40px] pb-[20px] px-3">

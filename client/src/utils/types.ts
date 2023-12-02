@@ -1,7 +1,7 @@
 export type RouteInfo = {
     path: string;
     component: React.FC;
-    layout?: React.FC;
+    layout?: React.FC | null;
 };
 
 export interface UserInfo {
