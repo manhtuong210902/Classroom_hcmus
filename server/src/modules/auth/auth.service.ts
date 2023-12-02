@@ -26,13 +26,15 @@ export class AuthService {
         private readonly jwtService: JwtService,
         private readonly mailerService: MailerService,
         private readonly configService: ConfigService,
-    ) { }
+    ) {}
 
-
-    async checkIsExistedAccount(field: string, value: any): Promise<Boolean | User> {
+    async checkIsExistedAccount(
+        field: string,
+        value: any,
+    ): Promise<Boolean | User> {
         const isExisted = await this.userService.findOne({
-            [field]: value
-        })
+            [field]: value,
+        });
 
         if (isExisted) {
             return isExisted;
@@ -42,21 +44,26 @@ export class AuthService {
 
     async register(registerDto: RegisterDto): Promise<string | Object> {
         try {
-            const isExistedusername = await this.checkIsExistedAccount("username", registerDto.username);
+            const isExistedusername = await this.checkIsExistedAccount(
+                'username',
+                registerDto.username,
+            );
 
             if (isExistedusername) {
                 return 'Username already exists';
             }
             registerDto.password = generateHash(registerDto.password);
-            const newUser = await this.userService.createUser(registerDto, AuthProviderType.DEFAULT);
+            const newUser = await this.userService.createUser(
+                registerDto,
+                AuthProviderType.DEFAULT,
+            );
             const userRole = await this.roleService.findOrCreate(RoleType.USER);
             await newUser.$add('roles', userRole[0].id);
             await this.sendVerifyEmail(newUser.id, registerDto.email);
 
             return {
-                message: "Please verify your email"
-            }
-
+                message: 'Please verify your email',
+            };
         } catch (error) {
             return error.message;
         }
@@ -95,22 +102,26 @@ export class AuthService {
         }
     }
 
-
     async googleAuth(
-        googleAuthResponse: GoogleAuthResponse, isExisted: Boolean | User
-    )
-        : Promise<AuthResponse | string> {
+        googleAuthResponse: GoogleAuthResponse,
+        isExisted: Boolean | User,
+    ): Promise<AuthResponse | string> {
         let user: User;
 
         if (isExisted instanceof User) {
             user = isExisted;
-        }
-        else {
-            const newUser = await this.userService.createUser({
-                google: googleAuthResponse.email,
-                fullname: googleAuthResponse.firstName + ' ' + googleAuthResponse.lastName,
-                imgUrl: googleAuthResponse.picture
-            }, AuthProviderType.GOOGLE)
+        } else {
+            const newUser = await this.userService.createUser(
+                {
+                    google: googleAuthResponse.email,
+                    fullname:
+                        googleAuthResponse.firstName +
+                        ' ' +
+                        googleAuthResponse.lastName,
+                    imgUrl: googleAuthResponse.picture,
+                },
+                AuthProviderType.GOOGLE,
+            );
             const userRole = await this.roleService.findOrCreate(RoleType.USER);
             await newUser.$add('roles', userRole[0].id);
             user = newUser;
@@ -125,28 +136,32 @@ export class AuthService {
             userId: user.id,
             fullname: user.fullname,
             gender: user.gender || '',
-            email: user.email
-        }
+            email: user.email,
+        };
 
         return authResponse;
     }
 
     async facebookAuth(
         authFacebookResponse: FacebookAuthResponse,
-        isExisted: User | Boolean
-    )
-        : Promise<AuthResponse | string> {
+        isExisted: User | Boolean,
+    ): Promise<AuthResponse | string> {
         let user: User;
 
         if (isExisted instanceof User) {
             user = isExisted;
-        }
-        else {
-            const newUser = await this.userService.createUser({
-                facebook: authFacebookResponse.facebookId,
-                fullname: authFacebookResponse.firstName + ' ' + authFacebookResponse.lastName,
-                imgUrl: authFacebookResponse.photo
-            }, AuthProviderType.FACEBOOK)   
+        } else {
+            const newUser = await this.userService.createUser(
+                {
+                    facebook: authFacebookResponse.facebookId,
+                    fullname:
+                        authFacebookResponse.firstName +
+                        ' ' +
+                        authFacebookResponse.lastName,
+                    imgUrl: authFacebookResponse.photo,
+                },
+                AuthProviderType.FACEBOOK,
+            );
             const userRole = await this.roleService.findOrCreate(RoleType.USER);
             await newUser.$add('roles', userRole[0].id);
             user = newUser;
@@ -161,8 +176,8 @@ export class AuthService {
             userId: user.id,
             fullname: user.fullname,
             gender: user.gender || '',
-            email: user.email
-        }
+            email: user.email,
+        };
 
         return authResponse;
     }
@@ -216,40 +231,59 @@ export class AuthService {
 
     async sendVerifyEmail(userId: string, email: string) {
         const token = generateHash(VERIFY_EMAIL + userId + email);
-        const callbackUrl = this.configService.get<string>('CLIENT_URL') + `/auth/verify?email=${email}&user_id=${userId}&token=${token}`
+        const callbackUrl =
+            this.configService.get<string>('CLIENT_URL') +
+            `/auth/verify?email=${email}&user_id=${userId}&token=${token}`;
         this.mailerService.sendMail({
             to: email,
-            subject: 'Testing Mailer ✅',
-            html: `<h1>Welcome</h1><br/><h4>Click here 👉 to verify email: <a href=${callbackUrl}>Click here</a></h4>`
-        })
+            subject: 'Verify Email 📖',
+            html: `<h1>Welcome</h1><br/><h4>Click here 👉 to verify email: <a href=${callbackUrl}>Click here</a></h4>`,
+        });
     }
 
     async sendResetPassword(userId: string, email: string) {
         const token = generateHash(RESET_PASSWORD + userId + email);
-        const callbackUrl = this.configService.get<string>('SERVER_URL') + `/api/v1/auth/reset-password?email=${email}&user_id=${userId}&token=${token}`
+        const callbackUrl =
+            this.configService.get<string>('SERVER_URL') +
+            `/api/v1/auth/reset-password?email=${email}&user_id=${userId}&token=${token}`;
         this.mailerService.sendMail({
             to: email,
-            subject: 'Testing Mailer ✅',
-            html: RESET_PASSWORD_TEMPLATE(callbackUrl)
-        })
+            subject: 'Reset Password 📖',
+            html: RESET_PASSWORD_TEMPLATE(callbackUrl),
+        });
     }
 
-    async resetPassword(userId: string, email: string, token: string, newPassword: string) {
-        const isValid = await validateHash(RESET_PASSWORD + userId + email, token);
+    async resetPassword(
+        userId: string,
+        email: string,
+        token: string,
+        newPassword: string,
+    ) {
+        const isValid = await validateHash(
+            RESET_PASSWORD + userId + email,
+            token,
+        );
         if (isValid) {
-            await this.userService.updateUser({ password: generateHash(newPassword) }, userId);
+            await this.userService.updateUser(
+                { password: generateHash(newPassword) },
+                userId,
+            );
             return true;
         }
 
-        throw new BadRequestException({ "message": "Invalid verification" });
+        throw new BadRequestException({ message: 'Invalid verification' });
     }
 
     async verifyEmail(userId: string, email: string, hash: string) {
         try {
-
-            const isValid = await validateHash(VERIFY_EMAIL + userId + email, hash);
+            const isValid = await validateHash(
+                VERIFY_EMAIL + userId + email,
+                hash,
+            );
             if (!isValid) {
-                throw new BadRequestException({ "message": "Invalid verification" });
+                throw new BadRequestException({
+                    message: 'Invalid verification',
+                });
             }
             await this.userService.updateUser({ is_verified: true }, userId);
 
@@ -257,7 +291,9 @@ export class AuthService {
                 email: email,
             });
             if (!hasUser) {
-                throw new BadRequestException({ "message": "Cannot found user with this Email" });
+                throw new BadRequestException({
+                    message: 'Cannot found user with this Email',
+                });
             }
 
             const tokens = await this.assignTokens(hasUser.id, RoleType.USER);
@@ -273,10 +309,8 @@ export class AuthService {
                 email: hasUser.email,
             };
             return authResponse;
-
         } catch (error) {
-            throw new BadRequestException({ "message": error.message });
+            throw new BadRequestException({ message: error.message });
         }
-
     }
 }

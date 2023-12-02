@@ -26,7 +26,6 @@ export default function Login() {
     async function onSubmit(values: z.infer<typeof loginSchema>) {
         const res = await loginUser(dispatch, values);
         if (res.error) {
-            console.log("Log check message: ", res.message);
             toast.error(res.message);
             return;
         }
@@ -39,7 +38,7 @@ export default function Login() {
                 <div className="flex flex-col md:flex-row gap-2 justify-between items-center">
                     <div className="text-2xl text-primary font-bold">Log in to Education</div>
                     <span className="text-[#031FEF] underline cursor-pointer">
-                        <Link to={"/signup"}>Create new account</Link>
+                        <Link to={routes.SIGNUP}>Create new account</Link>
                     </span>
                 </div>
 
@@ -84,6 +83,10 @@ export default function Login() {
                                 </FormItem>
                             )}
                         />
+
+                        <span className="text-[#031FEF] underline cursor-pointer text-right">
+                            <Link to={routes.REQUEST_RESET_PASSWORD}>Forgot password?</Link>
+                        </span>
                         <Button type="submit" className="text-base">
                             Login
                         </Button>

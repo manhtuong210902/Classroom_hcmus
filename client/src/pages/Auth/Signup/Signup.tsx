@@ -36,7 +36,7 @@ export default function Signup() {
         }
 
         if (res.statusCode === 201) {
-            toast.success(res.data.message);
+            toast.info(res.data.message);
             navigate(routes.LOGIN);
             return;
         } else {
