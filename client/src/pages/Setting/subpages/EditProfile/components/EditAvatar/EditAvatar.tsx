@@ -1,34 +1,26 @@
-import { profileService } from "@src/services/profile/profile.service";
 import { Edit } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@src/components/ui/avatar";
 import { getFirstCharacter } from "@src/utils/lib";
 import { useAppDispatch, useAppSelector } from "@src/hooks/appHook";
-import { selectUserInfo, updateUser } from "@src/store/reducers/authSlice";
+import { selectUserInfo } from "@src/store/reducers/authSlice";
 import { useState } from "react";
 import { Skeleton } from "@src/components/ui/skeleton";
+import { updateAvatarUser } from "@src/services/profile/apiRequest";
 
 const EditAvatar = () => {
     const user = useAppSelector(selectUserInfo);
-    const dipatch = useAppDispatch();
+    const dispatch = useAppDispatch();
     const [loading, setLoading] = useState(false);
 
     const handleUpdateAvatar = async (e: any) => {
         setLoading(true);
         const formData = new FormData();
         formData.append("file", e.target.files[0]);
-        if(user?.username){
+        if (user?.username) {
             formData.append("userId", user.id);
         }
-        const response = await profileService.updateAvatar(formData);
-        
-        if (response.data.statusCode === 200) {
-                dipatch(
-                    updateUser({
-                        ...user,
-                        imgUrl: response.data.data.imgUrl,
-                    })
-                );
-        }
+
+        updateAvatarUser(dispatch, formData, user);
 
         setLoading(false);
     };

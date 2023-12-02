@@ -3,14 +3,14 @@ import { Button } from "@src/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@src/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@src/components/ui/radio-group";
 import { useAppDispatch, useAppSelector } from "@src/hooks/appHook";
-import { profileService } from "@src/services/profile/profile.service";
-import { selectUserInfo, updateUser } from "@src/store/reducers/authSlice";
+import { updateProfileUser } from "@src/services/profile/apiRequest";
+import { selectUserInfo } from "@src/store/reducers/authSlice";
 import { useForm } from "react-hook-form";
 
 const FormAddGender = ({ onClose }: { onClose: any }) => {
     const user = useAppSelector(selectUserInfo);
     const genderDefault = user?.gender || "Male";
-    const dipatch = useAppDispatch();
+    const dispatch = useAppDispatch();
     const form = useForm({
         defaultValues: {
             gender: genderDefault,
@@ -19,15 +19,7 @@ const FormAddGender = ({ onClose }: { onClose: any }) => {
 
     async function onSubmit(values: any) {
         if (values.gender.trim() !== genderDefault.trim()) {
-            const res = await profileService.updateProfile(values);
-            if (res.data.statusCode === 200) {
-                dipatch(
-                    updateUser({
-                        ...user,
-                        gender: values.gender,
-                    })
-                );
-            }
+            updateProfileUser(dispatch, user, values);
         }
         onClose();
     }
