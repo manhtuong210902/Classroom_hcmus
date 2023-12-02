@@ -18,7 +18,7 @@ import { ConfigService } from '@nestjs/config';
 import { RESET_PASSWORD, VERIFY_EMAIL } from 'src/lib/util/constant/hash-type';
 import { RESET_PASSWORD_TEMPLATE } from 'src/lib/configs/mailer/mailer.template';
 import { ErrorMessage } from 'src/utils/types';
-import {ERROR_CODE, ERROR_MSG} from "src/utils/project-constants";
+import { ERROR_CODE, ERROR_MSG } from "src/utils/project-constants";
 import { RegisterResponse } from './response/register-reponse';
 
 @Injectable()
@@ -29,7 +29,7 @@ export class AuthService {
         private readonly jwtService: JwtService,
         private readonly mailerService: MailerService,
         private readonly configService: ConfigService,
-    ) {}
+    ) { }
 
     async checkIsExistedAccount(
         field: string,
@@ -53,10 +53,10 @@ export class AuthService {
             );
 
             if (isExistedusername) {
-                const response : ErrorMessage = {
+                const response: ErrorMessage = {
                     errorCode: ERROR_CODE.USERNAME_IS_USED,
                     message: ERROR_MSG.USERNAME_IS_USED
-                } 
+                }
                 return response;
             }
             registerDto.password = generateHash(registerDto.password);
@@ -66,19 +66,19 @@ export class AuthService {
             );
             const userRole = await this.roleService.findOrCreate(RoleType.USER);
             await newUser.$add('roles', userRole[0].id);
-            await this.sendVerifyEmail(newUser.id, registerDto.email);
-            
-            const response : RegisterResponse= {
+            await this.sendVerifyEmail(registerDto.email);
+
+            const response: RegisterResponse = {
                 isSuccess: true
-            } 
+            }
             return response;
 
         } catch (error) {
-            const response : ErrorMessage = {
+            const response: ErrorMessage = {
                 errorCode: ERROR_CODE.BAD_REQUEST,
                 message: error.message
-            } 
-            return  response;
+            }
+            return response;
         }
     }
 
@@ -87,11 +87,12 @@ export class AuthService {
             const hasUser = await this.userService.findOne({
                 username: loginDto.username,
             });
+
             if (!hasUser) {
-                const response: ErrorMessage ={
+                const response: ErrorMessage = {
                     errorCode: ERROR_CODE.USER_NOT_FOUND,
                     message: ERROR_CODE.USER_NOT_FOUND
-                } 
+                }
                 return response;
             }
             const isRightPassword = await validateHash(
@@ -99,9 +100,16 @@ export class AuthService {
                 hasUser.password,
             );
             if (!isRightPassword) {
-                const response : ErrorMessage = {
+                const response: ErrorMessage = {
                     errorCode: ERROR_CODE.WRONG_PASSWORD,
                     message: ERROR_CODE.WRONG_PASSWORD
+                }
+                return response;
+            }
+            if (!hasUser.is_verified) {
+                const response: ErrorMessage = {
+                    errorCode: ERROR_CODE.USER_NOT_VERIFIED,
+                    message: ERROR_CODE.USER_NOT_VERIFIED
                 }
                 return response;
             }
@@ -119,10 +127,10 @@ export class AuthService {
             };
             return authResponse;
         } catch (error) {
-            const response : ErrorMessage= {
+            const response: ErrorMessage = {
                 errorCode: ERROR_CODE.BAD_REQUEST,
                 message: ERROR_MSG.BAD_REQUEST
-            } 
+            }
             return response;
         }
     }
@@ -218,7 +226,7 @@ export class AuthService {
                 RoleType.USER,
             );
             if (!isVerified) {
-                const response : ErrorMessage = {
+                const response: ErrorMessage = {
                     errorCode: ERROR_CODE.INVALID_TOKEN,
                     message: ERROR_MSG.INVALID_TOKEN
                 }
@@ -229,8 +237,8 @@ export class AuthService {
 
             return requestTokenResponse;
         } catch (error) {
-            const response : ErrorMessage = {
-                errorCode : ERROR_CODE.BAD_REQUEST,
+            const response: ErrorMessage = {
+                errorCode: ERROR_CODE.BAD_REQUEST,
                 message: error.message
             }
             return response;
@@ -263,11 +271,11 @@ export class AuthService {
         };
     }
 
-    async sendVerifyEmail(userId: string, email: string) {
-        const token = generateHash(VERIFY_EMAIL + userId + email);
+    async sendVerifyEmail(email: string) {
+        const token = generateHash(VERIFY_EMAIL + email);
         const callbackUrl =
             this.configService.get<string>('CLIENT_URL') +
-            `/auth/verify?email=${email}&user_id=${userId}&token=${token}`;
+            `/verify-email?email=${email}&token=${token}`;
         this.mailerService.sendMail({
             to: email,
             subject: 'Verify Email 📖',
@@ -275,11 +283,11 @@ export class AuthService {
         });
     }
 
-    async sendResetPassword(userId: string, email: string) {
-        const token = generateHash(RESET_PASSWORD + userId + email);
+    async sendResetPassword(email: string) {
+        const token = generateHash(RESET_PASSWORD + email);
         const callbackUrl =
-            this.configService.get<string>('SERVER_URL') +
-            `/api/v1/auth/reset-password?email=${email}&user_id=${userId}&token=${token}`;
+            this.configService.get<string>('CLIENT_URL') +
+            `/reset-password?email=${email}&token=${token}`;
         this.mailerService.sendMail({
             to: email,
             subject: 'Reset Password 📖',
@@ -294,7 +302,7 @@ export class AuthService {
         newPassword: string,
     ) {
         const isValid = await validateHash(
-            RESET_PASSWORD + userId + email,
+            RESET_PASSWORD + email,
             token,
         );
         if (isValid) {
@@ -308,10 +316,10 @@ export class AuthService {
         throw new BadRequestException({ message: 'Invalid verification' });
     }
 
-    async verifyEmail(userId: string, email: string, hash: string) {
+    async verifyEmail(email: string, hash: string) {
         try {
             const isValid = await validateHash(
-                VERIFY_EMAIL + userId + email,
+                VERIFY_EMAIL + email,
                 hash,
             );
             if (!isValid) {
@@ -319,7 +327,6 @@ export class AuthService {
                     message: 'Invalid verification',
                 });
             }
-            await this.userService.updateUser({ is_verified: true }, userId);
 
             const hasUser = await this.userService.findOne({
                 email: email,
@@ -329,6 +336,8 @@ export class AuthService {
                     message: 'Cannot found user with this Email',
                 });
             }
+
+            await this.userService.updateUser({ is_verified: true }, hasUser.id);
 
             const tokens = await this.assignTokens(hasUser.id, RoleType.USER);
 

@@ -33,7 +33,7 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Post('/send-reset-password')
     async sendMailResetPassword(@Body() body) {
-        await this.authService.sendResetPassword(body.userId, body.email);
+        await this.authService.sendResetPassword(body.email);
         return {
             "message": "Send mail for reset password successfully"
         }
@@ -52,7 +52,7 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Get('/verify')
     async verifyEmail(@Query() query) {
-        const authResponse = await this.authService.verifyEmail(query.user_id, query.email, query.token);
+        const authResponse = await this.authService.verifyEmail(query.email, query.token);
         return authResponse;
     }
 
