@@ -56,6 +56,24 @@ export const loginUser = async (dispatch: any, params: any) => {
     }
 };
 
+export const verifyEmail = async (params: any) => {
+    try {
+        const res = await authService.verify(params);
+        return res.data;
+    } catch (error: any) {
+        return error?.response?.data;
+    }
+};
+
+export const requestResetPassword = async (params: any) => {
+    try {
+        const res = await authService.requestReset(params);
+        return res.data;
+    } catch (error: any) {
+        return error?.response?.data;
+    }
+};
+
 export const logoutUser = (dispatch: any) => {
     LocalStorage.clearToken();
     dispatch(loadUserFail());

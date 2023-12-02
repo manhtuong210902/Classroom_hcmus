@@ -9,7 +9,7 @@ import { selectUserInfo } from "@src/store/reducers/authSlice";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-export const formSchema = z.object({
+export const emailSchema = z.object({
     email: z.string().email(),
 });
 
@@ -17,14 +17,14 @@ const FormAddEmail = ({ onClose }: { onClose: any }) => {
     const user = useAppSelector(selectUserInfo);
     const emailDefault = user?.email || "";
     const dispatch = useAppDispatch();
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const form = useForm<z.infer<typeof emailSchema>>({
+        resolver: zodResolver(emailSchema),
         defaultValues: {
             email: emailDefault,
         },
     });
 
-    async function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: z.infer<typeof emailSchema>) {
         if (values.email.trim() !== emailDefault.trim()) {
             updateProfileUser(dispatch, user, values);
         }

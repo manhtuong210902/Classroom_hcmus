@@ -1,4 +1,4 @@
-import { LOGIN_API, REGISTER_API } from "./api";
+import { LOGIN_API, REGISTER_API, REQUEST_REST_PASSWORD, VERIFY_ENAIL } from "./api";
 import axiosClient from "../axiosClient";
 
 export const authService = {
@@ -8,5 +8,13 @@ export const authService = {
 
     register: (params: any) => {
         return axiosClient.post(REGISTER_API, params);
+    },
+
+    verify: (params: any) => {
+        return axiosClient.get(VERIFY_ENAIL, { params });
+    },
+
+    requestReset: (params: any) => {
+        return axiosClient.post(REQUEST_REST_PASSWORD, params);
     },
 };
