@@ -66,7 +66,7 @@ export class UserController {
             return response;
             
         } catch (error) {
-            throw new BadRequestException(error.message)
+            throw new BadRequestException(error)
         }
     }
 

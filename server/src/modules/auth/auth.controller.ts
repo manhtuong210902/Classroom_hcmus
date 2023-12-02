@@ -13,7 +13,6 @@ import { User } from '../user/entities/user.entity';
 
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ConfigService } from '@nestjs/config';
-import { ErrorMessage, isErrorMessage } from 'src/utils/types';
 import { RegisterResponse } from './response/register-reponse';
 
 @Controller('auth')
@@ -33,7 +32,7 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Post('/send-reset-password')
     async sendMailResetPassword(@Body() body) {
-        await this.authService.sendResetPassword(body.userId, body.email);
+        await this.authService.sendResetPassword(body.email);
         return {
             "message": "Send mail for reset password successfully"
         }
@@ -52,7 +51,7 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Get('/verify')
     async verifyEmail(@Query() query) {
-        const authResponse = await this.authService.verifyEmail(query.user_id, query.email, query.token);
+        const authResponse = await this.authService.verifyEmail(query.email, query.token);
         return authResponse;
     }
 
@@ -128,10 +127,8 @@ export class AuthController {
     })
     async login(@Body() loginDto: LoginDto): Promise<ResponseTemplate<AuthResponse>> {
 
-        const authResponse: AuthResponse | ErrorMessage = await this.authService.login(loginDto);
-        if (isErrorMessage(authResponse)) {
-            throw new BadRequestException(authResponse);
-        }
+        const authResponse: AuthResponse  = await this.authService.login(loginDto);
+
         const response: ResponseTemplate<AuthResponse> = {
             data: authResponse,
             message: "Login successfully",
@@ -150,10 +147,8 @@ export class AuthController {
     })
     async requestToken(@Body() requestTokenDto: RequestTokenDto)
         : Promise<ResponseTemplate<RequestTokenResponse>> {
-        const requestTokenResponse: RequestTokenResponse | ErrorMessage = await this.authService.requestToken(requestTokenDto);
-        if (isErrorMessage(requestTokenResponse)) {
-            throw new BadRequestException(requestTokenResponse);
-        }
+        const requestTokenResponse: RequestTokenResponse  = await this.authService.requestToken(requestTokenDto);
+
         const response: ResponseTemplate<RequestTokenResponse> = {
             data: requestTokenResponse,
             statusCode: HttpStatus.OK,
