@@ -17,7 +17,6 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { RESET_PASSWORD, VERIFY_EMAIL } from 'src/lib/util/constant/hash-type';
 import { RESET_PASSWORD_TEMPLATE } from 'src/lib/configs/mailer/mailer.template';
-import { ErrorMessage } from 'src/utils/types';
 import { ERROR_CODE, ERROR_MSG } from "src/utils/project-constants";
 import { RegisterResponse } from './response/register-reponse';
 
@@ -47,7 +46,7 @@ export class AuthService {
 
     async register(registerDto: RegisterDto): Promise<RegisterResponse> {
         try {
-            const isExistedusername = await this.checkIsExistedAccount(
+            const isExistedUsername = await this.checkIsExistedAccount(
                 'username',
                 registerDto.username,
             );
@@ -57,7 +56,7 @@ export class AuthService {
                 registerDto.email,
             );
             
-            if (isExistedusername) {
+            if (isExistedUsername) {
                 throw new BadRequestException({
                     errorCode: ERROR_CODE.USERNAME_IS_USED,
                     message: ERROR_MSG.USERNAME_IS_USED
@@ -349,7 +348,7 @@ export class AuthService {
             };
             return authResponse;
         } catch (error) {
-            throw new BadRequestException({ message: error.message });
+            throw new BadRequestException(error);
         }
     }
 }
