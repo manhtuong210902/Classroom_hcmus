@@ -52,6 +52,11 @@ export class AuthService {
                 registerDto.username,
             );
 
+            const isExistedEmail = await this.checkIsExistedAccount(
+                'email',
+                registerDto.email,
+            );
+            
             if (isExistedusername) {
                 const response: ErrorMessage = {
                     errorCode: ERROR_CODE.USERNAME_IS_USED,
@@ -59,6 +64,15 @@ export class AuthService {
                 }
                 return response;
             }
+
+            if (isExistedEmail) {
+                const response: ErrorMessage = {
+                    errorCode: ERROR_CODE.EMAIL_IS_USED,
+                    message: ERROR_MSG.EMAIL_IS_USED
+                }
+                return response;
+            }
+
             registerDto.password = generateHash(registerDto.password);
             const newUser = await this.userService.createUser(
                 registerDto,
