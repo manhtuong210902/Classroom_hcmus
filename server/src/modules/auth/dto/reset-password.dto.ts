@@ -5,11 +5,6 @@ export class ResetPasswordDto{
     @IsString()
     @IsNotEmpty()
     @ApiProperty()
-    readonly userId: string;
-    
-    @IsString()
-    @IsNotEmpty()
-    @ApiProperty()
     readonly email: string;
 
     @IsString()

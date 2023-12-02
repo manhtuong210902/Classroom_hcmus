@@ -56,7 +56,7 @@ export class AuthService {
                 'email',
                 registerDto.email,
             );
-            
+
             if (isExistedusername) {
                 throw new BadRequestException({
                     errorCode: ERROR_CODE.USERNAME_IS_USED,
@@ -100,7 +100,7 @@ export class AuthService {
                 throw new BadRequestException({
                     errorCode: ERROR_CODE.USER_NOT_FOUND,
                     message: ERROR_MSG.USER_NOT_FOUND
-                }) 
+                })
             }
             const isRightPassword = await validateHash(
                 loginDto.password,
@@ -227,7 +227,7 @@ export class AuthService {
                 RoleType.USER,
             );
             if (!isVerified) {
-                throw new BadRequestException ({
+                throw new BadRequestException({
                     errorCode: ERROR_CODE.INVALID_TOKEN,
                     message: ERROR_MSG.INVALID_TOKEN
                 })
@@ -292,7 +292,6 @@ export class AuthService {
     }
 
     async resetPassword(
-        userId: string,
         email: string,
         token: string,
         newPassword: string,
@@ -302,9 +301,13 @@ export class AuthService {
             token,
         );
         if (isValid) {
+            const user = await this.userService.findOne({ email: email });
+            if (!user) {
+                throw new BadRequestException({ message: ERROR_CODE.USER_NOT_FOUND })
+            }
             await this.userService.updateUser(
                 { password: generateHash(newPassword) },
-                userId,
+                user.id,
             );
             return true;
         }
