@@ -16,7 +16,9 @@ import { ApiConsumes, ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from
 import { UUID } from 'crypto';
 import { UserProfileResponse } from './response/user-profile.response';
 import { multerOptions } from 'src/lib/configs/multer/multer.config';
-
+import { ErrorMessage } from 'src/utils';
+import {ERROR_CODE, ERROR_MSG} from 'src/utils/project-constants';
+ 
 @Controller('user')
 @ApiTags('user')
 @ApiExtraModels(ResponseTemplate, UserProfileResponse, UpdateAvatarResponse)
@@ -114,7 +116,11 @@ export class UserController {
         try {
             const hasUser = await this.userService.findOne({id: userId});
             if (!hasUser){
-                throw new BadRequestException("User not found");
+                const error : ErrorMessage = {
+                    errorCode: ERROR_CODE.USER_NOT_FOUND,
+                    message: ERROR_MSG.USER_NOT_FOUND
+                }
+                throw new BadRequestException(error);
             }
             const profileData : UserProfileResponse = {
                 address: hasUser.address,
@@ -132,7 +138,7 @@ export class UserController {
             }
             return response;
         } catch (error) {
-            throw new BadRequestException(error.message);
+            throw new BadRequestException(error);
         }   
     }
 

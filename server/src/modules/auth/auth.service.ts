@@ -45,7 +45,7 @@ export class AuthService {
         return false;
     }
 
-    async register(registerDto: RegisterDto): Promise<ErrorMessage | RegisterResponse> {
+    async register(registerDto: RegisterDto): Promise<RegisterResponse> {
         try {
             const isExistedusername = await this.checkIsExistedAccount(
                 'username',
@@ -53,11 +53,10 @@ export class AuthService {
             );
 
             if (isExistedusername) {
-                const response : ErrorMessage = {
+                throw new BadRequestException({
                     errorCode: ERROR_CODE.USERNAME_IS_USED,
                     message: ERROR_MSG.USERNAME_IS_USED
-                } 
-                return response;
+                })
             }
             registerDto.password = generateHash(registerDto.password);
             const newUser = await this.userService.createUser(
@@ -74,25 +73,20 @@ export class AuthService {
             return response;
 
         } catch (error) {
-            const response : ErrorMessage = {
-                errorCode: ERROR_CODE.BAD_REQUEST,
-                message: error.message
-            } 
-            return  response;
+            throw new BadRequestException(error);
         }
     }
 
-    async login(loginDto: LoginDto): Promise<AuthResponse | ErrorMessage> {
+    async login(loginDto: LoginDto): Promise<AuthResponse> {
         try {
             const hasUser = await this.userService.findOne({
                 username: loginDto.username,
             });
             if (!hasUser) {
-                const response: ErrorMessage ={
+                throw new BadRequestException({
                     errorCode: ERROR_CODE.USER_NOT_FOUND,
-                    message: ERROR_CODE.USER_NOT_FOUND
-                } 
-                return response;
+                    message: ERROR_MSG.USER_NOT_FOUND
+                }) 
             }
             const isRightPassword = await validateHash(
                 loginDto.password,

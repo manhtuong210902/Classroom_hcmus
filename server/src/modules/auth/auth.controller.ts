@@ -107,13 +107,9 @@ export class AuthController {
             $ref: getSchemaPath(RegisterResponse),
         },
     })
-    async register(@Body() registerDto: RegisterDto): Promise<ResponseTemplate<ErrorMessage | RegisterResponse>> {
-        const authResponse: ErrorMessage | RegisterResponse = await this.authService.register(registerDto);
+    async register(@Body() registerDto: RegisterDto): Promise<ResponseTemplate<RegisterResponse>> {
+        const authResponse: RegisterResponse = await this.authService.register(registerDto);
         
-        if (isErrorMessage(authResponse)) {
-            throw new BadRequestException(authResponse);
-        }
-
         const response: ResponseTemplate<RegisterResponse> = {
             data: authResponse,
             message: "Register successfully, Please verify your email.",
@@ -134,7 +130,7 @@ export class AuthController {
 
         const authResponse: AuthResponse | ErrorMessage = await this.authService.login(loginDto);
         if (isErrorMessage(authResponse)) {
-            throw new BadRequestException({ "message": authResponse });
+            throw new BadRequestException(authResponse);
         }
         const response: ResponseTemplate<AuthResponse> = {
             data: authResponse,
@@ -156,7 +152,7 @@ export class AuthController {
         : Promise<ResponseTemplate<RequestTokenResponse>> {
         const requestTokenResponse: RequestTokenResponse | ErrorMessage = await this.authService.requestToken(requestTokenDto);
         if (isErrorMessage(requestTokenResponse)) {
-            throw new BadRequestException({ "message": requestTokenResponse });
+            throw new BadRequestException(requestTokenResponse);
         }
         const response: ResponseTemplate<RequestTokenResponse> = {
             data: requestTokenResponse,
