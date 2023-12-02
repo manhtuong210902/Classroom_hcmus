@@ -44,20 +44,16 @@ export class AuthController {
     async resetPassword(@Body() resetPassword: ResetPasswordDto) {
         const result = await this.authService.resetPassword(resetPassword.userId, resetPassword.email, resetPassword.token, resetPassword.newPassword);
         if (result)
-            return 'ok';
+            return {
+                "message": "Reset password successfully"
+            }
     }
 
     @HttpCode(HttpStatus.OK)
     @Get('/verify')
     async verifyEmail(@Query() query) {
-        const isValid = this.authService.verifyEmail(query.user_id, query.email, query.token);
-        if (isValid)
-            return {
-                "message": "Verify success"
-            };
-        return {
-            "message": "Verify fail"
-        }
+        const authResponse = await this.authService.verifyEmail(query.user_id, query.email, query.token);
+        return authResponse;
     }
 
 
