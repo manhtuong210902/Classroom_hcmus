@@ -6,7 +6,7 @@ const routes = {
     LOGIN: "/login",
     LOGIN_GG_SUCCESS: "/login/google",
     LOGIN_FB_SUCCESS: "/login/facebook",
-    VERIFY: "/auth/verify",
+    VERIFY: "/verify-email",
     REQUEST_RESET_PASSWORD: "/request-reset-password",
     REST_PASSWORD: "/reset-password",
 };
