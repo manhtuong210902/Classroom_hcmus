@@ -8,8 +8,7 @@ const LoginSocial = () => {
     };
 
     const loginWithFacebook = () => {
-        console.log("Log check gg path: ", AUTH_FACEBOOK);
-        // window.open(AUTH_FACEBOOK, "_self");
+        window.open(AUTH_FACEBOOK, "_self");
     };
 
     return (

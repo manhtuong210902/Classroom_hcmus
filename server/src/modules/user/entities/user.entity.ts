@@ -1,12 +1,19 @@
-import { Column, Model, DataType, Table, BelongsToMany, BeforeUpdate } from 'sequelize-typescript';
+import {
+    Column,
+    Model,
+    DataType,
+    Table,
+    BelongsToMany,
+    BeforeUpdate,
+} from 'sequelize-typescript';
 import { UserRole } from './user-role.entity';
 import { Role } from '../../role/role.entity';
 
 @Table({
-    "tableName": "users",
-    "timestamps": false
+    tableName: 'users',
+    timestamps: false,
 })
-export class User extends Model<User>{
+export class User extends Model<User> {
     @Column({
         type: DataType.UUID,
         defaultValue: DataType.UUIDV4,
@@ -20,7 +27,7 @@ export class User extends Model<User>{
     username: string;
 
     @Column({
-        allowNull: false,                
+        allowNull: false,
     })
     fullname: string;
 
@@ -40,28 +47,28 @@ export class User extends Model<User>{
     password: string;
 
     @Column({
-        allowNull: true
+        allowNull: true,
     })
     email: string;
 
     @Column({
-        allowNull: true
+        allowNull: true,
     })
     google: string;
 
     @Column({
-        allowNull: true
+        allowNull: true,
     })
     facebook: string;
 
     @Column({
-        allowNull: false
+        allowNull: false,
     })
     auth_provider: string;
 
     @Column({
         allowNull: true,
-        defaultValue: false
+        defaultValue: false,
     })
     is_verified: boolean;
 
@@ -77,6 +84,7 @@ export class User extends Model<User>{
     updated_at?: Date;
 
     @Column({
+        type: DataType.TEXT,
         allowNull: true,
     })
     img_url: string;
@@ -99,4 +107,3 @@ export class User extends Model<User>{
         instance.updated_at = new Date();
     }
 }
-
