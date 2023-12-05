@@ -19,9 +19,14 @@ export class BadRequestExceptionFilter implements ExceptionFilter {
         const status = exception.getStatus(); 
         const message = exception.message || 'Bad Request';
         const error : any = exception.getResponse();
-        
+        let errorCode;
+        try {
+            errorCode = error?.getResponse()?.errorCode
+        } catch (err) {
+            errorCode = error.errorCode
+        }
         response.status(status).json({
-            error: error?.getResponse()?.errorCode || error?.message || "Bad Request",
+            error: errorCode || "Bad Request",
             statusCode: status,
             message: message,
         });

@@ -25,6 +25,8 @@ import { User } from '../user/entities/user.entity';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ConfigService } from '@nestjs/config';
 import { RegisterResponse } from './response/register-reponse';
+import { SendResetPasswordDto } from './dto/send-reset-pw.dto';
+import { ERROR_CODE, ErrorMessage } from 'src/utils';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -41,8 +43,17 @@ export class AuthController {
 
     @HttpCode(HttpStatus.OK)
     @Post('/send-reset-password')
-    async sendMailResetPassword(@Body() body) {
-        await this.authService.sendResetPassword(body.email);
+    async sendMailResetPassword(@Body() sendResetPw: SendResetPasswordDto) {
+        
+        const isExistUser : Boolean | User = await this.authService.checkIsExistedAccount('email', sendResetPw.email)
+        if (!isExistUser) {
+            const error : ErrorMessage= {
+                errorCode: ERROR_CODE.USER_NOT_FOUND,
+                message: ERROR_CODE.USER_NOT_FOUND
+            } 
+            throw new BadRequestException(error)
+        }
+        await this.authService.sendResetPassword(sendResetPw);
         return {
             message: 'Send mail for reset password successfully',
         };
@@ -74,12 +85,13 @@ export class AuthController {
 
     @Get('facebook')
     @UseGuards(AuthGuard('facebook'))
-    async facebookLogin(@Req() req) {}
+    async facebookLogin(@Req() req) {
+        
+    }
 
     @Get('facebook/callback')
     @UseGuards(AuthGuard('facebook'))
     async facebookCallback(@Req() req, @Res() res) {
-        console.log('Log check req: ', req.user);
         const isExisted: Boolean | User =
             await this.authService.checkIsExistedAccount(
                 'facebook',
@@ -91,14 +103,19 @@ export class AuthController {
             isExisted,
         );
 
-        const redirectUrl = `${this.clientUrl}/login/facebook?access_token=${authResponse.accessToken}&refresh_token=${authResponse.refreshToken}&user_id=${authResponse.userId}`;
+        const queryParams = 
+        `access_token=${authResponse.accessToken}&refresh_token=${authResponse.refreshToken}&user_id=${authResponse.userId}`;
+
+        const redirectUrl = `${this.clientUrl}/login/facebook?${queryParams}`;
 
         return res.redirect(redirectUrl);
     }
 
     @Get('google')
     @UseGuards(AuthGuard('google'))
-    async googleLogin(@Req() req) {}
+    async googleLogin(@Req() req) {
+    
+    }
 
     @Get('google/callback')
     @UseGuards(AuthGuard('google'))

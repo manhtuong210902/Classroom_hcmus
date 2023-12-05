@@ -8,6 +8,8 @@ import {
 } from 'sequelize-typescript';
 import { UserRole } from './user-role.entity';
 import { Role } from '../../role/role.entity';
+import { UserClass } from 'src/modules/class/entities/user-class.entity';
+import { Class } from 'src/modules/class/entities/class.entity';
 
 @Table({
     tableName: 'users',
@@ -98,6 +100,10 @@ export class User extends Model<User> {
         allowNull: true,
     })
     refresh_token: string;
+
+
+    @BelongsToMany(() => Class, () => UserClass)
+    user_classes: UserClass[];
 
     @BelongsToMany(() => Role, () => UserRole)
     roles: Role[];

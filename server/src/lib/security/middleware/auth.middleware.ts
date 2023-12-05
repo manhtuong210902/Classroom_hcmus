@@ -1,4 +1,3 @@
-import { verify } from 'jsonwebtoken';
 import { NestMiddleware, Injectable, ForbiddenException } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { JwtService } from '../jwt/jwt.service';
@@ -23,12 +22,11 @@ export class AuthMiddleware implements NestMiddleware {
         let roles;
 
         if (!bearerHeader || !accessToken || bearerHeader.split(' ')[0] !== 'Bearer') {
-            // throw new ForbiddenException('Please register or sign in.');
             next();
         }
 
         try {
-            user = await this.userService.findOne({ access_token: accessToken });
+            user = await this.userService.findUserWithRoles({ access_token: accessToken });
             
             const isValidToken : Boolean  = await this.jwtService.verifyToken(
                 accessToken,
@@ -42,7 +40,7 @@ export class AuthMiddleware implements NestMiddleware {
         } catch (error) {
             throw new ForbiddenException('Please register or sign in.');
         }
-
+        
         if (user) {
             req.user = user;
             req.roles = roles;

@@ -1,2 +1,2 @@
-export const ACCESS_TOKEN_EXPIRED_TIME = '15m'
+export const ACCESS_TOKEN_EXPIRED_TIME = '1d'
 export const REFRESH_TOKEN_EXPIRED_TIME = '30d'

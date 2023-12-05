@@ -19,6 +19,7 @@ import { RESET_PASSWORD, VERIFY_EMAIL } from 'src/lib/util/constant/hash-type';
 import { RESET_PASSWORD_TEMPLATE } from 'src/lib/configs/mailer/mailer.template';
 import { ERROR_CODE, ERROR_MSG } from "src/utils/project-constants";
 import { RegisterResponse } from './response/register-reponse';
+import { SendResetPasswordDto } from './dto/send-reset-pw.dto';
 
 @Injectable()
 export class AuthService {
@@ -34,7 +35,7 @@ export class AuthService {
         field: string,
         value: any,
     ): Promise<Boolean | User> {
-        const isExisted = await this.userService.findOne({
+        const isExisted = await this.userService.findUserWithRoles({
             [field]: value,
         });
 
@@ -46,12 +47,12 @@ export class AuthService {
 
     async register(registerDto: RegisterDto): Promise<RegisterResponse> {
         try {
-            const isExistedUsername = await this.checkIsExistedAccount(
+            const isExistedUsername : User | Boolean = await this.checkIsExistedAccount(
                 'username',
                 registerDto.username,
             );
 
-            const isExistedEmail = await this.checkIsExistedAccount(
+            const isExistedEmail : User | Boolean = await this.checkIsExistedAccount(
                 'email',
                 registerDto.email,
             );
@@ -91,7 +92,7 @@ export class AuthService {
 
     async login(loginDto: LoginDto): Promise<AuthResponse> {
         try {
-            const hasUser = await this.userService.findOne({
+            const hasUser = await this.userService.findUserWithRoles({
                 username: loginDto.username,
             });
 
@@ -278,13 +279,13 @@ export class AuthService {
         });
     }
 
-    async sendResetPassword(email: string) {
-        const token = generateHash(RESET_PASSWORD + email);
+    async sendResetPassword(sendResetPw : SendResetPasswordDto) {
+        const token = generateHash(RESET_PASSWORD + sendResetPw.email);
         const callbackUrl =
             this.configService.get<string>('CLIENT_URL') +
-            `/reset-password?email=${email}&token=${token}`;
+            `/reset-password?email=${sendResetPw.email}&token=${token}`;
         this.mailerService.sendMail({
-            to: email,
+            to: sendResetPw.email,
             subject: 'Reset Password 📖',
             html: RESET_PASSWORD_TEMPLATE(callbackUrl),
         });
@@ -300,7 +301,7 @@ export class AuthService {
             token,
         );
         if (isValid) {
-            const user = await this.userService.findOne({ email: email });
+            const user = await this.userService.findUserWithRoles({ email: email });
             if (!user) {
                 throw new BadRequestException({ message: ERROR_CODE.USER_NOT_FOUND })
             }
@@ -326,7 +327,7 @@ export class AuthService {
                 });
             }
 
-            const hasUser = await this.userService.findOne({
+            const hasUser = await this.userService.findUserWithRoles({
                 email: email,
             });
             if (!hasUser) {

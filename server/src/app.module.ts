@@ -22,6 +22,11 @@ import { CloudinaryModule } from './lib/configs/cloudinary/cloudinary.module';
 import { MulterModule } from '@nestjs/platform-express/multer';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { MailerConfigService } from './lib/configs/mailer/mailer.config';
+import { ClassModule } from './modules/class/class.module';
+import { UserClass } from './modules/class/entities/user-class.entity';
+import { Class } from './modules/class/entities/class.entity';
+import { ClassRolesGuard } from './lib/security/guard/class-role.guard';
+import { ClassController } from './modules/class/class.controller';
 
 @Module({
     imports: [
@@ -32,7 +37,7 @@ import { MailerConfigService } from './lib/configs/mailer/mailer.config';
         SequelizeModule.forRootAsync({
             useClass: SequelizeConfigService,
         }),
-        SequelizeModule.forFeature([User, Role, UserRole]),
+        SequelizeModule.forFeature([User, Role, UserRole, UserClass, Class]),
         MailerModule.forRootAsync({
             useClass: MailerConfigService,
         }),
@@ -43,6 +48,7 @@ import { MailerConfigService } from './lib/configs/mailer/mailer.config';
         AuthModule,
         RoleModule,
         CloudinaryModule,
+        ClassModule,
     ],
     controllers: [AppController],
     providers: [
@@ -51,12 +57,16 @@ import { MailerConfigService } from './lib/configs/mailer/mailer.config';
             provide: APP_GUARD,
             useClass: RolesGuard,
         },
+        {
+            provide: APP_GUARD,
+            useClass: ClassRolesGuard,
+        }
     ],
 })
 export class AppModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
             .apply(AuthMiddleware)
-         .forRoutes(UserController);
+            .forRoutes(UserController, ClassController);
     }
 }

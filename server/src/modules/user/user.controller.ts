@@ -1,4 +1,4 @@
-import { Controller, Body, BadRequestException, ParseUUIDPipe} from '@nestjs/common';
+import { Controller, Body, BadRequestException} from '@nestjs/common';
 import { UserService } from './user.service';
 import { Role } from 'src/lib/security/decorators/role.decorator';
 import { HttpStatus } from '@nestjs/common/enums';
@@ -90,7 +90,9 @@ export class UserController {
         
         const isSuccess = await this.userService.updateUser(convertedData, updateDto.userId);
         if (isSuccess[0] === 0){
-            throw new BadRequestException("UpdateFailed");
+            throw new BadRequestException({
+                message: "UpdateFailed"
+            });
         }
         const response : ResponseTemplate<null> ={
             data: null,
@@ -114,7 +116,7 @@ export class UserController {
         : Promise<ResponseTemplate<UserProfileResponse>>
     {
         try {
-            const hasUser = await this.userService.findOne({id: userId});
+            const hasUser = await this.userService.findUserWithRoles({id: userId});
             if (!hasUser){
                 const error : ErrorMessage = {
                     errorCode: ERROR_CODE.USER_NOT_FOUND,

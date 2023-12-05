@@ -1,4 +1,4 @@
-import { Column, Model, DataType, Table, HasMany, BelongsToMany } from 'sequelize-typescript';
+import { Column, Model, DataType, Table, BelongsToMany } from 'sequelize-typescript';
 import { UserRole } from '../user/entities/user-role.entity';
 import { User } from '../user/entities/user.entity';
 
@@ -19,6 +19,4 @@ export class Role extends Model {
     })
     role_name: string;
 
-    @BelongsToMany(() => User, () => UserRole)
-    roles: Role[];
 }

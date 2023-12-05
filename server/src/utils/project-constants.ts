@@ -12,6 +12,9 @@ export const ERROR_CODE = {
     EMAIL_IS_USED: 'EMAIL_IS_USED',
     INVALID_TOKEN :'INVALID_TOKEN',
 
+    // class
+    IS_EXIST_CLASS_NAME : 'IS_EXIST_CLASS_NAME',
+
     // global
     BAD_REQUEST : 'BAD_REQUEST'
 
@@ -26,6 +29,10 @@ export const ERROR_MSG = {
     USERNAME_IS_USED : 'This username is already in used.',
     EMAIL_IS_USED: 'Email is already in use',
     INVALID_TOKEN :'Invalid refresh token',
+
+
+    // class
+    IS_EXIST_CLASS_NAME:'Class name is already in used.',
 
     //global
     BAD_REQUEST : 'BAD_REQUEST'

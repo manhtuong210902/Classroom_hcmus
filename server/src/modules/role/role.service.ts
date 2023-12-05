@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Role } from './role.entity';
 import { RoleType } from 'src/lib/util/constant';
+import { ClassRoleType } from 'src/utils';
 
 @Injectable()
 export class RoleService {
@@ -17,7 +18,7 @@ export class RoleService {
         })
     }
 
-    async findOrCreate(role: RoleType): Promise<[Role,Boolean]>{
+    async findOrCreate(role: RoleType | ClassRoleType): Promise<[Role,Boolean]>{
         
         const userRole =  await this.roleModel.findOrCreate({
             where: {
