@@ -17,7 +17,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { RESET_PASSWORD, VERIFY_EMAIL } from 'src/lib/util/constant/hash-type';
 import { RESET_PASSWORD_TEMPLATE } from 'src/lib/configs/mailer/mailer.template';
-import { ERROR_CODE, ERROR_MSG } from "src/utils/project-constants";
+import { ERROR_CODE, ERROR_MSG } from 'src/utils/project-constants';
 import { RegisterResponse } from './response/register-reponse';
 import { SendResetPasswordDto } from './dto/send-reset-pw.dto';
 
@@ -29,7 +29,7 @@ export class AuthService {
         private readonly jwtService: JwtService,
         private readonly mailerService: MailerService,
         private readonly configService: ConfigService,
-    ) { }
+    ) {}
 
     async checkIsExistedAccount(
         field: string,
@@ -56,19 +56,19 @@ export class AuthService {
                 'email',
                 registerDto.email,
             );
-            
+
             if (isExistedUsername) {
                 throw new BadRequestException({
                     errorCode: ERROR_CODE.USERNAME_IS_USED,
-                    message: ERROR_MSG.USERNAME_IS_USED
-                })
+                    message: ERROR_MSG.USERNAME_IS_USED,
+                });
             }
 
             if (isExistedEmail) {
                 throw new BadRequestException({
                     errorCode: ERROR_CODE.EMAIL_IS_USED,
-                    message: ERROR_MSG.EMAIL_IS_USED
-                })
+                    message: ERROR_MSG.EMAIL_IS_USED,
+                });
             }
 
             registerDto.password = generateHash(registerDto.password);
@@ -81,10 +81,9 @@ export class AuthService {
             await this.sendVerifyEmail(registerDto.email);
 
             const response: RegisterResponse = {
-                isSuccess: true
-            }
+                isSuccess: true,
+            };
             return response;
-
         } catch (error) {
             throw new BadRequestException(error);
         }
@@ -99,8 +98,8 @@ export class AuthService {
             if (!hasUser) {
                 throw new BadRequestException({
                     errorCode: ERROR_CODE.USER_NOT_FOUND,
-                    message: ERROR_MSG.USER_NOT_FOUND
-                })
+                    message: ERROR_MSG.USER_NOT_FOUND,
+                });
             }
             const isRightPassword = await validateHash(
                 loginDto.password,
@@ -109,13 +108,13 @@ export class AuthService {
             if (!isRightPassword) {
                 throw new BadRequestException({
                     errorCode: ERROR_CODE.WRONG_PASSWORD,
-                    message: ERROR_CODE.WRONG_PASSWORD
+                    message: ERROR_CODE.WRONG_PASSWORD,
                 });
             }
             if (!hasUser.is_verified) {
                 throw new BadRequestException({
                     errorCode: ERROR_CODE.USER_NOT_VERIFIED,
-                    message: ERROR_CODE.USER_NOT_VERIFIED
+                    message: ERROR_CODE.USER_NOT_VERIFIED,
                 });
             }
             const tokens = await this.assignTokens(hasUser.id, RoleType.USER);
@@ -137,9 +136,9 @@ export class AuthService {
     }
 
     async googleAuth(
-        googleAuthResponse: GoogleAuthResponse, isExisted: Boolean | User
-    )
-        : Promise<AuthResponse> {
+        googleAuthResponse: GoogleAuthResponse,
+        isExisted: Boolean | User,
+    ): Promise<AuthResponse> {
         let user: User;
 
         if (isExisted instanceof User) {
@@ -148,6 +147,7 @@ export class AuthService {
             const newUser = await this.userService.createUser(
                 {
                     google: googleAuthResponse.email,
+                    email: googleAuthResponse.email,
                     fullname:
                         googleAuthResponse.firstName +
                         ' ' +
@@ -178,9 +178,8 @@ export class AuthService {
 
     async facebookAuth(
         authFacebookResponse: FacebookAuthResponse,
-        isExisted: User | Boolean
-    )
-        : Promise<AuthResponse> {
+        isExisted: User | Boolean,
+    ): Promise<AuthResponse> {
         let user: User;
 
         if (isExisted instanceof User) {
@@ -229,8 +228,8 @@ export class AuthService {
             if (!isVerified) {
                 throw new BadRequestException({
                     errorCode: ERROR_CODE.INVALID_TOKEN,
-                    message: ERROR_MSG.INVALID_TOKEN
-                })
+                    message: ERROR_MSG.INVALID_TOKEN,
+                });
             }
             const requestTokenResponse: RequestTokenResponse =
                 await this.assignTokens(requestTokenDto.userId, RoleType.USER);
@@ -291,19 +290,14 @@ export class AuthService {
         });
     }
 
-    async resetPassword(
-        email: string,
-        token: string,
-        newPassword: string,
-    ) {
-        const isValid = await validateHash(
-            RESET_PASSWORD + email,
-            token,
-        );
+    async resetPassword(email: string, token: string, newPassword: string) {
+        const isValid = await validateHash(RESET_PASSWORD + email, token);
         if (isValid) {
             const user = await this.userService.findUserWithRoles({ email: email });
             if (!user) {
-                throw new BadRequestException({ message: ERROR_CODE.USER_NOT_FOUND })
+                throw new BadRequestException({
+                    message: ERROR_CODE.USER_NOT_FOUND,
+                });
             }
             await this.userService.updateUser(
                 { password: generateHash(newPassword) },
@@ -317,10 +311,7 @@ export class AuthService {
 
     async verifyEmail(email: string, hash: string) {
         try {
-            const isValid = await validateHash(
-                VERIFY_EMAIL + email,
-                hash,
-            );
+            const isValid = await validateHash(VERIFY_EMAIL + email, hash);
             if (!isValid) {
                 throw new BadRequestException({
                     message: 'Invalid verification',
@@ -336,7 +327,10 @@ export class AuthService {
                 });
             }
 
-            await this.userService.updateUser({ is_verified: true }, hasUser.id);
+            await this.userService.updateUser(
+                { is_verified: true },
+                hasUser.id,
+            );
 
             const tokens = await this.assignTokens(hasUser.id, RoleType.USER);
 
