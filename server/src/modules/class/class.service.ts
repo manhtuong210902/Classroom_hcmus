@@ -1,6 +1,6 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Class } from './entities/class.entity';
-import { convertCamelToSnake } from 'src/lib/util/func';
+import { convertCamelToSnake, generateHash } from 'src/lib/util/func';
 import { CreateClassDto } from './dto/create-class.dto';
 import { User } from '../user/entities/user.entity';
 import { ClassRoleType, ERROR_CODE, ERROR_MSG } from 'src/utils';
@@ -9,6 +9,9 @@ import { UserService } from '../user/user.service';
 import { AddUserToClassDto } from './dto/add-user.dto';
 import { parseEnum } from 'src/utils/func';
 import sequelize from 'sequelize';
+import { ConfigService } from '@nestjs/config';
+import { MailerService } from '@nestjs-modules/mailer';
+import { INVITE_CLASS } from 'src/lib/util/constant';
 
 @Injectable()
 export class ClassService {
@@ -17,35 +20,37 @@ export class ClassService {
         private readonly classModel: typeof Class,
         private readonly roleService: RoleService,
         private readonly userService: UserService,
+        private readonly configService: ConfigService,
+        private readonly mailerService: MailerService,
     ) { }
-    
+
     /**
      * Set default role of the class creator is teacher 
      */
-    async createClass(createClassDto: CreateClassDto, user: User): Promise<Class>{
-        
+    async createClass(createClassDto: CreateClassDto, user: User): Promise<Class> {
+
         const isExisted = await this.isExistClassName(createClassDto.name, user.id);
-        if(isExisted){
+        if (isExisted) {
             throw new BadRequestException({
                 message: ERROR_MSG.IS_EXIST_CLASS_NAME,
-                errorCode : ERROR_CODE.IS_EXIST_CLASS_NAME
+                errorCode: ERROR_CODE.IS_EXIST_CLASS_NAME
             })
         }
 
-        const convertedData = convertCamelToSnake({ownerId: user.id, ...createClassDto});
-        
-        const newClass = await this.classModel.create(convertedData);
-        
-        const teacherRole = await this.roleService.findOrCreate(ClassRoleType.TEACHER); 
+        const convertedData = convertCamelToSnake({ ownerId: user.id, ...createClassDto });
 
-        await newClass.$add( 'user_classes', user.id, {through : {role_id : teacherRole[0].id}});
-        
-        return newClass;   
+        const newClass = await this.classModel.create(convertedData);
+
+        const teacherRole = await this.roleService.findOrCreate(ClassRoleType.TEACHER);
+
+        await newClass.$add('user_classes', user.id, { through: { role_id: teacherRole[0].id } });
+
+        return newClass;
     }
 
-    async isExistClassName(name: string, owner: string): Promise<Boolean>{
-        
-        const listClasses : Class[] = await this.classModel.findAll({
+    async isExistClassName(name: string, owner: string): Promise<Boolean> {
+
+        const listClasses: Class[] = await this.classModel.findAll({
             where: {
                 name: name,
                 owner_id: owner
@@ -56,29 +61,52 @@ export class ClassService {
     }
 
 
-    async addUserToClass(addUserToClassDto : AddUserToClassDto){
+    async addUserToClass(addUserToClassDto: AddUserToClassDto) {
         const hasClass = await this.classModel.findOne({
-            where:{
+            where: {
                 id: addUserToClassDto.classId
             }
         })
-        if (!hasClass){
+        if (!hasClass) {
             throw new BadRequestException();
         }
-        
-        const hasUser = await this.userService.findOne({id: addUserToClassDto.userId});
-        if(!hasUser){
+
+        const hasUser = await this.userService.findOne({ id: addUserToClassDto.userId });
+        if (!hasUser) {
             throw new BadRequestException();
         }
         const role = addUserToClassDto.isTeacher ? ClassRoleType.TEACHER : ClassRoleType.STUDENT;
         const userRole = await this.roleService.findOrCreate(role);
 
-        await hasClass.$add('user_classes', addUserToClassDto.userId,{through: {role_id : userRole[0].id}})
+        await hasClass.$add('user_classes', addUserToClassDto.userId, { through: { role_id: userRole[0].id } })
 
     }
 
 
-    async getAllUsersInClass(classId: string){
+    async getLinkInviteClass(classId: string) {
+        const callbackUrl =
+            this.configService.get<string>('CLIENT_URL') +
+            `/invite-class/${classId}`;
+        return callbackUrl;
+    }
+
+
+    async sendMailInviteClass(classId: string, fromUser: string, email: string, isTeacher: boolean) {
+        const token = generateHash(INVITE_CLASS + classId + email + isTeacher);
+
+        const callbackUrl =
+            this.configService.get<string>('CLIENT_URL') +
+            `/invite-class?token=${token}&class_id=${classId}&email=${email}`;
+
+        this.mailerService.sendMail({
+            to: email,
+            subject: 'Invite Class 🏫',
+            html: `<h1>Welcome</h1><br/><h4>${fromUser} has invited you to class</h4><br/><h4>Click here 👉 to join class: <a href=${callbackUrl}>Click here</a></h4>`,
+        });
+    }
+
+
+    async getAllUsersInClass(classId: string) {
         const result = await this.classModel.sequelize.query(
             `SELECT users.id, users.gender, users.address, 
                 users.img_url as imgUrl, users.fullname, 
@@ -91,14 +119,14 @@ export class ClassService {
             WHERE classes.id = :classId;
             `,
             {
-                replacements: {classId: classId},
+                replacements: { classId: classId },
                 type: sequelize.QueryTypes.SELECT
             }
         )
         return result;
     }
 
-    async getAllClassesOfUSer(userId: string){
+    async getAllClassesOfUSer(userId: string) {
         const result = await this.classModel.sequelize.query(
             `
             SELECT classes.id, classes.title, classes.name
