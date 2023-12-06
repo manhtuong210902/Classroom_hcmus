@@ -63,6 +63,10 @@ export function convertCamelToSnake(obj: any): any {
   }, {});
 }
 
+export function convertSnakeToCamel(snakeCaseString: string): string {
+  return snakeCaseString.replace(/(_\w)/g, match => match[1].toUpperCase());
+}
+
 export function removeNullValues(obj: Object): Object {
   const newObj: Object = {};
   

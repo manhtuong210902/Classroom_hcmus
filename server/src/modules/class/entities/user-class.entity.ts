@@ -24,6 +24,8 @@ export class UserClass extends Model<UserClass>{
     class_id: string;
 
     @ForeignKey(() => Role)
-    @Column
+    @Column({
+        type: DataType.UUID,
+    })
     role_id: string;
 }

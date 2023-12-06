@@ -38,12 +38,13 @@ export class UserService {
 
     async findUserInClassWithRole(userId: string, classId: string){
         const result = await this.userModel.sequelize.query(
-                'SELECT '+
-                'user_classes.role_id , classes.owner_id as owner ' +
-                'FROM users ' +
-                'JOIN (user_classes JOIN classes ON classes.id = user_classes.class_id) ' + 
-                'ON users.id = user_classes.user_id AND classes.id = :classId ' + 
-                'WHERE users.id = :userId;',
+                `SELECT 
+                user_classes.role_id , classes.owner_id as owner, roles.role_name 
+                FROM roles
+                JOIN users ON users.id = :userId 
+                JOIN (user_classes JOIN classes ON classes.id = user_classes.class_id) 
+                ON users.id = user_classes.user_id AND classes.id = :classId 
+                WHERE roles.id = user_classes.role_id;`,
             {
                 replacements: {classId: classId, userId: userId},
                 type: sequelize.QueryTypes.SELECT

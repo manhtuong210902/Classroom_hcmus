@@ -8,6 +8,7 @@ import { RoleService } from '../role/role.service';
 import { UserService } from '../user/user.service';
 import { AddUserToClassDto } from './dto/add-user.dto';
 import { parseEnum } from 'src/utils/func';
+import sequelize from 'sequelize';
 
 @Injectable()
 export class ClassService {
@@ -76,5 +77,43 @@ export class ClassService {
 
     }
 
+
+    async getAllUsersInClass(classId: string){
+        const result = await this.classModel.sequelize.query(
+            `SELECT users.id, users.gender, users.address, 
+                users.img_url as imgUrl, users.fullname, 
+                CASE WHEN roles.role_name = 'TEACHER' THEN true ELSE false END as isteacher
+            FROM users
+            JOIN user_classes ON user_classes.user_id = users.id
+            JOIN classes ON classes.id = user_classes.class_id
+            JOIN user_roles ON user_roles.user_id = users.id
+            JOIN roles ON roles.id = user_classes.role_id
+            WHERE classes.id = :classId;
+            `,
+            {
+                replacements: {classId: classId},
+                type: sequelize.QueryTypes.SELECT
+            }
+        )
+        return result;
+    }
+
+    async getAllClassesOfUSer(userId: string){
+        const result = await this.classModel.sequelize.query(
+            `
+            SELECT classes.id, classes.title, classes.name
+            FROM classes, user_classes
+            JOIN users ON users.id = user_classes.user_id AND users.id = :userId
+            WHERE classes.id = user_classes.class_id
+            `,
+            {
+                replacements: {
+                    userId: userId
+                },
+                type: sequelize.QueryTypes.SELECT
+            }
+        )
+        return result;
+    }
 
 }
