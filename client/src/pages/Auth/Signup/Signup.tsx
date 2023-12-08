@@ -36,11 +36,11 @@ export default function Signup() {
         }
 
         if (res.statusCode === 201) {
-            toast.info(res.data.message);
+            toast.info(res.message);
             navigate(routes.LOGIN);
             return;
         } else {
-            toast.error(res.data.message);
+            toast.error(res.message);
             return;
         }
     }
