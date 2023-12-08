@@ -1,2 +1,3 @@
 export const ACCESS_TOKEN_EXPIRED_TIME = '1d'
 export const REFRESH_TOKEN_EXPIRED_TIME = '30d'
+export const INVITE_CLASS_TOKEN_EXPIRED_TIME = '120d'

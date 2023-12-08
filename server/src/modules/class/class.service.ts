@@ -1,6 +1,6 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Class } from './entities/class.entity';
-import { convertCamelToSnake, generateHash } from 'src/lib/util/func';
+import { convertCamelToSnake, generateHash, validateHash } from 'src/lib/util/func';
 import { CreateClassDto } from './dto/create-class.dto';
 import { User } from '../user/entities/user.entity';
 import { ClassRoleType, ERROR_CODE, ERROR_MSG } from 'src/utils';
@@ -60,6 +60,21 @@ export class ClassService {
         return listClasses.length !== 0;
     }
 
+    async isExistClassId(classId: string): Promise<Boolean> {
+        try {
+
+            const _class: Class = await this.classModel.findOne({
+                where: {
+                    id: classId
+                },
+            })
+
+            return _class !== null;
+        } catch(err) {
+            throw new BadRequestException({message: 'Class ID doesnt exist'})
+        }
+    }
+
 
     async addUserToClass(addUserToClassDto: AddUserToClassDto) {
         const hasClass = await this.classModel.findOne({
@@ -84,10 +99,29 @@ export class ClassService {
 
 
     async getLinkInviteClass(classId: string) {
+        const token = generateHash(INVITE_CLASS + classId);
+
         const callbackUrl =
             this.configService.get<string>('CLIENT_URL') +
-            `/invite-class/${classId}`;
+            `/invite-class?token=${token}&class_id=${classId}`;
         return callbackUrl;
+    }
+
+    async verifyLinkInviteAndAdd(token: string, classId: string, userId: string) {
+        const isValid = validateHash(INVITE_CLASS + classId, token);
+
+        if (!isValid) {
+            throw new UnauthorizedException({
+                errorCode: ERROR_CODE.INVALID_TOKEN,
+                message: ERROR_MSG.INVALID_TOKEN,
+            });
+        }
+
+        await this.addUserToClass({
+            userId, classId, isTeacher: false
+        })
+
+        return true;
     }
 
 
