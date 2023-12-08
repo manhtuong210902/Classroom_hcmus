@@ -70,8 +70,8 @@ export class ClassService {
             })
 
             return _class !== null;
-        } catch(err) {
-            throw new BadRequestException({message: 'Class ID doesnt exist'})
+        } catch (err) {
+            throw new BadRequestException({ message: 'Class ID doesnt exist' })
         }
     }
 
@@ -125,7 +125,7 @@ export class ClassService {
     }
 
 
-    async sendMailInviteClass(classId: string, fromUser: string, email: string, isTeacher: boolean) {
+    async sendMailInviteClass(classId: string, fromUser: string, email: string, isTeacher: boolean): Promise<Boolean> {
         const token = generateHash(INVITE_CLASS + classId + email + isTeacher);
 
         const callbackUrl =
@@ -137,6 +137,39 @@ export class ClassService {
             subject: 'Invite Class 🏫',
             html: `<h1>Welcome</h1><br/><h4>${fromUser} has invited you to class</h4><br/><h4>Click here 👉 to join class: <a href=${callbackUrl}>Click here</a></h4>`,
         });
+
+        return true;
+    }
+
+    async verifyMailInviteClass(token: string, classId: string, userId: string, email: string) {
+        let isTeacher = false;
+        const isValid = validateHash(INVITE_CLASS + classId + email + isTeacher, token);
+
+        if (isValid) {
+            await this.addUserToClass({
+                userId, classId, isTeacher
+            })
+
+            return true;
+        }
+
+        isTeacher = true;
+        const isValidTeacher = validateHash(INVITE_CLASS + classId + email + isTeacher, token);
+
+        if (isValidTeacher) {
+            await this.addUserToClass({
+                userId, classId, isTeacher
+            })
+
+            return true;
+        }
+
+        if (!isValid && !isValidTeacher) {
+            throw new UnauthorizedException({
+                errorCode: ERROR_CODE.INVALID_TOKEN,
+                message: ERROR_MSG.INVALID_TOKEN,
+            });
+        }
     }
 
 

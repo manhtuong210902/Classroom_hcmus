@@ -147,4 +147,36 @@ export class ClassController {
         }
         return response
     }
+
+    //send mail to invite class
+    @HttpCode(HttpStatus.OK)
+    @Post('/send-mail-invite')
+    @Role(RoleType.USER)
+    async sendMailInviteClass(@Body() body): Promise<ResponseTemplate<Object>> {
+        const isSuccess = await this.classService.sendMailInviteClass(body.classId, body.fullname, body.email, body.isTeacher);
+
+        const response: ResponseTemplate<Object> = {
+            data: { isSuccess },
+            message: 'Successfully',
+            statusCode: HttpStatus.OK
+        }
+        return response
+    }
+
+    //verify mail invite class
+    @HttpCode(HttpStatus.OK)
+    @Post('/verify-mail-invite')
+    @Role(RoleType.USER)
+    async verifyMailInviteClass(@Body() body): Promise<ResponseTemplate<Object>> {
+        const isSuccess = await this.classService.verifyMailInviteClass(body.token, body.classId, body.userId, body.email);
+
+        const response: ResponseTemplate<Object> = {
+            data: { isSuccess },
+            message: 'Successfully',
+            statusCode: HttpStatus.OK
+        }
+        return response
+    }
+
+
 }
