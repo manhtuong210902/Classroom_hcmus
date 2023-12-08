@@ -11,5 +11,11 @@ export class CreateClassResponse {
     title : string;
 
     @ApiProperty()
+    subject: string;
+
+    @ApiProperty()
+    description : string;
+
+    @ApiProperty()
     owner:  string;
 }

@@ -16,11 +16,15 @@ export class UserClass extends Model<UserClass>{
     id: string;
     
     @ForeignKey(() => User)
-    @Column
+    @Column({
+        type: DataType.UUID,
+    })
     user_id: string;
     
     @ForeignKey(() => Class)
-    @Column
+    @Column({
+        type: DataType.UUID,
+    })
     class_id: string;
 
     @ForeignKey(() => Role)

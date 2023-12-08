@@ -20,8 +20,18 @@ export class Class extends Model<Class> {
     @Column
     title : string;
 
-    @Column
+    @Column({
+        type: DataType.UUID,
+    })
     owner_id: string;
+
+    @Column
+    subject: string;
+
+    @Column({
+        allowNull: true,
+    })
+    description: string;
 
     @Column({
         defaultValue: DataType.NOW,

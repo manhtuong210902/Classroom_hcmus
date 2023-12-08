@@ -15,4 +15,7 @@ export class UserOfClassResponse {
 
     @ApiProperty()
     imgUrl : string;
+
+    @ApiProperty()
+    isteacher: Boolean
 }
