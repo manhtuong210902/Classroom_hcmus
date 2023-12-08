@@ -17,5 +17,11 @@ export class UserOfClassResponse {
     imgUrl : string;
 
     @ApiProperty()
-    isteacher: Boolean
+    isTeacher: Boolean
+
+    @ApiProperty()
+    isCreator: Boolean
+
+    @ApiProperty()
+    ownerId: string
 }

@@ -7,6 +7,7 @@ import {
 import { Class } from './entities/class.entity';
 import {
     convertCamelToSnake,
+    convertSnakeToCamel,
     generateHash,
     validateHash,
 } from 'src/lib/util/func';
@@ -220,9 +221,12 @@ export class ClassService {
 
     async getAllUsersInClass(classId: string) {
         const result = await this.classModel.sequelize.query(
-            `SELECT users.id, users.gender, users.address, 
+            `SELECT 
+                users.id, users.gender, users.address, 
                 users.img_url as imgUrl, users.fullname, 
-                CASE WHEN roles.role_name = 'TEACHER' THEN true ELSE false END as isteacher
+                classes.owner_id AS owner_id,
+                CASE WHEN roles.role_name = 'TEACHER' THEN true ELSE false END as is_teacher,
+                CASE WHEN classes.owner_id = users.id THEN true ELSE false END as is_creator
             FROM users
             JOIN user_classes ON user_classes.user_id = users.id
             JOIN classes ON classes.id = user_classes.class_id
@@ -235,16 +239,22 @@ export class ClassService {
                 type: sequelize.QueryTypes.SELECT,
             },
         );
-        return result;
+        return convertSnakeToCamel(result);
     }
 
     async getAllClassesOfUSer(userId: string) {
         const result = await this.classModel.sequelize.query(
             `
-            SELECT classes.id, classes.title, classes.name, classes.subject, classes.description, users.fullname AS creator, users.img_url AS avatar
+            SELECT 
+                classes.id, classes.title, classes.name, classes.subject, classes.description, classes.owner_id as owner_id,
+                users.fullname AS creator, users.img_url AS avatar,
+                CASE WHEN roles.role_name = 'TEACHER' THEN true ELSE false END as is_teacher,
+                CASE WHEN classes.owner_id = :userId THEN true ELSE false END as is_creator
             FROM classes
             JOIN user_classes ON classes.id = user_classes.class_id
             JOIN users ON users.id = user_classes.user_id
+            JOIN user_roles ON user_roles.user_id = users.id
+            JOIN roles ON roles.id = user_classes.role_id
             JOIN users AS owner ON owner.id = classes.owner_id
             WHERE classes.id = user_classes.class_id AND users.id = :userId;
             `,
@@ -255,6 +265,6 @@ export class ClassService {
                 type: sequelize.QueryTypes.SELECT,
             },
         );
-        return result;
+        return convertSnakeToCamel(result);
     }
 }

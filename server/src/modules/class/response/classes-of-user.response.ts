@@ -15,4 +15,14 @@ export class ClassOfUserResponse {
 
     @ApiProperty()
     avatar: string;
+
+    @ApiProperty()
+    isTeacher: boolean;
+
+    @ApiProperty()
+    isCreator: boolean;
+
+    @ApiProperty()
+    ownerId: string;
+
 }

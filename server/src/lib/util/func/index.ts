@@ -63,9 +63,25 @@ export function convertCamelToSnake(obj: any): any {
   }, {});
 }
 
-export function convertSnakeToCamel(snakeCaseString: string): string {
-  return snakeCaseString.replace(/(_\w)/g, match => match[1].toUpperCase());
+export function convertSnakeToCamel(obj: any): any {
+  if (obj !== null && typeof obj === 'object') {
+    if (Array.isArray(obj)) {
+      return obj.map(convertSnakeToCamel);
+    } else {
+      const camelObj: any = {};
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+          camelObj[camelKey] = convertSnakeToCamel(obj[key]);
+        }
+      }
+      return camelObj;
+    }
+  } else {
+    return obj;
+  }
 }
+
 
 export function removeNullValues(obj: Object): Object {
   const newObj: Object = {};
