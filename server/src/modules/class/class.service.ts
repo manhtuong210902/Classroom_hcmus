@@ -1,14 +1,25 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+    BadRequestException,
+    Inject,
+    Injectable,
+    UnauthorizedException,
+} from '@nestjs/common';
 import { Class } from './entities/class.entity';
-import { convertCamelToSnake } from 'src/lib/util/func';
+import {
+    convertCamelToSnake,
+    generateHash,
+    validateHash,
+} from 'src/lib/util/func';
 import { CreateClassDto } from './dto/create-class.dto';
 import { User } from '../user/entities/user.entity';
 import { ClassRoleType, ERROR_CODE, ERROR_MSG } from 'src/utils';
 import { RoleService } from '../role/role.service';
 import { UserService } from '../user/user.service';
 import { AddUserToClassDto } from './dto/add-user.dto';
-import { parseEnum } from 'src/utils/func';
 import sequelize from 'sequelize';
+import { ConfigService } from '@nestjs/config';
+import { MailerService } from '@nestjs-modules/mailer';
+import { INVITE_CLASS } from 'src/lib/util/constant';
 
 @Injectable()
 export class ClassService {
@@ -17,6 +28,8 @@ export class ClassService {
         private readonly classModel: typeof Class,
         private readonly roleService: RoleService,
         private readonly userService: UserService,
+        private readonly configService: ConfigService,
+        private readonly mailerService: MailerService,
     ) {}
 
     /**
@@ -66,6 +79,20 @@ export class ClassService {
         return listClasses.length !== 0;
     }
 
+    async isExistClassId(classId: string): Promise<Boolean> {
+        try {
+            const _class: Class = await this.classModel.findOne({
+                where: {
+                    id: classId,
+                },
+            });
+
+            return _class !== null;
+        } catch (err) {
+            throw new BadRequestException({ message: 'Class ID doesnt exist' });
+        }
+    }
+
     async addUserToClass(addUserToClassDto: AddUserToClassDto) {
         const hasClass = await this.classModel.findOne({
             where: {
@@ -92,28 +119,123 @@ export class ClassService {
         });
     }
 
-    async getAllUsersInClass(classId: string) {
-        try {
-            const result = await this.classModel.sequelize.query(
-                `SELECT users.id, users.gender, users.address, 
-                    users.img_url as imgUrl, users.fullname, 
-                    CASE WHEN roles.role_name = 'TEACHER' THEN true ELSE false END as isteacher
-                FROM users
-                JOIN user_classes ON user_classes.user_id = users.id
-                JOIN classes ON classes.id = user_classes.class_id
-                JOIN user_roles ON user_roles.user_id = users.id
-                JOIN roles ON roles.id = user_classes.role_id
-                WHERE classes.id = :classId;
-                `,
-                {
-                    replacements: { classId: classId },
-                    type: sequelize.QueryTypes.SELECT,
-                },
-            );
-            return result;
-        } catch (error) {
-            throw new BadRequestException(error);
+    async getLinkInviteClass(classId: string) {
+        const token = generateHash(INVITE_CLASS + classId);
+
+        const callbackUrl =
+            this.configService.get<string>('CLIENT_URL') +
+            `/invite-class?token=${token}&class_id=${classId}`;
+        return callbackUrl;
+    }
+
+    async verifyLinkInviteAndAdd(
+        token: string,
+        classId: string,
+        userId: string,
+    ) {
+        const isValid = validateHash(INVITE_CLASS + classId, token);
+
+        if (!isValid) {
+            throw new UnauthorizedException({
+                errorCode: ERROR_CODE.INVALID_TOKEN,
+                message: ERROR_MSG.INVALID_TOKEN,
+            });
         }
+
+        await this.addUserToClass({
+            userId,
+            classId,
+            isTeacher: false,
+        });
+
+        return true;
+    }
+
+    async sendMailInviteClass(
+        classId: string,
+        fromUser: string,
+        email: string,
+        isTeacher: boolean,
+    ): Promise<Boolean> {
+        const token = generateHash(INVITE_CLASS + classId + email + isTeacher);
+
+        const callbackUrl =
+            this.configService.get<string>('CLIENT_URL') +
+            `/invite-class?token=${token}&class_id=${classId}&email=${email}`;
+
+        this.mailerService.sendMail({
+            to: email,
+            subject: 'Invite Class 🏫',
+            html: `<h1>Welcome</h1><br/><h4>${fromUser} has invited you to class</h4><br/><h4>Click here 👉 to join class: <a href=${callbackUrl}>Click here</a></h4>`,
+        });
+
+        return true;
+    }
+
+    async verifyMailInviteClass(
+        token: string,
+        classId: string,
+        userId: string,
+        email: string,
+    ) {
+        let isTeacher = false;
+        const isValid = validateHash(
+            INVITE_CLASS + classId + email + isTeacher,
+            token,
+        );
+
+        if (isValid) {
+            await this.addUserToClass({
+                userId,
+                classId,
+                isTeacher,
+            });
+
+            return true;
+        }
+
+        isTeacher = true;
+        const isValidTeacher = validateHash(
+            INVITE_CLASS + classId + email + isTeacher,
+            token,
+        );
+
+        if (isValidTeacher) {
+            await this.addUserToClass({
+                userId,
+                classId,
+                isTeacher,
+            });
+
+            return true;
+        }
+
+        if (!isValid && !isValidTeacher) {
+            throw new UnauthorizedException({
+                errorCode: ERROR_CODE.INVALID_TOKEN,
+                message: ERROR_MSG.INVALID_TOKEN,
+            });
+        }
+    }
+
+    async getAllUsersInClass(classId: string) {
+        const result = await this.classModel.sequelize.query(
+            `SELECT users.id, users.gender, users.address, 
+                users.img_url as imgUrl, users.fullname, 
+                CASE WHEN roles.role_name = 'TEACHER' THEN true ELSE false END as isteacher
+            FROM users
+            JOIN user_classes ON user_classes.user_id = users.id
+            JOIN classes ON classes.id = user_classes.class_id
+            JOIN user_roles ON user_roles.user_id = users.id
+            JOIN roles ON roles.id = user_classes.role_id
+            WHERE classes.id = :classId;
+            `,
+            {
+                replacements: { classId: classId },
+                type: sequelize.QueryTypes.SELECT,
+            },
+        );
+        return result;
     }
 
     async getAllClassesOfUSer(userId: string) {

@@ -1,2 +1,3 @@
 export const VERIFY_EMAIL = 'VERIFY_EMAIL';
 export const RESET_PASSWORD = 'RESET_PASSWORD';
+export const INVITE_CLASS = 'INVITE_CLASS';

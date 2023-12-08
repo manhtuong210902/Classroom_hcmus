@@ -22,7 +22,7 @@ export class AuthMiddleware implements NestMiddleware {
         let roles;
 
         if (!bearerHeader || !accessToken || bearerHeader.split(' ')[0] !== 'Bearer') {
-            next();
+            return next();
         }
 
         try {

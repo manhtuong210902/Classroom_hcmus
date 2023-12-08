@@ -11,6 +11,7 @@ export class ClassAuthMiddleware implements NestMiddleware {
 
     async use(req: Request | any, res: Response, next: () => void) {
         const classId = req.params.classId || req.body.classId || req.query.class_id;
+
         if (!classId) {
             next();
             return;
