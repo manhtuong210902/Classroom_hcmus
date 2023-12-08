@@ -17,68 +17,82 @@ export class ClassService {
         private readonly classModel: typeof Class,
         private readonly roleService: RoleService,
         private readonly userService: UserService,
-    ) { }
-    
+    ) {}
+
     /**
-     * Set default role of the class creator is teacher 
+     * Set default role of the class creator is teacher
      */
-    async createClass(createClassDto: CreateClassDto, user: User): Promise<Class>{
-        
-        const isExisted = await this.isExistClassName(createClassDto.name, user.id);
-        if(isExisted){
+    async createClass(
+        createClassDto: CreateClassDto,
+        user: User,
+    ): Promise<Class> {
+        const isExisted = await this.isExistClassName(
+            createClassDto.name,
+            user.id,
+        );
+        if (isExisted) {
             throw new BadRequestException({
                 message: ERROR_MSG.IS_EXIST_CLASS_NAME,
-                errorCode : ERROR_CODE.IS_EXIST_CLASS_NAME
-            })
+                errorCode: ERROR_CODE.IS_EXIST_CLASS_NAME,
+            });
         }
 
-        const convertedData = convertCamelToSnake({ownerId: user.id, ...createClassDto});
-        
-        const newClass = await this.classModel.create(convertedData);
-        
-        const teacherRole = await this.roleService.findOrCreate(ClassRoleType.TEACHER); 
+        const convertedData = convertCamelToSnake({
+            ownerId: user.id,
+            ...createClassDto,
+        });
 
-        await newClass.$add( 'user_classes', user.id, {through : {role_id : teacherRole[0].id}});
-        
-        return newClass;   
+        const newClass = await this.classModel.create(convertedData);
+
+        const teacherRole = await this.roleService.findOrCreate(
+            ClassRoleType.TEACHER,
+        );
+
+        await newClass.$add('user_classes', user.id, {
+            through: { role_id: teacherRole[0].id },
+        });
+
+        return newClass;
     }
 
-    async isExistClassName(name: string, owner: string): Promise<Boolean>{
-        
-        const listClasses : Class[] = await this.classModel.findAll({
+    async isExistClassName(name: string, owner: string): Promise<Boolean> {
+        const listClasses: Class[] = await this.classModel.findAll({
             where: {
                 name: name,
-                owner_id: owner
+                owner_id: owner,
             },
-        })
+        });
 
         return listClasses.length !== 0;
     }
 
-
-    async addUserToClass(addUserToClassDto : AddUserToClassDto){
+    async addUserToClass(addUserToClassDto: AddUserToClassDto) {
         const hasClass = await this.classModel.findOne({
-            where:{
-                id: addUserToClassDto.classId
-            }
-        })
-        if (!hasClass){
+            where: {
+                id: addUserToClassDto.classId,
+            },
+        });
+        if (!hasClass) {
             throw new BadRequestException();
         }
-        
-        const hasUser = await this.userService.findOne({id: addUserToClassDto.userId});
-        if(!hasUser){
+
+        const hasUser = await this.userService.findOne({
+            id: addUserToClassDto.userId,
+        });
+        if (!hasUser) {
             throw new BadRequestException();
         }
-        const role = addUserToClassDto.isTeacher ? ClassRoleType.TEACHER : ClassRoleType.STUDENT;
+        const role = addUserToClassDto.isTeacher
+            ? ClassRoleType.TEACHER
+            : ClassRoleType.STUDENT;
         const userRole = await this.roleService.findOrCreate(role);
 
-        await hasClass.$add('user_classes', addUserToClassDto.userId,{through: {role_id : userRole[0].id}})
-
+        await hasClass.$add('user_classes', addUserToClassDto.userId, {
+            through: { role_id: userRole[0].id },
+        });
     }
 
-
-    async getAllUsersInClass(classId: string){
+    async getAllUsersInClass(classId: string) {
         try {
             const result = await this.classModel.sequelize.query(
                 `SELECT users.id, users.gender, users.address, 
@@ -92,22 +106,20 @@ export class ClassService {
                 WHERE classes.id = :classId;
                 `,
                 {
-                    replacements: {classId: classId},
-                    type: sequelize.QueryTypes.SELECT
-                }
-            )
+                    replacements: { classId: classId },
+                    type: sequelize.QueryTypes.SELECT,
+                },
+            );
             return result;
-
         } catch (error) {
             throw new BadRequestException(error);
         }
-        
     }
 
-    async getAllClassesOfUSer(userId: string){
+    async getAllClassesOfUSer(userId: string) {
         const result = await this.classModel.sequelize.query(
             `
-            SELECT classes.id, classes.title, classes.name, classes.subject, users.fullname AS creator, users.img_url AS avatar
+            SELECT classes.id, classes.title, classes.name, classes.subject, classes.description, users.fullname AS creator, users.img_url AS avatar
             FROM classes
             JOIN user_classes ON classes.id = user_classes.class_id
             JOIN users ON users.id = user_classes.user_id
@@ -116,12 +128,11 @@ export class ClassService {
             `,
             {
                 replacements: {
-                    userId: userId
+                    userId: userId,
                 },
-                type: sequelize.QueryTypes.SELECT
-            }
-        )
+                type: sequelize.QueryTypes.SELECT,
+            },
+        );
         return result;
     }
-
 }

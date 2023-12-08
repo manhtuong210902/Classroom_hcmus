@@ -1,13 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@src/components/ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "@src/components/ui/popover";
 import { getFirstCharacter } from "@src/utils/lib";
+import { ClassInfo } from "@src/utils/types";
 import { MoreVertical } from "lucide-react";
-
-export type ClassInfo = {
-    name: string;
-    creator: string;
-    avatar: string;
-};
 
 const ClassItem = ({ item }: { item: ClassInfo }) => {
     return (
@@ -31,7 +26,7 @@ const ClassItem = ({ item }: { item: ClassInfo }) => {
                 <span className="text-sm">{item.creator}</span>
                 <div className="absolute right-5 top-full -translate-y-1/2">
                     <Avatar>
-                        <AvatarImage src={item.avatar} />
+                        <AvatarImage src={item?.avatar} />
                         <AvatarFallback className="font-semibold text-primary">
                             {getFirstCharacter(item.creator)}
                         </AvatarFallback>

@@ -87,3 +87,10 @@ export const resetPasswordSchema = z
             path: ["confirmPassword"],
         }
     );
+
+export const createClassSchema = z.object({
+    name: z.string().min(1, { message: "Class name is required field" }),
+    title: z.string(),
+    description: z.string(),
+    subject: z.string(),
+});

@@ -13,3 +13,19 @@ export interface UserInfo {
     address?: string;
     gender?: string;
 }
+
+export interface ClassInfo {
+    id: string;
+    description?: string;
+    name: string;
+    owner: string;
+    subject?: string;
+    title?: string;
+    creator: string;
+    avatar?: string;
+}
+
+export interface MessageInfo {
+    statusCode: number;
+    message: string;
+}
