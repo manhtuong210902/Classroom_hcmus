@@ -40,11 +40,13 @@ export class ClassController {
             owner: newClass.owner_id,
             name: newClass.name,
             title: newClass.title,
+            description: newClass.description,
+            subject: newClass.subject
         }
 
         const response: ResponseTemplate<CreateClassResponse> = {
             data: createClassResponse,
-            message: "Create a new class successfully",
+            message: `Create a class ${newClass.name} successfully`,
             statusCode: HttpStatus.CREATED
         }
 
@@ -62,7 +64,7 @@ export class ClassController {
     }
 
     @HttpCode(HttpStatus.OK)
-    @Get('/list-users')
+    @Get('/users')
     @Role(RoleType.USER)
     @ClassRole([ClassRoleType.STUDENT, ClassRoleType.TEACHER])
     @ApiExtraModels(UserOfClassResponse)

@@ -11,5 +11,8 @@ export class ClassOfUserResponse {
     name : string;
 
     @ApiProperty()
-    isteacher: boolean;
+    creator: string;
+
+    @ApiProperty()
+    avatar: string;
 }

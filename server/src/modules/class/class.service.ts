@@ -163,10 +163,12 @@ export class ClassService {
     async getAllClassesOfUSer(userId: string) {
         const result = await this.classModel.sequelize.query(
             `
-            SELECT classes.id, classes.title, classes.name
-            FROM classes, user_classes
-            JOIN users ON users.id = user_classes.user_id AND users.id = :userId
-            WHERE classes.id = user_classes.class_id
+            SELECT classes.id, classes.title, classes.name, classes.subject, users.fullname AS creator, users.img_url AS avatar
+            FROM classes
+            JOIN user_classes ON classes.id = user_classes.class_id
+            JOIN users ON users.id = user_classes.user_id
+            JOIN users AS owner ON owner.id = classes.owner_id
+            WHERE classes.id = user_classes.class_id AND users.id = :userId;
             `,
             {
                 replacements: {

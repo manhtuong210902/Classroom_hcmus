@@ -1,4 +1,4 @@
-import { NestMiddleware, Injectable} from '@nestjs/common';
+import { NestMiddleware, Injectable, BadRequestException} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { UserService } from 'src/modules/user/user.service';
 import { ClassRoleType } from 'src/utils';
@@ -23,7 +23,7 @@ export class ClassAuthMiddleware implements NestMiddleware {
                 req.classRoles.push(ClassRoleType.OWNER);
             }
         } catch (error) {
-            console.log(error)
+            throw new BadRequestException(error)
         }
         next();
     }

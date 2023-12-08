@@ -11,4 +11,12 @@ export class CreateClassDto{
     @IsString()
     @IsNotEmpty({"message": "Class title is required"})
     title: string;
+
+    @ApiProperty()
+    @IsString()
+    description: string;
+
+    @ApiProperty()
+    @IsString()
+    subject: string;
 }
