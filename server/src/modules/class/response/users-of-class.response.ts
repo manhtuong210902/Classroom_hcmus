@@ -17,11 +17,16 @@ export class UserOfClassResponse {
     imgUrl : string;
 
     @ApiProperty()
-    isTeacher: Boolean
-
-    @ApiProperty()
     isCreator: Boolean
 
     @ApiProperty()
     ownerId: string
+}
+
+export class ListUserOfClassResponse{
+    @ApiProperty()
+    listTeachers: Array<UserOfClassResponse>;
+
+    @ApiProperty()
+    listStudents: Array<UserOfClassResponse>;
 }

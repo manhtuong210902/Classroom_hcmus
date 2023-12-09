@@ -11,7 +11,7 @@ import { AddUserToClassDto } from './dto/add-user.dto';
 import { ClassRole } from 'src/lib/security/decorators/class-role.decorator';
 import { ClassRoleType } from 'src/utils';
 import { ClassOfUserResponse } from './response/classes-of-user.response';
-import { UserOfClassResponse } from './response/users-of-class.response';
+import { ListUserOfClassResponse } from './response/users-of-class.response';
 import { SendMailInviteDto } from './dto/send-mail-invite.dto';
 import { VerifyMailInviteDto } from './dto/verify-mail-invite.dto';
 
@@ -60,22 +60,22 @@ export class ClassController {
     @Get('/users')
     @Role(RoleType.USER)
     @ClassRole([ClassRoleType.STUDENT, ClassRoleType.TEACHER])
-    @ApiExtraModels(UserOfClassResponse)
+    @ApiExtraModels(ListUserOfClassResponse)
     @ApiResponse({
         status: HttpStatus.OK,
         schema: {
-            type: 'array',
-            items: {
-                $ref: getSchemaPath(UserOfClassResponse),
-            }
+            $ref: getSchemaPath(ListUserOfClassResponse),
         },
     })
     async getAllUsersInClass(@Query() query)
-        : Promise<ResponseTemplate<Object[]>> {
+        : Promise<ResponseTemplate<Object>> {
         const classId = query.class_id;
-        let data: Object[] = await this.classService.getAllUsersInClass(classId);
-        const response: ResponseTemplate<Object[]> = {
-            data: data,
+        let data: any[] = await this.classService.getAllUsersInClass(classId);
+        
+        const dataResponse : ListUserOfClassResponse = this.classService.listUSersOfClass(data);
+        
+        const response: ResponseTemplate<Object> = {
+            data: dataResponse,
             message: 'Success',
             statusCode: HttpStatus.OK
         }

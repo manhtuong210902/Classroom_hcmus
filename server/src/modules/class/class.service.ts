@@ -21,6 +21,7 @@ import sequelize from 'sequelize';
 import { ConfigService } from '@nestjs/config';
 import { MailerService } from '@nestjs-modules/mailer';
 import { INVITE_CLASS } from 'src/lib/util/constant';
+import { ListUserOfClassResponse } from './response/users-of-class.response';
 
 @Injectable()
 export class ClassService {
@@ -240,6 +241,26 @@ export class ClassService {
             },
         );
         return convertSnakeToCamel(result);
+    }
+
+    listUSersOfClass(data) : ListUserOfClassResponse {
+        let listTeachers = [];
+        let listStudents = [];
+        for(let i = 0; i < data.length; i++){
+            if(data[i].isTeacher){
+                delete data[i].isTeacher;
+                listTeachers.push(data[i]);
+            }
+            else{
+                delete data[i].isTeacher;
+                listStudents.push(data[i]);
+            }
+        }
+        const dataResponse : ListUserOfClassResponse = {
+            listTeachers,
+            listStudents
+        }
+        return dataResponse;
     }
 
     async getAllClassesOfUSer(userId: string) {
