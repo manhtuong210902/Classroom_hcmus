@@ -44,6 +44,8 @@ export const createClass = async (params: any, dispatch: any, currentUser: UserI
                     ...res.data.data,
                     creator: currentUser.fullname,
                     avatar: currentUser.imgUrl,
+                    isTeacher: true,
+                    isCreator: true,
                 })
             );
         }

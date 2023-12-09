@@ -5,7 +5,6 @@ import routes from "@src/configs/router";
 import { Link, useLocation } from "react-router-dom";
 import { useAppSelector } from "@src/hooks/appHook";
 import { selectClassList } from "@src/store/reducers/classSlice";
-import { selectUserInfo } from "@src/store/reducers/authSlice";
 import ClassSidebarItem from "./ClassSidebarItem";
 import { useState } from "react";
 
@@ -28,9 +27,7 @@ const Sicebar = ({ isShowSideBar }: { isShowSideBar: boolean }) => {
 
     const location = useLocation();
     const classList = useAppSelector(selectClassList);
-    const user = useAppSelector(selectUserInfo);
-
-    const [teachingClasses] = useState(classList.filter((item) => item.owner === user?.id));
+    const [teachingClasses] = useState(classList.filter((item) => item.isTeacher));
 
     return (
         <div

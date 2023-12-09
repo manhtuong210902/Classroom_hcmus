@@ -23,6 +23,8 @@ export interface ClassInfo {
     title?: string;
     creator: string;
     avatar?: string;
+    isTeacher: boolean;
+    isCreator: boolean;
 }
 
 export interface MessageInfo {
