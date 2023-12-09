@@ -12,6 +12,8 @@ import { ClassRole } from 'src/lib/security/decorators/class-role.decorator';
 import { ClassRoleType } from 'src/utils';
 import { ClassOfUserResponse } from './response/classes-of-user.response';
 import { UserOfClassResponse } from './response/users-of-class.response';
+import { SendMailInviteDto } from './dto/send-mail-invite.dto';
+import { VerifyMailInviteDto } from './dto/verify-mail-invite.dto';
 
 @Controller('class')
 @ApiTags('class')
@@ -53,15 +55,6 @@ export class ClassController {
         return response;
     }
 
-
-    // này test add user 
-    @HttpCode(HttpStatus.CREATED)
-    @Post('/management/add-user')
-    @Role(RoleType.USER)
-    async addUserToClass(@Body() addUserToClass: AddUserToClassDto, @Req() req) {
-        const makeAddition = await this.classService.addUserToClass(addUserToClass)
-        return "oke"
-    }
 
     @HttpCode(HttpStatus.OK)
     @Get('/users')
@@ -152,8 +145,14 @@ export class ClassController {
     @HttpCode(HttpStatus.OK)
     @Post('/send-mail-invite')
     @Role(RoleType.USER)
-    async sendMailInviteClass(@Body() body): Promise<ResponseTemplate<Object>> {
-        const isSuccess = await this.classService.sendMailInviteClass(body.classId, body.fullname, body.email, body.isTeacher);
+    async sendMailInviteClass(@Body() sendMailInviteDto : SendMailInviteDto): Promise<ResponseTemplate<Object>> {
+        const isSuccess = await 
+                            this.classService.sendMailInviteClass(
+                                sendMailInviteDto.classId,
+                                sendMailInviteDto.fromUser,
+                                sendMailInviteDto.email,
+                                sendMailInviteDto.isTeacher
+                            );
 
         const response: ResponseTemplate<Object> = {
             data: { isSuccess },
@@ -167,8 +166,16 @@ export class ClassController {
     @HttpCode(HttpStatus.OK)
     @Post('/verify-mail-invite')
     @Role(RoleType.USER)
-    async verifyMailInviteClass(@Body() body): Promise<ResponseTemplate<Object>> {
-        const isSuccess = await this.classService.verifyMailInviteClass(body.token, body.classId, body.userId, body.email);
+    async verifyMailInviteClass(@Body() verifyMailInviteDto : VerifyMailInviteDto)
+    : Promise<ResponseTemplate<Object>> 
+    {
+        const isSuccess = 
+                await this.classService.verifyMailInviteClass(
+                    verifyMailInviteDto.token,
+                    verifyMailInviteDto.classId,
+                    verifyMailInviteDto.userId,
+                    verifyMailInviteDto.email
+                );
 
         const response: ResponseTemplate<Object> = {
             data: { isSuccess },
