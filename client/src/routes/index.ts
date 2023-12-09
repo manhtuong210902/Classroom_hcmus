@@ -7,6 +7,7 @@ import RequestResetPassword from "@src/pages/Auth/RequestResetPassword/RequestRe
 import ResetPassword from "@src/pages/Auth/ResetPassword/ResetPassword";
 import Signup from "@src/pages/Auth/Signup/Signup";
 import VerifyEmail from "@src/pages/Auth/Verify/VerifyEmail";
+import ClassPage from "@src/pages/Class/ClassPage";
 import HomePage from "@src/pages/Home/HomePage";
 import LandingPage from "@src/pages/Landing/LandingPage";
 import settingRoutes from "@src/pages/Setting/routes";
@@ -23,6 +24,10 @@ const publicRoutes: RouteInfo[] = [
     { path: routes.VERIFY, component: VerifyEmail, layout: null },
 ];
 
-const privateRoutes: RouteInfo[] = [{ path: routes.HOME, component: HomePage, layout: HomeLayout }, ...settingRoutes];
+const privateRoutes: RouteInfo[] = [
+    { path: routes.HOME, component: HomePage, layout: HomeLayout },
+    { path: routes.CLASS, component: ClassPage, layout: HomeLayout },
+    ...settingRoutes,
+];
 
 export { publicRoutes, privateRoutes };

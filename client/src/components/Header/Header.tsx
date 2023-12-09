@@ -1,5 +1,5 @@
 import BookImg from "@image/img_book.png";
-import { LogOutIcon, MenuIcon, PlusIcon } from "lucide-react";
+import { ChevronRight, LogOutIcon, MenuIcon, PlusIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { useAppDispatch, useAppSelector } from "@src/hooks/appHook";
@@ -10,12 +10,14 @@ import { useNavigate } from "react-router-dom";
 import routes from "@src/configs/router";
 import { useState } from "react";
 import ModalCreateClass from "../Modal/ModalCreateClass";
+import { selectCurrClass } from "@src/store/reducers/classSlice";
 
 const HeaderHome = ({ setIsShowSideBar, isShowSideBar }: { setIsShowSideBar: any; isShowSideBar: boolean }) => {
     const user = useAppSelector(selectUserInfo);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const [isShowModal, setIsShowModal] = useState(false);
+    const currClass = useAppSelector(selectCurrClass);
 
     const handleToggleShow = () => {
         setIsShowSideBar((prev: any) => !prev);
@@ -49,6 +51,15 @@ const HeaderHome = ({ setIsShowSideBar, isShowSideBar }: { setIsShowSideBar: any
                         </div>
                         <img src={BookImg} alt="" className="w-8 h-8 object-cover select-none" />
                         <h1 className="font-bold texl-xl md:text-2xl text-primary select-none">Education</h1>
+                        {currClass && (
+                            <div className="flex items-center gap-4">
+                                <ChevronRight />
+                                <div className="flex flex-col gap-1">
+                                    <h3 className="text-sm font-semibold">{currClass.name}</h3>
+                                    <p className="text-xs text-secondary-foreground">{currClass.subject}</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex items-center gap-3">

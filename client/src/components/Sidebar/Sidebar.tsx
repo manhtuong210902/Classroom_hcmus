@@ -30,7 +30,6 @@ const Sicebar = ({ isShowSideBar }: { isShowSideBar: boolean }) => {
     const classList = useAppSelector(selectClassList);
     const user = useAppSelector(selectUserInfo);
 
-    console.log("Log check classList: ", classList);
     const [teachingClasses] = useState(classList.filter((item) => item.owner === user?.id));
 
     return (

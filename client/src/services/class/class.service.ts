@@ -11,6 +11,6 @@ export const classService = {
     },
 
     getListUsersInClass: (classId: string) => {
-        return axiosClient.get(`${LIST_USER_IN_CLASS_API}/?class_id=${classId}}`);
+        return axiosClient.get(`${LIST_USER_IN_CLASS_API}/?class_id=${classId}`);
     },
 };

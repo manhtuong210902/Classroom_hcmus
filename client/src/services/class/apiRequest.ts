@@ -19,10 +19,13 @@ export const getListClass = async (dispatch: any): Promise<MessageInfo> => {
         };
     }
 };
-export const getListUsersInClass = async (classId: string) => {
+export const getListUsersInClass = async (classId: string | null | undefined) => {
+    if (!classId) {
+        return;
+    }
     try {
         const res = await classService.getListUsersInClass(classId);
-        return res.data.data;
+        return res.data;
     } catch (error: any) {
         return error.response.data;
     }

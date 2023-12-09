@@ -1,12 +1,26 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@src/components/ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "@src/components/ui/popover";
+import { useAppDispatch } from "@src/hooks/appHook";
+import { setCurrClass } from "@src/store/reducers/classSlice";
 import { getFirstCharacter } from "@src/utils/lib";
 import { ClassInfo } from "@src/utils/types";
 import { MoreVertical } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const ClassItem = ({ item }: { item: ClassInfo }) => {
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+
+    const handleClickClassItem = () => {
+        dispatch(setCurrClass(item));
+        navigate(`/class/${item.id}`);
+    };
+
     return (
-        <div className="mb-6 rounded-md border border-border shadow-md w-[300px] overflow-hidden cursor-pointer hover:shadow-lg">
+        <div
+            className="mb-6 rounded-md border border-border shadow-md w-[300px] overflow-hidden cursor-pointer hover:shadow-lg"
+            onClick={handleClickClassItem}
+        >
             <div className="bg-primary p-4 flex flex-col text-base text-white relative">
                 <div className="flex justify-between items-center">
                     <h3 className="font-semibold text-lg capitalize truncate">{item.name}</h3>
