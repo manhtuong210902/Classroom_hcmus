@@ -4,6 +4,7 @@ import { AvatarFallback } from "@radix-ui/react-avatar";
 import { getFirstCharacter } from "@src/utils/lib";
 import { useAppDispatch, useAppSelector } from "@src/hooks/appHook";
 import { selectCurrClass, setCurrClass } from "@src/store/reducers/classSlice";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
     item: ClassInfo;
@@ -14,8 +15,10 @@ const ClassSidebarItem = (props: Props) => {
     const { item, isShowSideBar } = props;
     const currClass = useAppSelector(selectCurrClass);
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
     const handleClickTabClass = () => {
+        navigate(`/class/${item.id}`);
         dispatch(setCurrClass(item));
     };
 
