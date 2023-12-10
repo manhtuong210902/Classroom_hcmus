@@ -134,10 +134,10 @@ export class ClassController {
 
     // Get invite link
     @HttpCode(HttpStatus.OK)
-    @Post('/invite')
+    @Get('/invite')
     @Role(RoleType.USER)
-    async getLinkInvite(@Body() body): Promise<ResponseTemplate<String>> {
-        const classId = body.classId;
+    async getLinkInvite(@Query() query): Promise<ResponseTemplate<String>> {
+        const classId = query.class_id;
 
         await this.classService.isExistClassId(classId);
 
