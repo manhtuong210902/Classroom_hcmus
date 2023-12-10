@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ClassService } from './class.service';
 import { ClassController } from './class.controller';
 import { classProviders } from './class.provider';
@@ -9,13 +9,14 @@ import { ClassAuthMiddleware } from 'src/lib/security/middleware/class-auth.midd
 @Module({
   providers: [ClassService, ...classProviders],
   controllers: [ClassController],
-  imports: [RoleModule,UserModule]
-  
+  imports: [RoleModule, UserModule]
+
 })
 export class ClassModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(ClassAuthMiddleware)
-      .forRoutes(ClassController);
+      .exclude({ path: 'v1/class/has-user', method: RequestMethod.GET })
+      .forRoutes(ClassController)
   }
 }

@@ -67,11 +67,10 @@ export class ClassController {
         },
     })
     async getClassByClassIdAndUserId(@Param('classId') classId: string, @Req() req)
-        : Promise<ResponseTemplate<Object>> 
-    {
+        : Promise<ResponseTemplate<Object>> {
         const userId = req.user.id;
-        let data: any[] = await this.classService.getClassByClassIdAndUserId(userId,classId);
-        
+        let data: any[] = await this.classService.getClassByClassIdAndUserId(userId, classId);
+
         const response: ResponseTemplate<Object> = {
             data: data,
             message: 'Success',
@@ -95,9 +94,9 @@ export class ClassController {
         : Promise<ResponseTemplate<Object>> {
         const classId = query.class_id;
         let data: any[] = await this.classService.getAllUsersInClass(classId);
-        
-        const dataResponse : ListUserOfClassResponse = this.classService.listUSersOfClass(data);
-        
+
+        const dataResponse: ListUserOfClassResponse = this.classService.listUSersOfClass(data);
+
         const response: ResponseTemplate<Object> = {
             data: dataResponse,
             message: 'Success',
@@ -130,6 +129,23 @@ export class ClassController {
             statusCode: HttpStatus.OK
         }
         return response;
+    }
+
+    // Check user in class?
+    @HttpCode(HttpStatus.OK)
+    @Get('/has-user')
+    @Role(RoleType.USER)
+    async checkIsExistUserInClass(@Query() query): Promise<ResponseTemplate<Object>> {
+        const { class_id, user_id } = query;
+
+        const data = await this.classService.isExistUserInClass(user_id, class_id);
+
+        const response: ResponseTemplate<Object> = {
+            data: { data },
+            message: 'Successfully',
+            statusCode: HttpStatus.OK
+        }
+        return response
     }
 
     // Get invite link
@@ -169,14 +185,14 @@ export class ClassController {
     @HttpCode(HttpStatus.OK)
     @Post('/send-mail-invite')
     @Role(RoleType.USER)
-    async sendMailInviteClass(@Body() sendMailInviteDto : SendMailInviteDto): Promise<ResponseTemplate<Object>> {
-        const isSuccess = await 
-                            this.classService.sendMailInviteClass(
-                                sendMailInviteDto.classId,
-                                sendMailInviteDto.fromUser,
-                                sendMailInviteDto.email,
-                                sendMailInviteDto.isTeacher
-                            );
+    async sendMailInviteClass(@Body() sendMailInviteDto: SendMailInviteDto): Promise<ResponseTemplate<Object>> {
+        const isSuccess = await
+            this.classService.sendMailInviteClass(
+                sendMailInviteDto.classId,
+                sendMailInviteDto.fromUser,
+                sendMailInviteDto.email,
+                sendMailInviteDto.isTeacher
+            );
 
         const response: ResponseTemplate<Object> = {
             data: { isSuccess },
@@ -190,16 +206,15 @@ export class ClassController {
     @HttpCode(HttpStatus.OK)
     @Post('/verify-mail-invite')
     @Role(RoleType.USER)
-    async verifyMailInviteClass(@Body() verifyMailInviteDto : VerifyMailInviteDto)
-    : Promise<ResponseTemplate<Object>> 
-    {
-        const isSuccess = 
-                await this.classService.verifyMailInviteClass(
-                    verifyMailInviteDto.token,
-                    verifyMailInviteDto.classId,
-                    verifyMailInviteDto.userId,
-                    verifyMailInviteDto.email
-                );
+    async verifyMailInviteClass(@Body() verifyMailInviteDto: VerifyMailInviteDto)
+        : Promise<ResponseTemplate<Object>> {
+        const isSuccess =
+            await this.classService.verifyMailInviteClass(
+                verifyMailInviteDto.token,
+                verifyMailInviteDto.classId,
+                verifyMailInviteDto.userId,
+                verifyMailInviteDto.email
+            );
 
         const response: ResponseTemplate<Object> = {
             data: { isSuccess },

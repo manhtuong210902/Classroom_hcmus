@@ -32,7 +32,7 @@ export class ClassService {
         private readonly userService: UserService,
         private readonly configService: ConfigService,
         private readonly mailerService: MailerService,
-    ) {}
+    ) { }
 
     /**
      * Set default role of the class creator is teacher
@@ -119,6 +119,31 @@ export class ClassService {
         await hasClass.$add('user_classes', addUserToClassDto.userId, {
             through: { role_id: userRole[0].id },
         });
+    }
+
+    async isExistUserInClass(userId: string, classId: string) {
+        try {
+            const result = await this.classModel.sequelize.query(
+                `SELECT 
+                    *
+                FROM user_classes
+                WHERE class_id = :classId AND user_id = :userId
+                `,
+                {
+                    replacements: { classId, userId },
+                    type: sequelize.QueryTypes.SELECT,
+                },
+            );
+            if (result)
+                return true;
+            return false;
+        } catch (err) {
+            // throw new UnauthorizedException({
+            //     errorCode: ERROR_CODE.BAD_REQUEST,
+            //     message: ERROR_MSG.BAD_REQUEST,
+            // });
+            return false;
+        }
     }
 
     async getLinkInviteClass(classId: string) {
@@ -243,27 +268,27 @@ export class ClassService {
         return convertSnakeToCamel(result);
     }
 
-    listUSersOfClass(data) : ListUserOfClassResponse {
+    listUSersOfClass(data): ListUserOfClassResponse {
         let listTeachers = [];
         let listStudents = [];
-        for(let i = 0; i < data.length; i++){
-            if(data[i].isTeacher){
+        for (let i = 0; i < data.length; i++) {
+            if (data[i].isTeacher) {
                 delete data[i].isTeacher;
                 listTeachers.push(data[i]);
             }
-            else{
+            else {
                 delete data[i].isTeacher;
                 listStudents.push(data[i]);
             }
         }
-        const dataResponse : ListUserOfClassResponse = {
+        const dataResponse: ListUserOfClassResponse = {
             listTeachers,
             listStudents
         }
         return dataResponse;
     }
 
-    async getClassByClassIdAndUserId(userId : string, classId : string){
+    async getClassByClassIdAndUserId(userId: string, classId: string) {
         const result = await this.classModel.sequelize.query(
             `
             SELECT 
