@@ -37,12 +37,12 @@ const ClassItem = ({ item }: { item: ClassInfo }) => {
                         </PopoverContent>
                     </Popover>
                 </div>
-                <span className="text-sm">{item.creator}</span>
+                <span className="text-sm">{item?.creator}</span>
                 <div className="absolute right-5 top-full -translate-y-1/2">
                     <Avatar>
                         <AvatarImage src={item?.avatar} />
                         <AvatarFallback className="font-semibold text-primary">
-                            {getFirstCharacter(item.creator)}
+                            {getFirstCharacter(item?.creator || "")}
                         </AvatarFallback>
                     </Avatar>
                 </div>
