@@ -139,20 +139,16 @@ export class ClassService {
                 return true;
             return false;
         } catch (err) {
-            // throw new UnauthorizedException({
-            //     errorCode: ERROR_CODE.BAD_REQUEST,
-            //     message: ERROR_MSG.BAD_REQUEST,
-            // });
             return false;
         }
     }
 
     async getLinkInviteClass(classId: string) {
         const token = generateHash(INVITE_CLASS + classId);
-
+        const isTeacher = false;
         const callbackUrl =
             this.configService.get<string>('CLIENT_URL') +
-            `/invite-class?token=${token}&class_id=${classId}`;
+            `/invite-class?token=${token}&class_id=${classId}&is_teacher=${isTeacher}`;
         return callbackUrl;
     }
 
@@ -189,7 +185,7 @@ export class ClassService {
 
         const callbackUrl =
             this.configService.get<string>('CLIENT_URL') +
-            `/invite-class?token=${token}&class_id=${classId}&email=${email}`;
+            `/invite-class?token=${token}&class_id=${classId}&email=${email}&is_teacher=${isTeacher}`;
 
         this.mailerService.sendMail({
             to: email,
@@ -252,7 +248,7 @@ export class ClassService {
         const result = await this.classModel.sequelize.query(
             `SELECT 
                 users.id, users.gender, users.address, 
-                users.img_url as imgUrl, users.fullname, 
+                users.img_url as img_url, users.fullname, 
                 classes.owner_id AS owner_id,
                 CASE WHEN roles.role_name = 'TEACHER' THEN true ELSE false END as is_teacher,
                 CASE WHEN classes.owner_id = users.id THEN true ELSE false END as is_creator
@@ -296,7 +292,7 @@ export class ClassService {
             `
             SELECT 
                 classes.id, classes.title, classes.name, classes.subject, classes.description, classes.owner_id as owner_id,
-                users.fullname AS creator, users.img_url AS avatar,
+                owner.fullname AS creator, owner.img_url AS avatar,
                 CASE WHEN roles.role_name = 'TEACHER' THEN true ELSE false END as is_teacher,
                 CASE WHEN classes.owner_id = :userId THEN true ELSE false END as is_creator
             FROM classes

@@ -195,13 +195,19 @@ export class ClassController {
             body.classId,
             body.userId,
         );
-
-        await this.classService.isExistClassId(body.classId);
+        if(!isSuccess){
+            const response: ResponseTemplate<Object> = {
+                data: { isSuccess },
+                message: 'Successfully',
+                statusCode: HttpStatus.OK,
+            };
+            return response;
+        }
 
         let data: any[] = await this.classService.getClassByClassIdAndUserId(body.userId, body.classId);
 
         const response: ResponseTemplate<Object> = {
-            data: { ...data, isSuccess },
+            data: { class: data, isSuccess },
             message: 'Successfully',
             statusCode: HttpStatus.OK,
         };
@@ -239,18 +245,26 @@ export class ClassController {
     async verifyMailInviteClass(
         @Body() verifyMailInviteDto: VerifyMailInviteDto,
     ): Promise<ResponseTemplate<Object>> {
-        await this.classService.isExistClassId(verifyMailInviteDto.classId);
+
         const isSuccess = await this.classService.verifyMailInviteClass(
             verifyMailInviteDto.token,
             verifyMailInviteDto.classId,
             verifyMailInviteDto.userId,
             verifyMailInviteDto.email,
         );
+        if(!isSuccess){
+            const response: ResponseTemplate<Object> = {
+                data: { isSuccess },
+                message: 'Successfully',
+                statusCode: HttpStatus.OK,
+            };
+            return response;   
+        }
 
         let data: any[] = await this.classService.getClassByClassIdAndUserId(verifyMailInviteDto.userId, verifyMailInviteDto.classId);
 
         const response: ResponseTemplate<Object> = {
-            data: { ...data, isSuccess },
+            data: { class: data, isSuccess },
             message: 'Successfully',
             statusCode: HttpStatus.OK,
         };
