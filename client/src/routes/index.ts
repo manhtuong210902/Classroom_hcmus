@@ -11,6 +11,7 @@ import ClassPage from "@src/pages/Class/ClassPage";
 import InvitePage from "@src/pages/Class/InvitePage";
 import HomePage from "@src/pages/Home/HomePage";
 import LandingPage from "@src/pages/Landing/LandingPage";
+import NotFoundPage from "@src/pages/NotFound/NotFoundPage";
 import settingRoutes from "@src/pages/Setting/routes";
 import { RouteInfo } from "@src/utils/types";
 
@@ -29,6 +30,7 @@ const privateRoutes: RouteInfo[] = [
     { path: routes.HOME, component: HomePage, layout: HomeLayout },
     { path: routes.CLASS, component: ClassPage, layout: HomeLayout },
     { path: routes.INVITE, component: InvitePage, layout: HomeLayout },
+    { path: routes.NOT_FOUND, component: NotFoundPage, layout: HomeLayout },
     ...settingRoutes,
 ];
 

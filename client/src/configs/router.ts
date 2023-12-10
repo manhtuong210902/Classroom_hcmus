@@ -11,6 +11,7 @@ const routes = {
     REST_PASSWORD: "/reset-password",
     CLASS: "/class/:id",
     INVITE: "/invite-class",
+    NOT_FOUND: "/not-found",
 };
 
 export default routes;

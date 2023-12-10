@@ -10,6 +10,7 @@ const LoginSuccess = () => {
     const accessToken = searchParams.get("access_token");
     const refreshToken = searchParams.get("refresh_token");
     const userId = searchParams.get("user_id");
+    const redirectUrl = LocalStorage.getRedirectUrl();
 
     if (!accessToken || !refreshToken || !userId) {
         setIsSccess(false);
@@ -23,7 +24,7 @@ const LoginSuccess = () => {
         return <Navigate to={routes.LOGIN} />;
     }
 
-    return <Navigate to={routes.HOME} />;
+    return <Navigate to={redirectUrl || routes.HOME} />;
 };
 
 export default LoginSuccess;

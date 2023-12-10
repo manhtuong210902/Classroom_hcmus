@@ -29,6 +29,16 @@ export const LocalStorage = (function () {
         return localStorage.getItem("userId");
     }
 
+    function _setRedirectUrl(url: string) {
+        if (url) {
+            localStorage.setItem("redirectUrl", url);
+        }
+    }
+
+    function _getRedirectUrl() {
+        return localStorage.getItem("redirectUrl");
+    }
+
     function _clearToken() {
         localStorage.clear();
     }
@@ -41,5 +51,7 @@ export const LocalStorage = (function () {
         setUserId: _setUserId,
         getUserId: _getUserId,
         clearToken: _clearToken,
+        setRedirectUrl: _setRedirectUrl,
+        getRedirectUrl: _getRedirectUrl,
     };
 })();

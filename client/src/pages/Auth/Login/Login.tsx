@@ -11,10 +11,12 @@ import { loginUser } from "@src/services/auth/apiRequest";
 import routes from "@src/configs/router";
 import LoginSocial from "../components/LoginSoical/LoginSocial";
 import { toast } from "react-toastify";
+import { LocalStorage } from "@src/utils/LocalStorage";
 
 export default function Login() {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const redirectUrl = LocalStorage.getRedirectUrl();
     const form = useForm<z.infer<typeof loginSchema>>({
         resolver: zodResolver(loginSchema),
         defaultValues: {
@@ -30,7 +32,7 @@ export default function Login() {
             return;
         }
 
-        navigate(routes.HOME);
+        navigate(redirectUrl || routes.HOME);
     }
     return (
         <div className="max-w-2xl xl:px-[80px] lg:px-[40px] py-[40px] px-3">

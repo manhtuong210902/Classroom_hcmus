@@ -1,5 +1,10 @@
 import { Controller, HttpCode, HttpStatus, Post, Body } from '@nestjs/common';
-import { ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import {
+    ApiExtraModels,
+    ApiResponse,
+    ApiTags,
+    getSchemaPath,
+} from '@nestjs/swagger';
 import { ClassService } from './class.service';
 import { CreateClassDto } from './dto/create-class.dto';
 import { Get, Param, Query, Req } from '@nestjs/common/decorators';
@@ -18,10 +23,7 @@ import { VerifyMailInviteDto } from './dto/verify-mail-invite.dto';
 @Controller('class')
 @ApiTags('class')
 export class ClassController {
-
-    constructor(
-        private readonly classService: ClassService,
-    ) { }
+    constructor(private readonly classService: ClassService) {}
 
     @HttpCode(HttpStatus.CREATED)
     @Post('/management')
@@ -33,9 +35,14 @@ export class ClassController {
             $ref: getSchemaPath(CreateClassResponse),
         },
     })
-    async createClass(@Body() createClassDto: CreateClassDto, @Req() req)
-        : Promise<ResponseTemplate<CreateClassResponse>> {
-        const newClass = await this.classService.createClass(createClassDto, req.user)
+    async createClass(
+        @Body() createClassDto: CreateClassDto,
+        @Req() req,
+    ): Promise<ResponseTemplate<CreateClassResponse>> {
+        const newClass = await this.classService.createClass(
+            createClassDto,
+            req.user,
+        );
 
         const createClassResponse: CreateClassResponse = {
             id: newClass.id,
@@ -43,14 +50,14 @@ export class ClassController {
             name: newClass.name,
             title: newClass.title,
             description: newClass.description,
-            subject: newClass.subject
-        }
+            subject: newClass.subject,
+        };
 
         const response: ResponseTemplate<CreateClassResponse> = {
             data: createClassResponse,
             message: `Create a class ${newClass.name} successfully`,
-            statusCode: HttpStatus.CREATED
-        }
+            statusCode: HttpStatus.CREATED,
+        };
 
         return response;
     }
@@ -66,16 +73,21 @@ export class ClassController {
             $ref: getSchemaPath(ClassOfUserResponse),
         },
     })
-    async getClassByClassIdAndUserId(@Param('classId') classId: string, @Req() req)
-        : Promise<ResponseTemplate<Object>> {
+    async getClassByClassIdAndUserId(
+        @Param('classId') classId: string,
+        @Req() req,
+    ): Promise<ResponseTemplate<Object>> {
         const userId = req.user.id;
-        let data: any[] = await this.classService.getClassByClassIdAndUserId(userId, classId);
+        let data: any[] = await this.classService.getClassByClassIdAndUserId(
+            userId,
+            classId,
+        );
 
         const response: ResponseTemplate<Object> = {
             data: data,
             message: 'Success',
-            statusCode: HttpStatus.OK
-        }
+            statusCode: HttpStatus.OK,
+        };
         return response;
     }
 
@@ -90,18 +102,20 @@ export class ClassController {
             $ref: getSchemaPath(ListUserOfClassResponse),
         },
     })
-    async getAllUsersInClass(@Query() query)
-        : Promise<ResponseTemplate<Object>> {
+    async getAllUsersInClass(
+        @Query() query,
+    ): Promise<ResponseTemplate<Object>> {
         const classId = query.class_id;
         let data: any[] = await this.classService.getAllUsersInClass(classId);
 
-        const dataResponse: ListUserOfClassResponse = this.classService.listUSersOfClass(data);
+        const dataResponse: ListUserOfClassResponse =
+            this.classService.listUSersOfClass(data);
 
         const response: ResponseTemplate<Object> = {
             data: dataResponse,
             message: 'Success',
-            statusCode: HttpStatus.OK
-        }
+            statusCode: HttpStatus.OK,
+        };
         return response;
     }
 
@@ -115,19 +129,19 @@ export class ClassController {
             type: 'array',
             items: {
                 $ref: getSchemaPath(ClassOfUserResponse),
-            }
+            },
         },
     })
-    async getAllClassesOfUser(@Req() req)
-        : Promise<ResponseTemplate<Object[]>> {
+    async getAllClassesOfUser(@Req() req): Promise<ResponseTemplate<Object[]>> {
         const userId = req.user.id;
-        const data: Object[] = await this.classService.getAllClassesOfUSer(userId);
+        const data: Object[] =
+            await this.classService.getAllClassesOfUSer(userId);
 
         const response: ResponseTemplate<Object[]> = {
             data: data,
             message: 'Successfully',
-            statusCode: HttpStatus.OK
-        }
+            statusCode: HttpStatus.OK,
+        };
         return response;
     }
 
@@ -135,17 +149,22 @@ export class ClassController {
     @HttpCode(HttpStatus.OK)
     @Get('/has-user')
     @Role(RoleType.USER)
-    async checkIsExistUserInClass(@Query() query): Promise<ResponseTemplate<Object>> {
+    async checkIsExistUserInClass(
+        @Query() query,
+    ): Promise<ResponseTemplate<Object>> {
         const { class_id, user_id } = query;
 
-        const data = await this.classService.isExistUserInClass(user_id, class_id);
+        const data = await this.classService.isExistUserInClass(
+            user_id,
+            class_id,
+        );
 
         const response: ResponseTemplate<Object> = {
             data: { data },
             message: 'Successfully',
-            statusCode: HttpStatus.OK
-        }
-        return response
+            statusCode: HttpStatus.OK,
+        };
+        return response;
     }
 
     // Get invite link
@@ -161,74 +180,76 @@ export class ClassController {
         const response: ResponseTemplate<String> = {
             data: link,
             message: 'Successfully',
-            statusCode: HttpStatus.OK
-        }
-        return response
+            statusCode: HttpStatus.OK,
+        };
+        return response;
     }
 
     // Verify invite link and add user
     @HttpCode(HttpStatus.OK)
     @Post('/verify-invite')
-    // @Role(RoleType.USER)
+    @Role(RoleType.USER)
     async verifyLinkInvite(@Body() body): Promise<ResponseTemplate<Object>> {
-        const isSuccess = await this.classService.verifyLinkInviteAndAdd(body.token, body.classId, body.userId);
+        const isSuccess = await this.classService.verifyLinkInviteAndAdd(
+            body.token,
+            body.classId,
+            body.userId,
+        );
 
         await this.classService.isExistClassId(body.classId);
 
         const response: ResponseTemplate<Object> = {
             data: { isSuccess },
             message: 'Successfully',
-            statusCode: HttpStatus.OK
-        }
-        return response
+            statusCode: HttpStatus.OK,
+        };
+        return response;
     }
 
     //send mail to invite class
     @HttpCode(HttpStatus.OK)
     @Post('/send-mail-invite')
     @Role(RoleType.USER)
-    async sendMailInviteClass(@Body() sendMailInviteDto: SendMailInviteDto): Promise<ResponseTemplate<Object>> {
-
+    async sendMailInviteClass(
+        @Body() sendMailInviteDto: SendMailInviteDto,
+    ): Promise<ResponseTemplate<Object>> {
         await this.classService.isExistClassId(sendMailInviteDto.classId);
 
-        const isSuccess = await
-            this.classService.sendMailInviteClass(
-                sendMailInviteDto.classId,
-                sendMailInviteDto.fromUser,
-                sendMailInviteDto.email,
-                sendMailInviteDto.isTeacher
-            );
+        const isSuccess = await this.classService.sendMailInviteClass(
+            sendMailInviteDto.classId,
+            sendMailInviteDto.fromUser,
+            sendMailInviteDto.email,
+            sendMailInviteDto.isTeacher,
+        );
 
         const response: ResponseTemplate<Object> = {
             data: { isSuccess },
             message: 'Successfully',
-            statusCode: HttpStatus.OK
-        }
-        return response
+            statusCode: HttpStatus.OK,
+        };
+        return response;
     }
 
     //verify mail invite class
     @HttpCode(HttpStatus.OK)
     @Post('/verify-mail-invite')
     @Role(RoleType.USER)
-    async verifyMailInviteClass(@Body() verifyMailInviteDto: VerifyMailInviteDto)
-        : Promise<ResponseTemplate<Object>> {
+    async verifyMailInviteClass(
+        @Body() verifyMailInviteDto: VerifyMailInviteDto,
+    ): Promise<ResponseTemplate<Object>> {
         await this.classService.isExistClassId(verifyMailInviteDto.classId);
-        const isSuccess =
-            await this.classService.verifyMailInviteClass(
-                verifyMailInviteDto.token,
-                verifyMailInviteDto.classId,
-                verifyMailInviteDto.userId,
-                verifyMailInviteDto.email
-            );
+        const isSuccess = await this.classService.verifyMailInviteClass(
+            verifyMailInviteDto.token,
+            verifyMailInviteDto.classId,
+            verifyMailInviteDto.userId,
+            verifyMailInviteDto.email,
+        );
 
         const response: ResponseTemplate<Object> = {
             data: { isSuccess },
             message: 'Successfully',
-            statusCode: HttpStatus.OK
-        }
-        return response
+            statusCode: HttpStatus.OK,
+        };
+        return response;
     }
-
-
 }

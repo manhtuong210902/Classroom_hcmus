@@ -4,12 +4,13 @@ import { loaderUser } from "@src/services/auth/apiRequest";
 import { selectIsAuthenticated, selectUserInfo } from "@src/store/reducers/authSlice";
 import { LocalStorage } from "@src/utils/LocalStorage";
 import { useEffect } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const PrivateRoute = () => {
     const dispatch = useAppDispatch();
     const isAuthenticated = useAppSelector(selectIsAuthenticated);
     const user = useAppSelector(selectUserInfo);
+    const location = useLocation();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -19,7 +20,8 @@ const PrivateRoute = () => {
         }
 
         if (!accessToken) {
-            navigate(routes.LANDINGPAGE);
+            LocalStorage.setRedirectUrl(`${location.pathname}${location.search}`);
+            navigate(`${location.pathname === "/" ? routes.LANDINGPAGE : routes.LOGIN}`);
         }
     }, [isAuthenticated]);
 

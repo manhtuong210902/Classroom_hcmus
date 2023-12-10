@@ -6,7 +6,6 @@ import { Link, useLocation } from "react-router-dom";
 import { useAppSelector } from "@src/hooks/appHook";
 import { selectClassList } from "@src/store/reducers/classSlice";
 import ClassSidebarItem from "./ClassSidebarItem";
-import { useState } from "react";
 
 const Sicebar = ({ isShowSideBar }: { isShowSideBar: boolean }) => {
     const topContents = [

@@ -11,6 +11,7 @@ import routes from "@src/configs/router";
 import { useState } from "react";
 import ModalCreateClass from "../Modal/ModalCreateClass";
 import { selectCurrClass } from "@src/store/reducers/classSlice";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 
 const HeaderHome = ({ setIsShowSideBar, isShowSideBar }: { setIsShowSideBar: any; isShowSideBar: boolean }) => {
     const user = useAppSelector(selectUserInfo);
@@ -49,26 +50,49 @@ const HeaderHome = ({ setIsShowSideBar, isShowSideBar }: { setIsShowSideBar: any
                         >
                             <MenuIcon width={32} />
                         </div>
-                        <img src={BookImg} alt="" className="w-8 h-8 object-cover select-none" />
-                        <h1 className="font-bold texl-xl md:text-2xl text-primary select-none">Education</h1>
+                        <img
+                            src={BookImg}
+                            alt=""
+                            className={`w-8 h-8 object-cover select-none ${currClass ? "hidden md:block" : ""}`}
+                        />
+                        <h1
+                            className={`font-bold texl-xl md:text-2xl text-primary select-none ${
+                                currClass ? "hidden md:block" : ""
+                            }`}
+                        >
+                            Education
+                        </h1>
                         {currClass && (
                             <div className="flex items-center gap-4">
                                 <ChevronRight />
                                 <div className="flex flex-col gap-1">
-                                    <h3 className="text-sm font-semibold">{currClass.name}</h3>
-                                    <p className="text-xs text-secondary-foreground">{currClass.subject}</p>
+                                    <h3 className="text-sm font-semibold max-w-[120px] md:max-w-[400px] truncate">
+                                        {currClass.name}
+                                    </h3>
+                                    <p className="text-xs text-secondary-foreground max-w-[120px] md:max-w-[400px] truncate">
+                                        {currClass.subject}
+                                    </p>
                                 </div>
                             </div>
                         )}
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <div
-                            className="rounded-full bg-muted w-[40px] h-[40px] flex items-center justify-center cursor-pointer"
-                            onClick={handleOpenModal}
-                        >
-                            <PlusIcon width={32} />
-                        </div>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <div
+                                        className="rounded-full bg-muted w-[40px] h-[40px] flex items-center justify-center cursor-pointer"
+                                        onClick={handleOpenModal}
+                                    >
+                                        <PlusIcon width={32} />
+                                    </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Create a class</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
 
                         <div className="cursor-pointer">
                             <Popover>

@@ -61,3 +61,59 @@ export const createClass = async (params: any, dispatch: any, currentUser: UserI
         };
     }
 };
+
+export const getClassDetail = async (classId: string | null | undefined) => {
+    if (!classId) {
+        return;
+    }
+    try {
+        const res = await classService.getClassById(classId);
+        return res.data;
+    } catch (error: any) {
+        return error.response.data;
+    }
+};
+
+export const getInviteUrl = async (classId: string | null | undefined) => {
+    if (!classId) {
+        return;
+    }
+    try {
+        const res = await classService.getInviteUrl(classId);
+        return res.data;
+    } catch (error: any) {
+        return error.response.data;
+    }
+};
+
+export const JoinClass = async (params: any) => {
+    try {
+        if (params?.email) {
+            const res = await classService.joinClassWithEmail(params);
+            return res.data;
+        } else {
+            const res = await classService.joinClassWithInviteLink(params);
+            return res.data;
+        }
+    } catch (error: any) {
+        return error.response.data;
+    }
+};
+
+export const sendMailInvite = async (param: any) => {
+    try {
+        const res = await classService.sendMailInvite(param);
+        return res.data;
+    } catch (error: any) {
+        return error.response.data;
+    }
+};
+
+export const checkHasClass = async (classId: string, userId: string) => {
+    try {
+        const res = await classService.checkHasClass(classId, userId);
+        return res.data;
+    } catch (error: any) {
+        return error.response.data;
+    }
+};
