@@ -160,7 +160,7 @@ export class ClassService {
         classId: string,
         userId: string,
     ) {
-        const isValid = validateHash(INVITE_CLASS + classId, token);
+        const isValid = await validateHash(INVITE_CLASS + classId, token);
 
         if (!isValid) {
             throw new UnauthorizedException({
@@ -205,8 +205,10 @@ export class ClassService {
         userId: string,
         email: string,
     ) {
+
+
         let isTeacher = false;
-        const isValid = validateHash(
+        const isValid = await validateHash(
             INVITE_CLASS + classId + email + isTeacher,
             token,
         );
@@ -222,7 +224,7 @@ export class ClassService {
         }
 
         isTeacher = true;
-        const isValidTeacher = validateHash(
+        const isValidTeacher = await validateHash(
             INVITE_CLASS + classId + email + isTeacher,
             token,
         );

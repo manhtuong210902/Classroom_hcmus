@@ -173,6 +173,8 @@ export class ClassController {
     async verifyLinkInvite(@Body() body): Promise<ResponseTemplate<Object>> {
         const isSuccess = await this.classService.verifyLinkInviteAndAdd(body.token, body.classId, body.userId);
 
+        await this.classService.isExistClassId(body.classId);
+
         const response: ResponseTemplate<Object> = {
             data: { isSuccess },
             message: 'Successfully',
@@ -186,6 +188,9 @@ export class ClassController {
     @Post('/send-mail-invite')
     @Role(RoleType.USER)
     async sendMailInviteClass(@Body() sendMailInviteDto: SendMailInviteDto): Promise<ResponseTemplate<Object>> {
+
+        await this.classService.isExistClassId(sendMailInviteDto.classId);
+
         const isSuccess = await
             this.classService.sendMailInviteClass(
                 sendMailInviteDto.classId,
@@ -208,6 +213,7 @@ export class ClassController {
     @Role(RoleType.USER)
     async verifyMailInviteClass(@Body() verifyMailInviteDto: VerifyMailInviteDto)
         : Promise<ResponseTemplate<Object>> {
+        await this.classService.isExistClassId(verifyMailInviteDto.classId);
         const isSuccess =
             await this.classService.verifyMailInviteClass(
                 verifyMailInviteDto.token,
