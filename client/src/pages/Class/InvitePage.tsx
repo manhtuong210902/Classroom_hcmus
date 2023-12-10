@@ -54,7 +54,7 @@ const InvitePage = () => {
                     return;
                 }
 
-                dispatch(addClass(res.data));
+                dispatch(addClass(res.data.class));
                 toast.success("Join class successfully");
                 navigate(`/class/${classId}`);
             });

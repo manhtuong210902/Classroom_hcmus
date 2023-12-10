@@ -6,5 +6,8 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getFirstCharacter(input: string): string {
+    if (!input) {
+        return "";
+    }
     return input.charAt(0);
 }
