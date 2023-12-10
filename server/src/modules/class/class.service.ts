@@ -134,7 +134,8 @@ export class ClassService {
                     type: sequelize.QueryTypes.SELECT,
                 },
             );
-            if (result)
+
+            if (result && result.length > 0)
                 return true;
             return false;
         } catch (err) {
