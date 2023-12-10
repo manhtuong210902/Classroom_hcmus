@@ -1,6 +1,7 @@
-import { Column, Model, DataType, Table, BelongsToMany } from 'sequelize-typescript';
+import { Column, Model, DataType, Table, BelongsToMany, HasMany } from 'sequelize-typescript';
 import { UserClass } from './user-class.entity';
 import { User } from 'src/modules/user/entities/user.entity';
+import { GradeComposition } from 'src/modules/composition/entities/grade-composition.entity';
 
 @Table({
     tableName: "classes",
@@ -52,5 +53,7 @@ export class Class extends Model<Class> {
     @BelongsToMany(() => User, () => UserClass)
     user_classes: UserClass[];
     
-
+    @HasMany(() => GradeComposition)    
+    grade_compositions: GradeComposition[]
+    
 }
