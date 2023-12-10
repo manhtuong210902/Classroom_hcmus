@@ -8,6 +8,7 @@ import ResetPassword from "@src/pages/Auth/ResetPassword/ResetPassword";
 import Signup from "@src/pages/Auth/Signup/Signup";
 import VerifyEmail from "@src/pages/Auth/Verify/VerifyEmail";
 import ClassPage from "@src/pages/Class/ClassPage";
+import InvitePage from "@src/pages/Class/InvitePage";
 import HomePage from "@src/pages/Home/HomePage";
 import LandingPage from "@src/pages/Landing/LandingPage";
 import settingRoutes from "@src/pages/Setting/routes";
@@ -27,6 +28,7 @@ const publicRoutes: RouteInfo[] = [
 const privateRoutes: RouteInfo[] = [
     { path: routes.HOME, component: HomePage, layout: HomeLayout },
     { path: routes.CLASS, component: ClassPage, layout: HomeLayout },
+    { path: routes.INVITE, component: InvitePage, layout: HomeLayout },
     ...settingRoutes,
 ];
 

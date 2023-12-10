@@ -27,7 +27,7 @@ const Sicebar = ({ isShowSideBar }: { isShowSideBar: boolean }) => {
 
     const location = useLocation();
     const classList = useAppSelector(selectClassList);
-    const [teachingClasses] = useState(classList.filter((item) => item.isTeacher));
+    const teachingClasses = classList.filter((item) => item.isTeacher);
 
     return (
         <div

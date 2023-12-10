@@ -10,6 +10,7 @@ const routes = {
     REQUEST_RESET_PASSWORD: "/request-reset-password",
     REST_PASSWORD: "/reset-password",
     CLASS: "/class/:id",
+    INVITE: "/invite-class",
 };
 
 export default routes;
