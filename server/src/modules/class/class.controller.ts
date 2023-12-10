@@ -201,7 +201,7 @@ export class ClassController {
         let data: any[] = await this.classService.getClassByClassIdAndUserId(body.userId, body.classId);
 
         const response: ResponseTemplate<Object> = {
-            data: data,
+            data: { ...data, isSuccess },
             message: 'Successfully',
             statusCode: HttpStatus.OK,
         };
@@ -250,7 +250,7 @@ export class ClassController {
         let data: any[] = await this.classService.getClassByClassIdAndUserId(verifyMailInviteDto.userId, verifyMailInviteDto.classId);
 
         const response: ResponseTemplate<Object> = {
-            data: data,
+            data: { ...data, isSuccess },
             message: 'Successfully',
             statusCode: HttpStatus.OK,
         };
