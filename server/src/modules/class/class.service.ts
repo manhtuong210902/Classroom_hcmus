@@ -263,6 +263,33 @@ export class ClassService {
         return dataResponse;
     }
 
+    async getClassByClassIdAndUserId(userId : string, classId : string){
+        const result = await this.classModel.sequelize.query(
+            `
+            SELECT 
+                classes.id, classes.title, classes.name, classes.subject, classes.description, classes.owner_id as owner_id,
+                users.fullname AS creator, users.img_url AS avatar,
+                CASE WHEN roles.role_name = 'TEACHER' THEN true ELSE false END as is_teacher,
+                CASE WHEN classes.owner_id = :userId THEN true ELSE false END as is_creator
+            FROM classes
+            JOIN user_classes ON classes.id = user_classes.class_id
+            JOIN users ON users.id = user_classes.user_id
+            JOIN user_roles ON user_roles.user_id = users.id
+            JOIN roles ON roles.id = user_classes.role_id
+            JOIN users AS owner ON owner.id = classes.owner_id
+            WHERE classes.id = user_classes.class_id AND users.id = :userId AND classes.id = :classId;
+            `,
+            {
+                replacements: {
+                    userId: userId,
+                    classId: classId
+                },
+                type: sequelize.QueryTypes.SELECT,
+            },
+        );
+        return convertSnakeToCamel(result[0]);
+    }
+
     async getAllClassesOfUSer(userId: string) {
         const result = await this.classModel.sequelize.query(
             `

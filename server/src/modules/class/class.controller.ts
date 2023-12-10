@@ -55,6 +55,30 @@ export class ClassController {
         return response;
     }
 
+    @HttpCode(HttpStatus.OK)
+    @Get('/detail/:classId')
+    @Role(RoleType.USER)
+    @ClassRole([ClassRoleType.STUDENT, ClassRoleType.TEACHER])
+    @ApiExtraModels(ClassOfUserResponse)
+    @ApiResponse({
+        status: HttpStatus.OK,
+        schema: {
+            $ref: getSchemaPath(ClassOfUserResponse),
+        },
+    })
+    async getClassByClassIdAndUserId(@Param('classId') classId: string, @Req() req)
+        : Promise<ResponseTemplate<Object>> 
+    {
+        const userId = req.user.id;
+        let data: any[] = await this.classService.getClassByClassIdAndUserId(userId,classId);
+        
+        const response: ResponseTemplate<Object> = {
+            data: data,
+            message: 'Success',
+            statusCode: HttpStatus.OK
+        }
+        return response;
+    }
 
     @HttpCode(HttpStatus.OK)
     @Get('/users')
