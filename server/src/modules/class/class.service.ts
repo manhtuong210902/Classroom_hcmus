@@ -319,7 +319,7 @@ export class ClassService {
             `
             SELECT 
                 classes.id, classes.title, classes.name, classes.subject, classes.description, classes.owner_id as owner_id,
-                users.fullname AS creator, users.img_url AS avatar,
+                owner.fullname AS creator, owner.img_url AS avatar,
                 CASE WHEN roles.role_name = 'TEACHER' THEN true ELSE false END as is_teacher,
                 CASE WHEN classes.owner_id = :userId THEN true ELSE false END as is_creator
             FROM classes
