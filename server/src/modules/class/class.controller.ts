@@ -23,7 +23,7 @@ import { VerifyMailInviteDto } from './dto/verify-mail-invite.dto';
 @Controller('class')
 @ApiTags('class')
 export class ClassController {
-    constructor(private readonly classService: ClassService) {}
+    constructor(private readonly classService: ClassService) { }
 
     @HttpCode(HttpStatus.CREATED)
     @Post('/management')
@@ -198,8 +198,10 @@ export class ClassController {
 
         await this.classService.isExistClassId(body.classId);
 
+        let data: any[] = await this.classService.getClassByClassIdAndUserId(body.userId, body.classId);
+
         const response: ResponseTemplate<Object> = {
-            data: { isSuccess },
+            data: data,
             message: 'Successfully',
             statusCode: HttpStatus.OK,
         };
@@ -245,8 +247,10 @@ export class ClassController {
             verifyMailInviteDto.email,
         );
 
+        let data: any[] = await this.classService.getClassByClassIdAndUserId(verifyMailInviteDto.userId, verifyMailInviteDto.classId);
+
         const response: ResponseTemplate<Object> = {
-            data: { isSuccess },
+            data: data,
             message: 'Successfully',
             statusCode: HttpStatus.OK,
         };
