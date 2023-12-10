@@ -6,8 +6,10 @@ import { selectCurrClass } from "@src/store/reducers/classSlice";
 import { toast } from "react-toastify";
 import { UserInfo } from "@src/utils/types";
 import { Skeleton } from "@src/components/ui/skeleton";
-import { UserPlusIcon } from "lucide-react";
+import { PlusIcon, UserPlusIcon } from "lucide-react";
 import ModalInviteMemmber from "@src/components/Modal/ModalInviteMember";
+import AddUserSVG from "@image/svg_add_user.svg";
+import { Button } from "@src/components/ui/button";
 
 const ListMember = () => {
     const currClass = useAppSelector(selectCurrClass);
@@ -28,8 +30,6 @@ const ListMember = () => {
                         toast.error(res.message);
                         return;
                     }
-
-                    console.log("Log check resdata", res);
 
                     setTeachers(res.data.listTeachers);
                     setClassmates(res.data.listStudents);
@@ -106,9 +106,31 @@ const ListMember = () => {
                                 <Skeleton className="h-4 w-[250px]" />
                             </div>
                         )}
-                        {classmates.map((item) => {
-                            return <MemberItem item={item} key={item.id} />;
-                        })}
+                        {classmates.length > 0 ? (
+                            <>
+                                {classmates.map((item) => {
+                                    return <MemberItem item={item} key={item.id} />;
+                                })}
+                            </>
+                        ) : (
+                            <>
+                                <div className="w-full flex flex-col gap-3 items-center justify-center h-80 mt-3">
+                                    <img src={AddUserSVG} alt="not-found" className="w-[200px] object-cover" />
+                                    <p className="text-xs">Add students to this class</p>
+                                    <Button
+                                        className="flex items-center gap-2"
+                                        onClick={() => {
+                                            setInvite({
+                                                isOpen: true,
+                                                role: "student",
+                                            });
+                                        }}
+                                    >
+                                        <PlusIcon /> Invite Student
+                                    </Button>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

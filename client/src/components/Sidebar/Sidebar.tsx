@@ -27,6 +27,7 @@ const Sicebar = ({ isShowSideBar }: { isShowSideBar: boolean }) => {
     const location = useLocation();
     const classList = useAppSelector(selectClassList);
     const teachingClasses = classList.filter((item) => item.isTeacher);
+    const enrolledClasses = classList.filter((item) => !item.isTeacher);
 
     return (
         <div
@@ -85,6 +86,15 @@ const Sicebar = ({ isShowSideBar }: { isShowSideBar: boolean }) => {
                                 <ListTodo />
                                 <span className={`${!isShowSideBar && "hidden"}`}>To dos</span>
                             </div>
+                            {enrolledClasses.length > 0 && (
+                                <>
+                                    {enrolledClasses.map((item) => {
+                                        return (
+                                            <ClassSidebarItem key={item.id} item={item} isShowSideBar={isShowSideBar} />
+                                        );
+                                    })}
+                                </>
+                            )}
                         </AccordionContent>
                     </AccordionItem>
                 </Accordion>

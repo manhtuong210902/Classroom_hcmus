@@ -2,15 +2,18 @@ import LogoImg from "@image/img_book.png";
 import { Avatar, AvatarFallback, AvatarImage } from "@src/components/ui/avatar";
 import { Button } from "@src/components/ui/button";
 import routes from "@src/configs/router";
-import { useAppSelector } from "@src/hooks/appHook";
+import { useAppDispatch, useAppSelector } from "@src/hooks/appHook";
 import { JoinClass, checkHasClass } from "@src/services/class/apiRequest";
 import { selectUserInfo } from "@src/store/reducers/authSlice";
+import { addClass } from "@src/store/reducers/classSlice";
 import { getFirstCharacter } from "@src/utils/lib";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const InvitePage = () => {
     const user = useAppSelector(selectUserInfo);
+    const dispatch = useAppDispatch();
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const token = searchParams.get("token");
@@ -44,6 +47,15 @@ const InvitePage = () => {
                 classId,
                 userId: user.id,
                 email,
+            }).then((res) => {
+                if (res.statusCode !== 200) {
+                    toast.error("Join class failed !");
+                    return;
+                }
+
+                dispatch(addClass(res.data));
+                toast.success("Join class successfully");
+                navigate(`/class/${classId}`);
             });
         }
     };
