@@ -1,5 +1,5 @@
 import Header from "@src/components/Header/Header";
-import Sicebar from "@src/components/Sidebar/Sidebar";
+import Sidebar from "@src/components/Sidebar/Sidebar";
 import routes from "@src/configs/router";
 import { useAppDispatch, useAppSelector } from "@src/hooks/appHook";
 import { getClassDetail, getListClass } from "@src/services/class/apiRequest";
@@ -50,7 +50,7 @@ const HomeLayout = ({ children }: Props) => {
         <div>
             <Header setIsShowSideBar={setIsShowSideBar} isShowSideBar={isShowSideBar} />
             <div className="flex">
-                <Sicebar isShowSideBar={isShowSideBar} />
+                <Sidebar isShowSideBar={isShowSideBar} />
                 <div className="h-[calc(100vh_-60px)] overflow-y-auto flex-1">{children}</div>
             </div>
         </div>

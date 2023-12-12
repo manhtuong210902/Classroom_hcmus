@@ -19,6 +19,7 @@ const InvitePage = () => {
     const token = searchParams.get("token");
     const classId = searchParams.get("class_id");
     const email = searchParams.get("email");
+    const isTeacher = searchParams.get("is_teacher");
     useEffect(() => {
         if (classId && user) {
             checkHasClass(classId, user.id).then((res) => {
@@ -53,7 +54,7 @@ const InvitePage = () => {
                     return;
                 }
 
-                dispatch(addClass(res.data));
+                dispatch(addClass(res.data.class));
                 toast.success("Join class successfully");
                 navigate(`/class/${classId}`);
             });
@@ -80,7 +81,7 @@ const InvitePage = () => {
 
                         <span className="text-sm">{user?.fullname}</span>
                     </div>
-                    <span className="text-xs">You are joining the class as a student.</span>
+                    <span className="text-xs">You are joining the class as a {isTeacher ? "teacher" : "student"}.</span>
                     <Button onClick={handleJoinClass}>Join class</Button>
                 </div>
             </div>

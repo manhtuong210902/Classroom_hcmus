@@ -25,13 +25,16 @@ const ClassSidebarItem = (props: Props) => {
     return (
         <div
             onClick={handleClickTabClass}
+            key={item.id}
             className={`${
-                currClass?.id === item.id && "bg-muted"
+                currClass?.id === item?.id && "bg-muted"
             } flex items-center gap-2 text-base font-semibold px-6 py-3 group cursor-pointer hover:bg-muted max-w-[300px] truncate mr-3 rounded-e-full`}
         >
             <Avatar className="w-6 h-6">
                 <AvatarImage src={item?.avatar} alt="" />
-                <AvatarFallback className="font-semibold text-xl">{getFirstCharacter(item.creator)}</AvatarFallback>
+                <AvatarFallback className="font-semibold text-xl">
+                    {getFirstCharacter(item?.creator) || ""}
+                </AvatarFallback>
             </Avatar>
             <span className={`${!isShowSideBar && "hidden"}`}>{item.name}</span>
         </div>

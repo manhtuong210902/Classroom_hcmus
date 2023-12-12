@@ -7,7 +7,7 @@ import { useAppSelector } from "@src/hooks/appHook";
 import { selectClassList } from "@src/store/reducers/classSlice";
 import ClassSidebarItem from "./ClassSidebarItem";
 
-const Sicebar = ({ isShowSideBar }: { isShowSideBar: boolean }) => {
+const Sidebar = ({ isShowSideBar }: { isShowSideBar: boolean }) => {
     const topContents = [
         {
             id: 1,
@@ -118,4 +118,4 @@ const Sicebar = ({ isShowSideBar }: { isShowSideBar: boolean }) => {
     );
 };
 
-export default Sicebar;
+export default Sidebar;
