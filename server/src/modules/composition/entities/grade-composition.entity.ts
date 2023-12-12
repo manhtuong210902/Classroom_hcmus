@@ -34,8 +34,9 @@ export class GradeComposition extends Model<GradeComposition> {
 
     @Column({
         allowNull: true,
+        defaultValue: false
     })
-    status: string;
+    is_final: Boolean;
 
     @ForeignKey(() => Class)
     @Column({

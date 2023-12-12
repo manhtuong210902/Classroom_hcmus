@@ -98,3 +98,15 @@ export function removeNullValues(obj: Object): Object {
 
   return newObj;
 }
+
+export function correctStringFormat(inputString: string): string {
+  if (!inputString) {
+    return "";
+  }
+
+  const correctedString = inputString
+    .trim() 
+    .replace(/\s+/g, " ")
+
+  return correctedString;
+}
