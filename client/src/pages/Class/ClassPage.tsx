@@ -2,6 +2,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@src/components/ui/tab
 import ClassworkTab from "./components/ClassworkTab";
 import StreamTab from "./components/StreamTab/StreamTab";
 import PeopleTab from "./components/PeopleTab/PeopleTab";
+import Upload from "@src/components/UploadFile/Upload";
 
 const ClassPage = () => {
     const tabs = [
@@ -24,6 +25,7 @@ const ClassPage = () => {
 
     return (
         <div className="w-full">
+            <Upload></Upload>
             <Tabs defaultValue={tabs[0]?.title} className="w-full">
                 <TabsList className="bg-transparent px-5">
                     <TabsTrigger value={tabs[0]?.title}>{tabs[0]?.title}</TabsTrigger>

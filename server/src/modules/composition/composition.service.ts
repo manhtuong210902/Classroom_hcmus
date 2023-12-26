@@ -5,6 +5,7 @@ import { convertCamelToSnake, correctStringFormat } from 'src/lib/util/func';
 import sequelize from 'sequelize';
 import { GradeCompositionResponse } from './response/grade-composition.response';
 
+
 @Injectable()
 export class CompositionService {
     constructor(
@@ -12,7 +13,6 @@ export class CompositionService {
         private readonly gradeModel: typeof GradeComposition,
     )
     {}
-
 
     async checkIsExistName( classId: string, name: string )
         : Promise<Boolean>
@@ -137,7 +137,7 @@ export class CompositionService {
                     SELECT name, position, class_id, scale, is_final, id
                     FROM grade_compositions
                     WHERE class_id = :classId
-                    ORDER BY position DESC;
+                    ORDER BY position ASC;
                 `,
                 {
                     type: sequelize.QueryTypes.SELECT,
@@ -227,15 +227,14 @@ export class CompositionService {
         }
     }
 
-    async updatePostition(
+    async updatePostitionOfCompositions(
         classId: string,
         listCompositions :string[],
-
     )
         : Promise<Boolean>
     {
         try {
-            const listCurrent = await this.gradeModel.sequelize.query(
+            const listCurrent : any= await this.gradeModel.sequelize.query(
                 `
                 SELECT name, position, class_id, scale, is_final, id
                 FROM grade_compositions
@@ -249,9 +248,31 @@ export class CompositionService {
                     }
                 }
             )
+            Logger.log(listCompositions, listCurrent)
             if(listCompositions.length !== listCurrent.length){
                 throw new BadRequestException();
             }
+
+            for(let i=0; i < listCompositions.length; i++){
+                if(listCompositions[i] !== listCurrent[i].id) {
+                    this.gradeModel.sequelize.query(
+                        `UPDATE grade_compositions
+                        SET position = :position
+                        WHERE id = :gradeId AND class_id = :classId`,
+                        {
+                            type: sequelize.QueryTypes.UPDATE,
+                            replacements: {
+                                classId,
+                                position: i,
+                                gradeId: listCompositions[i]
+                            }
+                        }    
+                    )
+                }
+            }
+            
+            return true;
+
             
         } catch (error) {
             Logger.error(error);

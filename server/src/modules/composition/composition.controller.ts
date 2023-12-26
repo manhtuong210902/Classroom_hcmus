@@ -9,9 +9,14 @@ import {
     Logger, 
     Param, 
     Patch, 
-    Post
+    Post,
+    Req,
+    Res,
+    UploadedFile,
+    UseInterceptors
 } from '@nestjs/common';
-import { ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { Response } from 'express';
+import { ApiBody, ApiConsumes, ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { CompositionService } from './composition.service';
 import { RoleType } from 'src/lib/util/constant';
 import { Role } from 'src/lib/security/decorators/role.decorator';
@@ -22,12 +27,16 @@ import { GradeCompositionResponse } from './response/grade-composition.response'
 import { ResponseTemplate } from 'src/lib/interfaces/response.template';
 import { IsSucccessResponse } from './response/is-success.response';
 import { UpdatePositionDto } from './dto/update-position.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileService } from '../file/file.service';
+import { UploadStudentListDto } from './dto/upload-student-list.dto';
 
 @Controller('composition')
 @ApiTags('composition')
 export class CompositionController {
     constructor(
-        private readonly compositionService: CompositionService
+        private readonly compositionService: CompositionService,
+        private readonly fileService: FileService
     ){}   
 
     @Post('/:classId/management')
@@ -211,7 +220,7 @@ export class CompositionController {
     } 
 
     @HttpCode(HttpStatus.OK)
-    @Patch('/:classId/management/position')
+    @Post('/:classId/management/positions')
     @Role(RoleType.USER)
     @ClassRole([ClassRoleType.TEACHER])
     @ApiExtraModels(IsSucccessResponse)
@@ -228,7 +237,21 @@ export class CompositionController {
         : Promise<ResponseTemplate<IsSucccessResponse>>
     {
         try {
-            return
+            
+            const isSuccess : Boolean = 
+                    await this.compositionService.updatePostitionOfCompositions(classId, updateComposition.listCompositions);
+            
+            if(isSuccess){
+                const response : ResponseTemplate<IsSucccessResponse> = {
+                    data: {
+                        isSuccess: isSuccess,
+                    },
+                    message: "Success",
+                    statusCode: 200,
+                }
+                return response;
+            }
+            throw new BadRequestException();
         } catch (error) {
             Logger.error(error);
             throw new BadRequestException(error);
@@ -272,6 +295,69 @@ export class CompositionController {
         }
     }
 
+
+    @HttpCode(HttpStatus.OK)
+    @Get('/:classId/management/default-file/list-students')
+    @Role(RoleType.USER)
+    @ClassRole([ClassRoleType.TEACHER])
+    @ApiOperation({ summary: 'Download File' })
+    async geDefaultStudentListExcelFile(
+        @Res({passthrough : true}) res : Response 
+    ){
+        const buffer = await this.fileService.findOrCreateFile("list-students", "sheet 1", ["StudendId", "Full name"]);;
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.set('Content-Disposition', `attachment; filename=student-list.xlsx`);
+        return res.send(buffer);
+    }
+
     
+    @HttpCode(HttpStatus.OK)
+    @Post('/:classId/management/list-students')
+    @UseInterceptors(FileInterceptor('file'))
+    @ApiConsumes('multipart/form-data')
+    @Role(RoleType.USER)
+    @ClassRole([ClassRoleType.TEACHER])
+    @ApiExtraModels(IsSucccessResponse)
+    @ApiOperation({summary: 'Upload a file'})
+    @ApiBody({
+        schema: {
+            type: 'object',
+            properties: {
+                file: {
+                    type: 'string',
+                    format: 'binary',
+                },
+            },
+        },
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        schema: {
+            $ref: getSchemaPath(IsSucccessResponse)
+        }
+    })
+    async uploadStudentsListAndMapStudentIds(
+        @UploadedFile() file: Express.Multer.File,
+        @Body() studentListDto : UploadStudentListDto,
+        @Req() req 
+    ){
+        const fileBuffer : Buffer = file.buffer;
+        console.log(file.originalname, file.size)
+        const isStored = await this.fileService.storeChunkFile(
+                            fileBuffer,
+                            parseInt(studentListDto.chunkIndex),
+                            req.userClassId,
+                            file.originalname
+                        )
+        const response : ResponseTemplate<IsSucccessResponse> = {
+            data: {
+                isSuccess: isStored
+            },
+            message: isStored? "Success" : "Failed",
+            statusCode: 200
+        }
+        return response;
+        return "oke";
+    }
 
 }

@@ -22,6 +22,7 @@ import { ConfigService } from '@nestjs/config';
 import { MailerService } from '@nestjs-modules/mailer';
 import { INVITE_CLASS } from 'src/lib/util/constant';
 import { ListUserOfClassResponse } from './response/users-of-class.response';
+import { DataType } from 'sequelize-typescript';
 
 @Injectable()
 export class ClassService {
@@ -338,5 +339,37 @@ export class ClassService {
             },
         );
         return convertSnakeToCamel(result);
+    }
+
+    async updateStudentId(
+        userId : string,
+        classId : string,
+        studentId: string
+    )
+        : Promise<Boolean>
+    {
+        try {
+            const result = await this.classModel.sequelize.query(
+                `
+                UPDATE user_classes
+                SET student_id = :studentId
+                WHERE user_classes.class_id = :classId AND user_classes.user_id = :userId;
+                `,
+                {
+                    replacements:{
+                        userId,
+                        classId,
+                        studentId
+                    },
+                    type: sequelize.QueryTypes.UPDATE
+                }
+            )
+            if (result.length > 0){
+                return true;
+            }
+            return false;
+        } catch (error) {
+            throw new BadRequestException(error);
+        }
     }
 }

@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Response } from 'express';
-import { ErrorMessage } from 'src/utils';
 
 
 @Catch(BadRequestException)
