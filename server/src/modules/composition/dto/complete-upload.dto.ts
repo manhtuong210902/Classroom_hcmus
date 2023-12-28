@@ -8,4 +8,9 @@ export class CompleteUploadDto{
     @IsString()
     random: string
 
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    fileType: string
+
 }

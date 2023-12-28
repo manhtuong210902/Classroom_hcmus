@@ -24,22 +24,29 @@ export class FileService {
 
     }
 
-    private async createFile(
+    async createFile(
         fileName: string,
         sheetName: string,
-        columns: string[]
+        columns: string[],
+        rows : any[] = [],
+        stored : boolean = true 
     ){
         const workbook = new ExcelJs.Workbook();
         const worksheet = workbook.addWorksheet(sheetName); 
         const headerRow = worksheet.addRow(columns);
         headerRow.font = { bold: true };
         
-        const buffer = await workbook.xlsx.writeBuffer();
-        
-        const uint8Array = new Uint8Array(buffer);
-        
-        fs.writeFileSync(`./uploads/files/${fileName}.xlsx`, uint8Array);
+        for(let i=0;i < rows.length; i++){
+            worksheet.addRow(rows[i]);
+        }
 
+        const buffer = await workbook.xlsx.writeBuffer();
+
+        const uint8Array = new Uint8Array(buffer);
+
+        stored && fs.writeFileSync(`./uploads/files/${fileName}.xlsx`, uint8Array);
+        
+        return buffer;
     }    
     
     async findOrCreateFile(fileName: string, sheetName : string, columns: string[]): Promise<Buffer> {
@@ -98,10 +105,11 @@ export class FileService {
     async mergeChunksToFinalFile(
         random: string,
         classId: string,
+        queue: string
     )
         : Promise<any>
     {
-        this.chunksQueue.add('combine',{
+        this.chunksQueue.add(queue,{
             random: random,
             classId: classId
         })

@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsString } from "class-validator";
 
-export class UploadStudentListDto{
+export class UploadFileDto{
     
     @ApiProperty()
     @IsString()
@@ -17,5 +17,5 @@ export class UploadStudentListDto{
     @IsNotEmpty()
     @IsString()
     random: string
-
+    
 }

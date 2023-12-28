@@ -25,53 +25,16 @@ export class CombineChunksProcessor {
         private gradeQueue: Queue
     ){}
 
-    @Process('combine')
+    @Process('list_students')
     async handleCombineChunks(job: Job) {
         const random : string = job.data.random;
         const classId = job.data.classId; 
-
-        const chunks = await this.chunkModel.sequelize.query(
-            `
-            SELECT *
-            FROM chunks
-            WHERE random_string = :random
-            ORDER BY chunk_index ASC;
-            `,
-            {
-                replacements:{
-                    random
-                },
-                type: sequelize.QueryTypes.SELECT
-            }
-        )   
         
-        const listStudentId = await this.combineChunksAndReadFile(chunks);
+        const listStudentId = await this.combineChunksAndRead(random);
         
         await this.storeStudentIds(listStudentId, classId);
     }
 
-    private async combineChunksAndReadFile(chunks){
-        const listBuffer = chunks.map(chunk=>chunk.buffer);
-
-        const buffer : Buffer = Buffer.concat([...listBuffer]);
-        
-        const workbook = new ExcelJs.Workbook();
-        await workbook.xlsx.load(buffer);
-    
-        const worksheet = workbook.worksheets[0];
-        const data = [];
-    
-        worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
-          const rowData = [];
-          row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-            rowData[colNumber - 1] = cell.value;
-          });
-          data.push(rowData);
-        });
-    
-        return data;
-   
-    }
 
     private async storeStudentIds(listStudentId, classId){
         
@@ -104,6 +67,80 @@ export class CombineChunksProcessor {
         });
     }
 
+
+    @Process('grades')
+    async handleUpdateGrade(job: Job){
+        const random : string = job.data.random;
+        const classId = job.data.classId; 
+
+        const listGrades = await this.combineChunksAndRead(random);
+        await this.storeStudentGrade(listGrades, classId);
+
+    }
+
+    private async storeStudentGrade(
+        listGrades: any[],
+        classId : string
+    ){
+        for(let i=1; i<listGrades.length; i++){
+            const studentId = listGrades[i][0];
+            const grade = listGrades[i][1];
+            await this.studentIdModel.sequelize.query(
+                `
+                UPDATE student_compositions
+                SET
+                    grade = :grade
+                WHERE class_id = :classId AND student_id = :studentId;
+                `,
+                {
+                    replacements:{
+                        classId,
+                        grade,
+                        studentId
+                    },
+                    type: sequelize.QueryTypes.UPDATE
+                }
+            )
+        }
+    }
+
+
+    private async combineChunksAndRead(random){
+        const chunks : any[] = await this.chunkModel.sequelize.query(
+            `
+            SELECT *
+            FROM chunks
+            WHERE random_string = :random
+            ORDER BY chunk_index ASC;
+            `,
+            {
+                replacements:{
+                    random
+                },
+                type: sequelize.QueryTypes.SELECT
+            }
+        )   
+        const listBuffer = chunks.map(chunk=>chunk.buffer);
+
+        const buffer : Buffer = Buffer.concat([...listBuffer]);
+        
+        const workbook = new ExcelJs.Workbook();
+        await workbook.xlsx.load(buffer);
+    
+        const worksheet = workbook.worksheets[0];
+        const data = [];
+    
+        worksheet.eachRow({ includeEmpty: false }, (row, rowNumber) => {
+          const rowData = [];
+          row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+            rowData[colNumber - 1] = cell.value;
+          });
+          data.push(rowData);
+        });
+    
+        return data;
+   
+    }
 
     @OnQueueActive()
     onActive(job: Job) {

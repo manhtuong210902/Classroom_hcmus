@@ -27,7 +27,7 @@ const Upload = () =>{
         formData.append("random", randomString)
         
         try {
-            const response = await axiosClient.post("http://localhost:3001/api/v1/composition/e0ac9d95-a3db-42f7-b1c9-ae624e652761/management/list-students", 
+            const response = await axiosClient.post("http://localhost:3001/api/v1/composition/e0ac9d95-a3db-42f7-b1c9-ae624e652761/file/upload", 
                 formData,
                 {
                     headers: {
@@ -42,8 +42,12 @@ const Upload = () =>{
     }
 
     async function completeUpload(randomString: string){
-        const response = await axiosClient.post("http://localhost:3001/api/v1/composition/e0ac9d95-a3db-42f7-b1c9-ae624e652761/management/list-students/completed",{
-            random: randomString
+        const response = await axiosClient.post(
+            "http://localhost:3001/api/v1/composition/e0ac9d95-a3db-42f7-b1c9-ae624e652761/file/completed",
+        {
+            random: randomString,
+            // fileType: "list_students"
+            fileType: "grades"
         })
         console.log(response)
     }
