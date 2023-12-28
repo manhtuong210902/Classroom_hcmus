@@ -39,7 +39,7 @@ import { BullModule } from '@nestjs/bull';
         BullModule,
         CloudinaryModule,
         ...serviceModules,
-        FileModule
+        FileModule,
     ],
     controllers: [AppController],
     providers: [

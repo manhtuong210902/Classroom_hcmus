@@ -13,4 +13,9 @@ export class UploadStudentListDto{
     @IsNotEmpty()
     chunkIndex: string
 
+    @ApiProperty()
+    @IsNotEmpty()
+    @IsString()
+    random: string
+
 }

@@ -1,5 +1,4 @@
-import { Column, Model, DataType, Table, ForeignKey } from 'sequelize-typescript';
-import { UserClass } from 'src/modules/class/entities/user-class.entity';
+import { Column, Model, DataType, Table, ForeignKey, BeforeUpdate } from 'sequelize-typescript';
 import { GradeComposition } from './grade-composition.entity';
 
 
@@ -19,9 +18,8 @@ export class StudentComposition extends Model<StudentComposition> {
     })
     id: string;
 
-    @ForeignKey(()=>UserClass)
     @Column({
-        type: DataType.UUID,
+        type: DataType.STRING,
     })
     student_id: string;
 
@@ -29,13 +27,20 @@ export class StudentComposition extends Model<StudentComposition> {
     @Column({
         type: DataType.UUID,
     })
-    composition_id: string;
+    grade_id: string;
 
     @Column({
         allowNull: true,
         type: DataType.FLOAT
     })
     grade: number;
+
+    @Column({
+        type: DataType.UUID,
+        allowNull: false,
+    })
+    class_id: string;
+
 
     @Column({
         defaultValue: DataType.NOW,
@@ -52,5 +57,10 @@ export class StudentComposition extends Model<StudentComposition> {
         allowNull: true,
     })
     deleted_at: Date;
+
+    @BeforeUpdate
+    static runBeforeUpdate(instance: StudentComposition) {
+        instance.updated_at = new Date();
+    }
 
 }

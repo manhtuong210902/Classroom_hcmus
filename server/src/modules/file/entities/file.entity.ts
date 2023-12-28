@@ -36,10 +36,4 @@ export class File extends Model<File> {
     })
     size: number;
 
-    @Column({
-        type: DataType.BOOLEAN,
-        allowNull: false
-    })
-    is_multipart: boolean;
-
 }

@@ -5,6 +5,7 @@ import { UserClass } from "./class/entities/user-class.entity";
 import { CompositionModule } from "./composition/composition.module";
 import { GradeComposition } from "./composition/entities/grade-composition.entity";
 import { StudentComposition } from "./composition/entities/student-composition.entity";
+import { StudentId } from "./composition/entities/student-id.entity";
 import { Chunk } from "./file/entities/chunk.entity";
 import { File } from "./file/entities/file.entity";
 import { CommentReview } from "./review/entities/comment-review.entity";
@@ -27,7 +28,8 @@ export const sequelizeModules = [
     ReviewComposition,
     CommentReview,
     File,
-    Chunk
+    Chunk,
+    StudentId
 ]
 
 export const serviceModules = [

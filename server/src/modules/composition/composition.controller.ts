@@ -10,6 +10,7 @@ import {
     Param, 
     Patch, 
     Post,
+    Query,
     Req,
     Res,
     UploadedFile,
@@ -30,6 +31,9 @@ import { UpdatePositionDto } from './dto/update-position.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FileService } from '../file/file.service';
 import { UploadStudentListDto } from './dto/upload-student-list.dto';
+import { CompleteUploadDto } from './dto/complete-upload.dto';
+import { GradeBoardResponse } from './response/grade-board.response';
+import { UpdateOneBoardDto } from './dto/update-one-board.dto';
 
 @Controller('composition')
 @ApiTags('composition')
@@ -342,12 +346,13 @@ export class CompositionController {
         @Req() req 
     ){
         const fileBuffer : Buffer = file.buffer;
-        console.log(file.originalname, file.size)
+        
         const isStored = await this.fileService.storeChunkFile(
                             fileBuffer,
                             parseInt(studentListDto.chunkIndex),
                             req.userClassId,
-                            file.originalname
+                            file.originalname,
+                            `${req.user.id}:${studentListDto.random}`
                         )
         const response : ResponseTemplate<IsSucccessResponse> = {
             data: {
@@ -357,7 +362,102 @@ export class CompositionController {
             statusCode: 200
         }
         return response;
-        return "oke";
     }
 
+    @HttpCode(HttpStatus.OK)
+    @Post('/:classId/management/list-students/completed')
+    @Role(RoleType.USER)
+    @ClassRole([ClassRoleType.TEACHER])
+    async completedUploadingFile(
+        @Param('classId') classId: string,
+        @Req() req,
+        @Body() completeUploadDto: CompleteUploadDto
+    )
+        : Promise<ResponseTemplate<null>>
+    {
+        const random = `${req.user.id}:${completeUploadDto.random}`;
+        
+        this.fileService.mergeChunksToFinalFile(random, classId);
+        
+        const response : ResponseTemplate<null> = {
+            data: null,
+            message: "Success",
+            statusCode: HttpStatus.OK
+        }
+        return response;
+    }
+
+    @HttpCode(HttpStatus.OK)
+    @Get('/:classId/management/grade-board')
+    @Role(RoleType.USER)
+    @ClassRole([ClassRoleType.TEACHER])
+    @ApiExtraModels(GradeBoardResponse)
+    @ApiResponse({
+        status: HttpStatus.OK,
+        schema:{
+            type: 'array',
+            items: {
+                $ref: getSchemaPath(GradeBoardResponse)
+            }
+        }
+    })
+    async getGradeBoard(
+        @Req() req,
+        @Param('classId') classId: string,
+        @Query() query
+    )
+        : Promise<ResponseTemplate<Object>> 
+    {
+        const studentId = query?.student_id || null;
+        const gradeId = query?.grade_id || null;
+        
+        let data = null;
+
+        // case: get a grade of a student
+        // this case is not supported
+        if(studentId && gradeId) {
+            throw new BadRequestException();
+        }
+        // case: get list of students for a grade
+        else if (!studentId && gradeId ){
+            data = await this.compositionService.getStudentsbyGradeId(classId, gradeId)
+        }
+        // case: get list of grades for a student
+        else if (studentId && !gradeId) {
+            data = await this.compositionService.getGradesByStudentId(classId, studentId, true);
+        }
+        // case: get all board
+        // Priority is given based on grade
+        else{
+            data = await this.compositionService.getGradeBoard(classId);   
+        }
+        const response : ResponseTemplate<Object> = {
+            data: data,
+            message: "Success",
+            statusCode: HttpStatus.OK
+        }
+        return response;
+    }
+
+
+    @HttpCode(HttpStatus.OK)
+    @Patch('/:classId/management/grade-board')
+    @Role(RoleType.USER)
+    @ClassRole([ClassRoleType.TEACHER])
+    async updateGradeBoardOne(
+        @Req() req,
+        @Param('classId') classId : string,
+        @Body() updateOne : UpdateOneBoardDto
+    )
+        : Promise<ResponseTemplate<null>>
+    {
+        await this.compositionService.updateBoardOne(updateOne, classId);    
+        const response : ResponseTemplate<null>= {
+            data: null,
+            message: "Updated",
+            statusCode: HttpStatus.OK
+        }
+        return response;    
+    }
+    
 }

@@ -7,12 +7,11 @@ import {
 } from '@nestjs/swagger';
 import { ClassService } from './class.service';
 import { CreateClassDto } from './dto/create-class.dto';
-import { Get, Param, Patch, Query, Req } from '@nestjs/common/decorators';
+import { Get, Param, Query, Req } from '@nestjs/common/decorators';
 import { Role } from 'src/lib/security/decorators/role.decorator';
 import { RoleType } from 'src/lib/util/constant';
 import { CreateClassResponse } from './response/create-class.response';
 import { ResponseTemplate } from 'src/lib/interfaces/response.template';
-import { AddUserToClassDto } from './dto/add-user.dto';
 import { ClassRole } from 'src/lib/security/decorators/class-role.decorator';
 import { ClassRoleType } from 'src/utils';
 import { ClassOfUserResponse } from './response/classes-of-user.response';

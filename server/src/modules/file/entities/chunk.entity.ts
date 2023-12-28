@@ -19,6 +19,12 @@ export class Chunk extends Model<Chunk> {
     })
     file_name: string;
 
+    @Column({
+        type: DataType.STRING,
+        allowNull: false
+    })
+    random_string: string;
+
     @ForeignKey(()=> User)
     @Column({
         type: DataType.UUID,

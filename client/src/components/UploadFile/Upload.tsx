@@ -1,12 +1,31 @@
 import axiosClient from "@src/services/axiosClient";
+import { useState } from "react";
 
 
 const Upload = () =>{
-    async function uploadChunk(chunk : Blob, chunkIndex : string, isMultiparts : Boolean) {
+
+    const [percent, setPersent] = useState(0)
+
+    const generateRandomString = () => {
+        const length = 10; 
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+    
+        for (let i = 0; i < length; i++) {
+          const randomIndex = Math.floor(Math.random() * characters.length);
+          result += characters.charAt(randomIndex);
+        }
+    
+        return result;
+    };
+
+    async function uploadChunk(chunk : Blob, chunkIndex : string, isMultiparts : Boolean, randomString: string){
         const formData = new FormData();
         formData.append("file", chunk);
         formData.append("chunkIndex", chunkIndex);
         formData.append("isMultiparts", isMultiparts.toString());
+        formData.append("random", randomString)
+        
         try {
             const response = await axiosClient.post("http://localhost:3001/api/v1/composition/e0ac9d95-a3db-42f7-b1c9-ae624e652761/management/list-students", 
                 formData,
@@ -16,22 +35,24 @@ const Upload = () =>{
                     },
                 }
             );
-    
             console.log(response)
         } catch (error) {
             console.error(error);
         }
     }
 
-    async function completeUpload(){
-        const response = await axiosClient.post("http://localhost:3001/api/v1/composition/e0ac9d95-a3db-42f7-b1c9-ae624e652761/management/list-students")
+    async function completeUpload(randomString: string){
+        const response = await axiosClient.post("http://localhost:3001/api/v1/composition/e0ac9d95-a3db-42f7-b1c9-ae624e652761/management/list-students/completed",{
+            random: randomString
+        })
         console.log(response)
     }
 
     const handleUpload =  async(event :any) => {
+            const randomString =  generateRandomString();
 
             const file = event.target.files[0];
-            const chunkSize = 50 * 1024; // Set the desired chunk size (100MB in this example)
+            const chunkSize = 200 * 1024; // Set the desired chunk size (100MB in this example)
             const totalChunks = Math.ceil(file.size / chunkSize);
         
             let isMultiparts : Boolean = true;
@@ -47,18 +68,22 @@ const Upload = () =>{
                 const chunk = file.slice(start, end);
     
                 // Make an API call to upload the chunk to the backend
-                await uploadChunk(chunk, chunkIndex.toString(), isMultiparts);
+                await uploadChunk(chunk, chunkIndex.toString(), isMultiparts, randomString);
+                const uploaded = parseFloat((100*(chunkIndex+1)/totalChunks).toFixed(2));
+                setPersent(uploaded);
             }
-
-            completeUpload();
-
+            completeUpload(randomString);
             
     }; 
     
     return (
-        <>
+        <>  
             <button id="btn-import">Upload</button>
             <input id="file-input" type="file" onChange={handleUpload}/>
+            {
+                percent!=0 && <div>uploaded {percent}%</div>
+            }
+
         </>
     )
 }
