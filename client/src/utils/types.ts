@@ -31,3 +31,11 @@ export interface MessageInfo {
     statusCode: number;
     message: string;
 }
+
+export interface GradeComposition {
+    id: string;
+    classId: string;
+    isFinal: boolean;
+    name: string;
+    scale: number;
+}

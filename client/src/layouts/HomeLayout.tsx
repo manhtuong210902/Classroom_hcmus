@@ -3,6 +3,7 @@ import Sidebar from "@src/components/Sidebar/Sidebar";
 import routes from "@src/configs/router";
 import { useAppDispatch, useAppSelector } from "@src/hooks/appHook";
 import { getClassDetail, getListClass } from "@src/services/class/apiRequest";
+import { getGradeCompositions } from "@src/services/grade/apiRequest";
 import { selectCurrClass, setCurrClass } from "@src/store/reducers/classSlice";
 import { CLASS_URL_REGEX } from "@src/utils/regex";
 import { useEffect, useState } from "react";
@@ -30,6 +31,17 @@ const HomeLayout = ({ children }: Props) => {
             }
         });
     }, []);
+
+    useEffect(() => {
+        if (params?.id) {
+            getGradeCompositions(dispatch, params?.id).then((data: any) => {
+                if (data.statusCode !== 200) {
+                    toast.error(data.message);
+                    return;
+                }
+            });
+        }
+    }, [params?.id]);
 
     useEffect(() => {
         if (CLASS_URL_REGEX.test(location.pathname)) {
