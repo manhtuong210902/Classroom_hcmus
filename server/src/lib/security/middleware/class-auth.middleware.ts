@@ -32,7 +32,7 @@ export class ClassAuthMiddleware implements NestMiddleware {
                 next();
                 return;
             }
-
+            req.userClassId = info.id;
             req.classRoles = [info.role_name];
             if (req.user.id === info.owner) {
                 req.classRoles.push(ClassRoleType.OWNER);

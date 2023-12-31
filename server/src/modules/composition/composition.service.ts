@@ -1,9 +1,11 @@
 import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
 import { GradeComposition } from './entities/grade-composition.entity';
 import { GradeCompositionDto } from './dto/grade-composition.dto';
-import { convertCamelToSnake, correctStringFormat } from 'src/lib/util/func';
+import { convertCamelToSnake, convertSnakeToCamel, correctStringFormat } from 'src/lib/util/func';
 import sequelize from 'sequelize';
 import { GradeCompositionResponse } from './response/grade-composition.response';
+import { UpdateOneBoardDto } from './dto/update-one-board.dto';
+
 
 @Injectable()
 export class CompositionService {
@@ -12,7 +14,6 @@ export class CompositionService {
         private readonly gradeModel: typeof GradeComposition,
     )
     {}
-
 
     async checkIsExistName( classId: string, name: string )
         : Promise<Boolean>
@@ -137,7 +138,7 @@ export class CompositionService {
                     SELECT name, position, class_id, scale, is_final, id
                     FROM grade_compositions
                     WHERE class_id = :classId
-                    ORDER BY position DESC;
+                    ORDER BY position ASC;
                 `,
                 {
                     type: sequelize.QueryTypes.SELECT,
@@ -227,15 +228,14 @@ export class CompositionService {
         }
     }
 
-    async updatePostition(
+    async updatePostitionOfCompositions(
         classId: string,
         listCompositions :string[],
-
     )
         : Promise<Boolean>
     {
         try {
-            const listCurrent = await this.gradeModel.sequelize.query(
+            const listCurrent : any= await this.gradeModel.sequelize.query(
                 `
                 SELECT name, position, class_id, scale, is_final, id
                 FROM grade_compositions
@@ -249,9 +249,31 @@ export class CompositionService {
                     }
                 }
             )
+            Logger.log(listCompositions, listCurrent)
             if(listCompositions.length !== listCurrent.length){
                 throw new BadRequestException();
             }
+
+            for(let i=0; i < listCompositions.length; i++){
+                if(listCompositions[i] !== listCurrent[i].id) {
+                    this.gradeModel.sequelize.query(
+                        `UPDATE grade_compositions
+                        SET position = :position
+                        WHERE id = :gradeId AND class_id = :classId`,
+                        {
+                            type: sequelize.QueryTypes.UPDATE,
+                            replacements: {
+                                classId,
+                                position: i,
+                                gradeId: listCompositions[i]
+                            }
+                        }    
+                    )
+                }
+            }
+            
+            return true;
+
             
         } catch (error) {
             Logger.error(error);
@@ -282,7 +304,7 @@ export class CompositionService {
                     type: sequelize.QueryTypes.UPDATE
                 }
             );
-            console.log(updated)
+            
             if(updated.length === 0){
                 return false;
             }
@@ -293,4 +315,152 @@ export class CompositionService {
         }
     }
 
+
+    // if isTeacher === true: return all list
+    // else  return grades set final
+    async getGradesByStudentId(
+        classId: string,
+        studentId: string,
+        isTeacher: boolean  = false
+    ){
+        const listGrades = await this.gradeModel.sequelize.query(
+            `
+            SELECT *
+            FROM student_compositions as sc
+            JOIN student_ids as si ON si.student_id = sc.student_id
+            JOIN grade_compositions as gc ON gc.id = sc.grade_id
+                AND
+                CASE 
+                    WHEN :isTeacher = false THEN is_final = true
+                    ELSE true
+                END 
+            WHERE sc.class_id = :classId AND sc.student_id= :studentId;
+            `,
+            {
+                replacements:{
+                    classId,
+                    studentId,
+                    isTeacher
+                },
+                type: sequelize.QueryTypes.SELECT
+            }
+        )
+        return convertSnakeToCamel(listGrades);
+    }
+
+
+    // get all grade of students by grade_composition
+    async getStudentsbyGradeId(
+        classId: string,
+        gradeId: string
+    ){
+        const listStudents = await this.gradeModel.sequelize.query(
+            `
+            SELECT *
+            FROM student_compositions as sc
+            JOIN student_ids as si ON si.student_id = sc.student_id
+            JOIN grade_compositions as gc ON gc.id = sc.grade_id
+            WHERE sc.class_id = :classId AND sc.grade_id= :gradeId;
+            `,
+            {
+                replacements:{
+                    classId,
+                    gradeId
+                },
+                type: sequelize.QueryTypes.SELECT
+            }
+        )
+        return convertSnakeToCamel(listStudents);  
+    }
+
+    // get all students and grades in grade board
+    async getGradeBoard(
+        classId: string
+    ){
+        const countStudents : any = await this.gradeModel.sequelize.query(
+            `
+            SELECT COUNT(1)
+            FROM student_ids;
+            `,
+            {
+                type: sequelize.QueryTypes.SELECT
+            }
+        )
+      
+        const gradeBoard = await this.gradeModel.sequelize.query(
+            `
+            SELECT *
+            FROM student_compositions as sc
+            JOIN student_ids as si ON si.student_id = sc.student_id
+            JOIN grade_compositions as gc ON gc.id = sc.grade_id
+            WHERE sc.class_id = :classId;
+            `,
+            {
+                replacements:{
+                    classId
+                },
+                type: sequelize.QueryTypes.SELECT
+            }
+        )
+        return {
+            list: convertSnakeToCamel(gradeBoard),
+            countStudents: parseInt(countStudents[0]?.count) || 0
+        }; 
+    }
+
+    async updateBoardOne(
+        updateOne: UpdateOneBoardDto,
+        classId: string,
+    ){
+        try {
+            // update studentId list
+            if(updateOne?.newFullName || updateOne?.studentId){
+                this.gradeModel.sequelize.query(
+                    `
+                    UPDATE student_ids
+                    SET 
+                        student_id = COALESCE(:newStudentId, student_id),
+                        full_name = COALESCE(:newFullName, full_name)
+                    WHERE student_id = :studentId AND class_id = :classId; 
+                    `,
+                    {
+                        replacements:{
+                            newStudentId: updateOne?.newStudentId,
+                            newFullName: updateOne?.newFullName,
+                            studentId: updateOne.studentId,
+                            classId
+                        },
+                        type: sequelize.QueryTypes.UPDATE
+                    }
+                )
+            }
+
+            // update scale
+            if(updateOne?.scale) {
+                this.gradeModel.sequelize.query(
+                    `
+                    UPDATE student_compositions
+                    SET 
+                        scale = :scale
+                    WHERE
+                        student_id = :studentId
+                        AND class_id = :classId
+                        AND grade_id = :gradeId;
+                    `,
+                    {
+                        replacements: {
+                            scale: updateOne?.scale,
+                            studentId: updateOne?.studentId,
+                            classId: classId,
+                            gradeId: updateOne?.gradeId
+                        },
+                        type: sequelize.QueryTypes.UPDATE
+                    }
+                )
+            }   
+        } catch (error) {
+            throw new BadRequestException(error);            
+        }
+        
+    }
 }

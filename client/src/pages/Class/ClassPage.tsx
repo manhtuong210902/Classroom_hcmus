@@ -5,6 +5,7 @@ import { useAppSelector } from "@src/hooks/appHook";
 import { selectCurrClass } from "@src/store/reducers/classSlice";
 import GradesTab from "./components/GradesTab/GradesTab";
 import GradeCompositionTab from "./components/GradesCompostionTab/GradeCompositionTab";
+import Upload from "@src/components/UploadFile/Upload";
 
 const ClassPage = () => {
     const currClass = useAppSelector(selectCurrClass);
@@ -35,6 +36,7 @@ const ClassPage = () => {
 
     return (
         <div className="w-full">
+            <Upload></Upload>
             <Tabs defaultValue={tabs[0]?.title} className="w-full">
                 <TabsList className="bg-transparent px-5">
                     <TabsTrigger value={tabs[0]?.title}>{tabs[0]?.title}</TabsTrigger>

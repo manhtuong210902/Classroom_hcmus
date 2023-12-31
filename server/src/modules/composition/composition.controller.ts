@@ -9,9 +9,15 @@ import {
     Logger, 
     Param, 
     Patch, 
-    Post
+    Post,
+    Query,
+    Req,
+    Res,
+    UploadedFile,
+    UseInterceptors
 } from '@nestjs/common';
-import { ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { Response } from 'express';
+import { ApiBody, ApiConsumes, ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { CompositionService } from './composition.service';
 import { RoleType } from 'src/lib/util/constant';
 import { Role } from 'src/lib/security/decorators/role.decorator';
@@ -22,12 +28,20 @@ import { GradeCompositionResponse } from './response/grade-composition.response'
 import { ResponseTemplate } from 'src/lib/interfaces/response.template';
 import { IsSucccessResponse } from './response/is-success.response';
 import { UpdatePositionDto } from './dto/update-position.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileService } from '../file/file.service';
+import { UploadFileDto } from './dto/upload-file.dto';
+import { CompleteUploadDto } from './dto/complete-upload.dto';
+import { GradeBoardResponse } from './response/grade-board.response';
+import { UpdateOneBoardDto } from './dto/update-one-board.dto';
+import { FileType } from 'src/utils/types/file-type';
 
 @Controller('composition')
 @ApiTags('composition')
 export class CompositionController {
     constructor(
-        private readonly compositionService: CompositionService
+        private readonly compositionService: CompositionService,
+        private readonly fileService: FileService
     ){}   
 
     @Post('/:classId/management')
@@ -211,7 +225,7 @@ export class CompositionController {
     } 
 
     @HttpCode(HttpStatus.OK)
-    @Patch('/:classId/management/position')
+    @Post('/:classId/management/positions')
     @Role(RoleType.USER)
     @ClassRole([ClassRoleType.TEACHER])
     @ApiExtraModels(IsSucccessResponse)
@@ -228,7 +242,21 @@ export class CompositionController {
         : Promise<ResponseTemplate<IsSucccessResponse>>
     {
         try {
-            return
+            
+            const isSuccess : Boolean = 
+                    await this.compositionService.updatePostitionOfCompositions(classId, updateComposition.listCompositions);
+            
+            if(isSuccess){
+                const response : ResponseTemplate<IsSucccessResponse> = {
+                    data: {
+                        isSuccess: isSuccess,
+                    },
+                    message: "Success",
+                    statusCode: 200,
+                }
+                return response;
+            }
+            throw new BadRequestException();
         } catch (error) {
             Logger.error(error);
             throw new BadRequestException(error);
@@ -272,6 +300,210 @@ export class CompositionController {
         }
     }
 
-    
 
+    @HttpCode(HttpStatus.OK)
+    @Get('/:classId/default-file/list-students')
+    @Role(RoleType.USER)
+    @ClassRole([ClassRoleType.TEACHER])
+    @ApiOperation({ summary: 'Download File' })
+    async getDefaultStudentListExcelFile(
+        @Res({passthrough : true}) res : Response 
+    ){
+        const buffer = await this.fileService.findOrCreateFile("list-students", "sheet 1", ["StudendId", "Full name"]);;
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.set('Content-Disposition', `attachment; filename=student-list.xlsx`);
+        return res.send(buffer);
+    }
+
+    
+    @HttpCode(HttpStatus.OK)
+    @Post('/:classId/file/upload')
+    @UseInterceptors(FileInterceptor('file'))
+    @ApiConsumes('multipart/form-data')
+    @Role(RoleType.USER)
+    @ClassRole([ClassRoleType.TEACHER])
+    @ApiExtraModels(IsSucccessResponse)
+    @ApiOperation({summary: 'Upload a file'})
+    @ApiBody({
+        schema: {
+            type: 'object',
+            properties: {
+                file: {
+                    type: 'string',
+                    format: 'binary',
+                },
+            },
+        },
+    })
+    @ApiResponse({
+        status: HttpStatus.OK,
+        schema: {
+            $ref: getSchemaPath(IsSucccessResponse)
+        }
+    })
+    async uploadFiles(
+        @UploadedFile() file: Express.Multer.File,
+        @Body() uploadDto : UploadFileDto,
+        @Req() req,
+
+    ){
+        const fileBuffer : Buffer = file.buffer;
+        
+        const isStored = await this.fileService.storeChunkFile(
+                            fileBuffer,
+                            parseInt(uploadDto.chunkIndex),
+                            req.userClassId,
+                            file.originalname,
+                            `${req.user.id}:${uploadDto.random}`
+                        )
+        const response : ResponseTemplate<IsSucccessResponse> = {
+            data: {
+                isSuccess: isStored
+            },
+            message: isStored? "Success" : "Failed",
+            statusCode: 200
+        }
+        return response;
+    }
+
+    @HttpCode(HttpStatus.OK)
+    @Post('/:classId/file/completed')
+    @Role(RoleType.USER)
+    @ClassRole([ClassRoleType.TEACHER])
+    async completedUploadingFile(
+        @Param('classId') classId: string,
+        @Req() req,
+        @Body() completeUploadDto: CompleteUploadDto,
+    )
+        : Promise<ResponseTemplate<null>>
+    {
+        const random = `${req.user.id}:${completeUploadDto.random}`;
+        const fileType =completeUploadDto.fileType;
+        if(!fileType || (fileType != FileType.STUDENT && fileType != FileType.GRADE)){
+            throw new BadRequestException();
+        }
+        
+        
+        this.fileService.mergeChunksToFinalFile(random, classId, fileType);
+        
+        const response : ResponseTemplate<null> = {
+            data: null,
+            message: "Success",
+            statusCode: HttpStatus.OK
+        }
+        return response;
+    }
+
+    @HttpCode(HttpStatus.OK)
+    @Get('/:classId/management/grade-board')
+    @Role(RoleType.USER)
+    @ClassRole([ClassRoleType.TEACHER])
+    @ApiExtraModels(GradeBoardResponse)
+    @ApiResponse({
+        status: HttpStatus.OK,
+        schema:{
+            type: 'array',
+            items: {
+                $ref: getSchemaPath(GradeBoardResponse)
+            }
+        }
+    })
+    async getGradeBoard(
+        @Req() req,
+        @Param('classId') classId: string,
+        @Query() query
+    )
+        : Promise<ResponseTemplate<Object>> 
+    {
+        const studentId = query?.student_id || null;
+        const gradeId = query?.grade_id || null;
+        
+        let data = null;
+
+        // case: get a grade of a student
+        // this case is not supported
+        if(studentId && gradeId) {
+            throw new BadRequestException();
+        }
+        // case: get list of students for a grade
+        else if (!studentId && gradeId ){
+            data = await this.compositionService.getStudentsbyGradeId(classId, gradeId)
+        }
+        // case: get list of grades for a student
+        else if (studentId && !gradeId) {
+            data = await this.compositionService.getGradesByStudentId(classId, studentId, true);
+        }
+        // case: get all board
+        // Priority is given based on grade
+        else{
+            data = await this.compositionService.getGradeBoard(classId);   
+        }
+        const response : ResponseTemplate<Object> = {
+            data: data,
+            message: "Success",
+            statusCode: HttpStatus.OK
+        }
+        return response;
+    }
+
+
+    @HttpCode(HttpStatus.OK)
+    @Patch('/:classId/management/grade-board')
+    @Role(RoleType.USER)
+    @ClassRole([ClassRoleType.TEACHER])
+    async updateGradeBoardOne(
+        @Req() req,
+        @Param('classId') classId : string,
+        @Body() updateOne : UpdateOneBoardDto
+    )
+        : Promise<ResponseTemplate<null>>
+    {
+        await this.compositionService.updateBoardOne(updateOne, classId);    
+        const response : ResponseTemplate<null>= {
+            data: null,
+            message: "Updated",
+            statusCode: HttpStatus.OK
+        }
+        return response;    
+    }
+
+    @HttpCode(HttpStatus.OK)
+    @Get('/:classId/default-file/grade')
+    @Role(RoleType.USER)
+    @ClassRole([ClassRoleType.TEACHER])
+    @ApiOperation({ summary: 'Download File' })
+    async getDefaultGradeExcelFile(
+        @Res({passthrough : true}) res : Response,
+        @Param('classId') classId: string,
+        @Query() query 
+    ){
+        const gradeId : string | null= query?.grade_id;
+
+        if (!gradeId){
+            throw new BadRequestException();
+        }
+        
+        const listStudentId = await this.compositionService.getStudentsbyGradeId(classId, gradeId);;
+
+        if(listStudentId.length ===0){
+            throw new BadRequestException();
+        }
+        
+        const rows = listStudentId.map(student =>{
+            return [student.studentId, ''];
+        }) 
+        
+        const gradeName : string = listStudentId[0].name;
+        
+        const buffer = await this.fileService.createFile(
+            "grade", 
+            "sheet 1", 
+            ["StudendId", gradeName],
+            rows,
+            false
+        );
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.set('Content-Disposition', `attachment; filename=grade.xlsx`);
+        return res.send(buffer);
+    }
 }

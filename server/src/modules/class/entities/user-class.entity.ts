@@ -14,6 +14,12 @@ export class UserClass extends Model<UserClass>{
         primaryKey: true,
     })
     id: string;
+
+    @Column({
+        type: DataType.STRING,
+        allowNull: true,
+    })
+    student_id: string;
     
     @ForeignKey(() => User)
     @Column({

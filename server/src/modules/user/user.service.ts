@@ -3,7 +3,6 @@ import { User } from './entities/user.entity';
 import { Role } from '../role/role.entity';
 import { omit } from 'lodash';
 import { convertCamelToSnake } from 'src/lib/util/func';
-import { Class } from '../class/entities/class.entity';
 import sequelize from 'sequelize';
 
 @Injectable()
@@ -39,7 +38,7 @@ export class UserService {
     async findUserInClassWithRole(userId: string, classId: string){
         const result = await this.userModel.sequelize.query(
                 `SELECT 
-                user_classes.role_id , classes.owner_id as owner, roles.role_name 
+                user_classes.role_id , classes.owner_id as owner, roles.role_name, user_classes.id as id
                 FROM roles
                 JOIN users ON users.id = :userId 
                 JOIN (user_classes JOIN classes ON classes.id = user_classes.class_id) 
