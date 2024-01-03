@@ -255,9 +255,11 @@ export class ReviewService {
         try {
             const query = await this.commentModel.sequelize.query(
                 `
-                SELECT * 
-                FROM comment_reviews
-                WHERE review_id = :reviewId;
+                SELECT cr.*, users.fullname, users.img_url
+                FROM comment_reviews AS cr
+                JOIN users 
+                ON users.id = cr.user_id 
+                WHERE cr.review_id = :reviewId;
                 `,
                 {
                     replacements:{
