@@ -394,6 +394,36 @@ export class CompositionController {
         return response;
     }
 
+
+    @HttpCode(HttpStatus.OK)
+    @Get('/:classId/view-grades')
+    @Role(RoleType.USER)
+    @ClassRole([ClassRoleType.STUDENT])
+    @ApiExtraModels(GradeBoardResponse)
+    @ApiResponse({
+        status: HttpStatus.OK,
+        schema:{
+            type: 'array',
+            items: {
+                $ref: getSchemaPath(GradeBoardResponse)
+            }
+        }
+    })
+    async getGradesBuStudentId(
+        @Param('classId') classId: string,
+        @Req() req,
+    ){
+        const studentId = await this.compositionService.getStudentId(req.user.id, classId);
+        const data = await this.compositionService.getGradesByStudentId(classId,studentId, false);
+        const response : ResponseTemplate<GradeBoardResponse> = {
+            data: data,
+            message: "Success",
+            statusCode: HttpStatus.OK
+        }
+        return response;
+    }
+
+
     @HttpCode(HttpStatus.OK)
     @Get('/:classId/management/grade-board')
     @Role(RoleType.USER)

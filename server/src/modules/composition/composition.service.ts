@@ -15,6 +15,30 @@ export class CompositionService {
     )
     {}
 
+
+    async getStudentId(userId, classId){
+        try {
+            const studentId : any[]= await this.gradeModel.sequelize.query(
+                `
+                SELECT student_id
+                FROM user_classes
+                WHERE class_id =:classId AND user_id =:userId;
+                `,
+                {
+                    replacements:{
+                        userId,
+                        classId
+                    },
+                    type: sequelize.QueryTypes.SELECT
+                }
+            )
+            return studentId[0].student_id;
+            
+        } catch (error) {
+            return null;
+        }
+    }
+
     async checkIsExistName( classId: string, name: string )
         : Promise<Boolean>
     {
