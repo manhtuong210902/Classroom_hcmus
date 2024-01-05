@@ -4,6 +4,7 @@ import "./App.css";
 import React from "react";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import "react-toastify/dist/ReactToastify.css";
+import "../i18n.config.js";
 
 function App() {
     return (
