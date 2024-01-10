@@ -1,4 +1,4 @@
-import { Module, RequestMethod} from '@nestjs/common';
+import { Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -19,6 +19,7 @@ import { ClassRolesGuard } from './lib/security/guard/class-role.guard';
 import { sequelizeModules, serviceModules } from './modules';
 import { FileModule } from './modules/file/file.module';
 import { BullModule } from '@nestjs/bull';
+import { SocketModule } from './modules/socket/socket.module';
 
 @Module({
     imports: [
@@ -40,6 +41,7 @@ import { BullModule } from '@nestjs/bull';
         CloudinaryModule,
         ...serviceModules,
         FileModule,
+        SocketModule,
     ],
     controllers: [AppController],
     providers: [
