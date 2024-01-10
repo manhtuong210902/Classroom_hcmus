@@ -20,6 +20,7 @@ import { sequelizeModules, serviceModules } from './modules';
 import { FileModule } from './modules/file/file.module';
 import { BullModule } from '@nestjs/bull';
 import { SocketModule } from './modules/socket/socket.module';
+import { NotificationModule } from './modules/notification/notification.module';
 
 @Module({
     imports: [
@@ -42,6 +43,7 @@ import { SocketModule } from './modules/socket/socket.module';
         ...serviceModules,
         FileModule,
         SocketModule,
+        NotificationModule,
     ],
     controllers: [AppController],
     providers: [
