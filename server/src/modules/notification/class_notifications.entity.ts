@@ -1,5 +1,6 @@
 import { Column, Model, DataType, Table, BelongsToMany, ForeignKey } from 'sequelize-typescript';
 import { UserClass } from '../class/entities/user-class.entity';
+import { Class } from '../class/entities/class.entity';
 
 @Table({
     tableName: "class_notifications",
@@ -19,6 +20,12 @@ export class Notification extends Model {
     })
     user_class_id: string;
 
+    @ForeignKey(()=>Class)
+    @Column({
+        type: DataType.UUID,
+    })
+    class_id: string;
+
     @Column({
         type: DataType.TEXT
     })
@@ -30,7 +37,8 @@ export class Notification extends Model {
     type: string;
 
     @Column({
-        type: DataType.UUID
+        type: DataType.UUID,
+        allowNull: true
     })
     entry_id: string;
 

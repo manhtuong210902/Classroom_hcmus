@@ -8,6 +8,7 @@ import { StudentComposition } from "./composition/entities/student-composition.e
 import { StudentId } from "./composition/entities/student-id.entity";
 import { Chunk } from "./file/entities/chunk.entity";
 import { File } from "./file/entities/file.entity";
+import { Notification } from "./notification/class_notifications.entity";
 import { CommentReview } from "./review/entities/comment-review.entity";
 import { ReviewComposition } from "./review/entities/review-compostion.entity";
 import { ReviewModule } from "./review/review.module";
@@ -29,7 +30,8 @@ export const sequelizeModules = [
     CommentReview,
     File,
     Chunk,
-    StudentId
+    StudentId,
+    Notification
 ]
 
 export const serviceModules = [
