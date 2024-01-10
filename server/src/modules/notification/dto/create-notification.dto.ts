@@ -1,22 +1,23 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsString } from "class-validator";
 
-export class CreateNotificationDto{
+export class CreateNotificationDto {
     @ApiProperty()
     @IsString()
-    @IsNotEmpty({"message": "Class name is required"})
-    name: string;
+    @IsNotEmpty({ "message": "userClassId is required" })
+    userClassId: string;
 
     @ApiProperty()
     @IsString()
-    @IsNotEmpty({"message": "Class title is required"})
-    title: string;
+    @IsNotEmpty({ "message": "Content is required" })
+    content: string;
 
     @ApiProperty()
     @IsString()
-    description: string;
+    @IsNotEmpty({ "message": "Content is required" })
+    type: string;
 
     @ApiProperty()
     @IsString()
-    subject: string;
+    entryId: string;
 }

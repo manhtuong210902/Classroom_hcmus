@@ -7,7 +7,7 @@ import { convertCamelToSnake } from 'src/lib/util/func';
 export class NotificationService {
   constructor(@Inject('NotificationRepository') private readonly notificationModel: typeof Notification) { }
 
-  async createClass(
+  async createNotifycation(
     createNotificationDto: CreateNotificationDto,
   ): Promise<Notification> {
 
