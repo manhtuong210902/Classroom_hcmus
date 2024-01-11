@@ -32,7 +32,7 @@ const ImportFile = () => {
             const chunk = file?.slice(start, end);
 
             const formData = new FormData();
-            formData.append("file", String(chunk));
+            formData.append("file", chunk as Blob);
             formData.append("chunkIndex", chunkIndex.toString());
             formData.append("isMultiparts", isMultiparts.toString());
             formData.append("random", randomString);
@@ -42,7 +42,7 @@ const ImportFile = () => {
             const uploaded = parseFloat(((100 * (chunkIndex + 1)) / totalChunks).toFixed(2));
             setPersent(uploaded);
         }
-        await completeUpload(randomString);
+        await completeUpload(String(currClass?.id), randomString);
     };
 
     return (

@@ -48,10 +48,10 @@ export const gradeService = {
         });
     },
 
-    completeUpload(randomString: string) {
-        return axiosClient.post(`${COMPOSITION_API}/file/completed`, {
+    completeUploadListStudent: async (classId: string, randomString: string) => {
+        return axiosClient.post(`${COMPOSITION_API}/${classId}/file/completed`, {
             random: randomString,
-            fileType: "grades",
+            fileType: "list_students",
         });
     },
 };

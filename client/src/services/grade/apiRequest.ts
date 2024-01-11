@@ -151,9 +151,9 @@ export const uploadChunk = async (classId: string, fromData: any): Promise<Messa
     }
 };
 
-export const completeUpload = async (randomString: string): Promise<MessageInfo> => {
+export const completeUpload = async (classId: string, randomString: string): Promise<MessageInfo> => {
     try {
-        const res = await gradeService.completeUpload(randomString);
+        const res = await gradeService.completeUploadListStudent(classId, randomString);
         console.log("log check complete", res?.data);
         return {
             statusCode: res?.data.statusCode,
