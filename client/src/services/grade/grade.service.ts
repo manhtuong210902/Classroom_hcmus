@@ -29,4 +29,29 @@ export const gradeService = {
         }
         return axiosClient.delete(`${COMPOSITION_API}/${classId}/management/grade/${compositionId}`);
     },
+
+    getGradeBoard: async (classId: string) => {
+        if (!classId) {
+            return;
+        }
+        return axiosClient.get(`${COMPOSITION_API}/${classId}/management/grade-board`);
+    },
+
+    uploadStudentList: async (classId: string, fromData: any) => {
+        if (!classId) {
+            return;
+        }
+        return axiosClient.post(`${COMPOSITION_API}/${classId}/file/upload`, fromData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+    },
+
+    completeUpload(randomString: string) {
+        return axiosClient.post(`${COMPOSITION_API}/file/completed`, {
+            random: randomString,
+            fileType: "grades",
+        });
+    },
 };

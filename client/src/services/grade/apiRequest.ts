@@ -109,3 +109,60 @@ export const deleteGradeComposition = async (dispatch: any, classId: string, gra
         };
     }
 };
+
+export const getGradeBoard = async (dispatch: any, classId: string): Promise<MessageInfo> => {
+    if (!classId) {
+        return errorMessage;
+    }
+
+    try {
+        const res = await gradeService.getGradeBoard(classId);
+        console.log("log check borad", res?.data);
+
+        return {
+            statusCode: res?.data.statusCode,
+            message: res?.data.message,
+        };
+    } catch (error: any) {
+        return {
+            statusCode: error.response.data.statusCode,
+            message: error.response.data.message,
+        };
+    }
+};
+
+export const uploadChunk = async (classId: string, fromData: any): Promise<MessageInfo> => {
+    if (!classId) {
+        return errorMessage;
+    }
+
+    try {
+        const res = await gradeService.uploadStudentList(classId, fromData);
+        console.log("log check upload", res?.data);
+        return {
+            statusCode: res?.data.statusCode,
+            message: res?.data.message,
+        };
+    } catch (error: any) {
+        return {
+            statusCode: error.response.data.statusCode,
+            message: error.response.data.message,
+        };
+    }
+};
+
+export const completeUpload = async (randomString: string): Promise<MessageInfo> => {
+    try {
+        const res = await gradeService.completeUpload(randomString);
+        console.log("log check complete", res?.data);
+        return {
+            statusCode: res?.data.statusCode,
+            message: res?.data.message,
+        };
+    } catch (error: any) {
+        return {
+            statusCode: error.response.data.statusCode,
+            message: error.response.data.message,
+        };
+    }
+};
