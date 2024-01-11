@@ -1,3 +1,4 @@
+import { ExportType } from "@src/utils/enum";
 import axiosClient from "../axiosClient";
 import { COMPOSITION_API } from "./api";
 
@@ -48,10 +49,20 @@ export const gradeService = {
         });
     },
 
-    completeUploadListStudent: async (classId: string, randomString: string) => {
+    completeUploadListStudent: async (classId: string, randomString: string, fileType: string) => {
         return axiosClient.post(`${COMPOSITION_API}/${classId}/file/completed`, {
             random: randomString,
-            fileType: "list_students",
+            fileType: fileType,
+        });
+    },
+
+    exportFile: async (classId: string, exportType: ExportType, params: any) => {
+        if (!classId) {
+            return;
+        }
+        return axiosClient.get(`${COMPOSITION_API}/${classId}/default-file/${exportType}`, {
+            params,
+            responseType: "blob",
         });
     },
 };

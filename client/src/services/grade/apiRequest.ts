@@ -1,7 +1,15 @@
 import { errorMessage } from "@src/utils/constants";
 import { gradeService } from "./grade.service";
 import { MessageInfo } from "@src/utils/types";
-import { addGradeComposition, deleteGrade, setGradeCompositionList, updateGrade } from "@src/store/reducers/gradeSlice";
+import { saveAs } from "file-saver";
+import {
+    addGradeComposition,
+    deleteGrade,
+    setGradeCompositionList,
+    setGradeStudentList,
+    updateGrade,
+} from "@src/store/reducers/gradeSlice";
+import { ExportType, FileType } from "@src/utils/enum";
 
 export const createGradeComposition = async (params: any, dispatch: any, classId: string): Promise<MessageInfo> => {
     if (!classId) {
@@ -117,7 +125,24 @@ export const getGradeBoard = async (dispatch: any, classId: string): Promise<Mes
 
     try {
         const res = await gradeService.getGradeBoard(classId);
-        console.log("log check borad", res?.data);
+        const listGrade = Object.values(
+            res?.data?.data?.list.reduce((acc: any, student: any) => {
+                if (!acc[student?.studentId]) {
+                    acc[student?.studentId] = {
+                        studentId: student?.studentId,
+                        fullName: student?.fullName,
+                    };
+                }
+                acc[student?.studentId][student?.name] = {
+                    gradeId: student?.gradeId,
+                    grade: student?.grade,
+                    scale: student?.scale,
+                };
+                return acc;
+            }, {})
+        );
+
+        dispatch(setGradeStudentList(listGrade));
 
         return {
             statusCode: res?.data.statusCode,
@@ -138,7 +163,6 @@ export const uploadChunk = async (classId: string, fromData: any): Promise<Messa
 
     try {
         const res = await gradeService.uploadStudentList(classId, fromData);
-        console.log("log check upload", res?.data);
         return {
             statusCode: res?.data.statusCode,
             message: res?.data.message,
@@ -151,15 +175,39 @@ export const uploadChunk = async (classId: string, fromData: any): Promise<Messa
     }
 };
 
-export const completeUpload = async (classId: string, randomString: string): Promise<MessageInfo> => {
+export const completeUpload = async (
+    classId: string,
+    randomString: string,
+    fileType: FileType
+): Promise<MessageInfo> => {
     try {
-        const res = await gradeService.completeUploadListStudent(classId, randomString);
-        console.log("log check complete", res?.data);
+        const res = await gradeService.completeUploadListStudent(classId, randomString, fileType);
         return {
             statusCode: res?.data.statusCode,
             message: res?.data.message,
         };
     } catch (error: any) {
+        return {
+            statusCode: error.response.data.statusCode,
+            message: error.response.data.message,
+        };
+    }
+};
+
+export const exportFile = async (classId: string, exportType: ExportType, params: any): Promise<MessageInfo> => {
+    if (!classId) {
+        return errorMessage;
+    }
+
+    try {
+        const res = await gradeService.exportFile(classId, exportType, params);
+        saveAs(res?.data, "export.xlsx");
+        return {
+            statusCode: 200,
+            message: "Export file successfully",
+        };
+    } catch (error: any) {
+        console.log("log check export error", error);
         return {
             statusCode: error.response.data.statusCode,
             message: error.response.data.message,

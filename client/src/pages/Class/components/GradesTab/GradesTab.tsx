@@ -14,35 +14,38 @@ import { selectCurrClass } from "@src/store/reducers/classSlice";
 import { useEffect } from "react";
 import ImportFile from "./ImportFile";
 import ExportFile from "./ExportFile";
+import { selectGradeCompositionList, selectGradeStudentList } from "@src/store/reducers/gradeSlice";
+import { ExportType, FileType } from "@src/utils/enum";
 
 const GradesTab = () => {
     const currClass = useAppSelector(selectCurrClass);
+    const gradesComposition = useAppSelector(selectGradeCompositionList);
+    const gradesBoard = useAppSelector(selectGradeStudentList);
     const dispatch = useAppDispatch();
 
-    const gradesBoard = [
-        {
-            studentId: "20120612",
-            name: "Nguyen Minh Duc",
-            grade: "10",
-        },
-        {
-            studentId: "20120619",
-            name: "Nguyen Manh Tuong",
-            grade: "9",
-        },
-    ];
-
     useEffect(() => {
-        getGradeBoard(dispatch, String(currClass?.id)).then(() => {
-            console.log("Grade Board is loaded");
-        });
+        getGradeBoard(dispatch, String(currClass?.id));
     }, [currClass]);
+
+    const totalGrade = (student: any) => {
+        let total = 0;
+        gradesComposition.forEach((grade) => {
+            total += student?.[grade.name]?.grade * (grade.scale / 100);
+        });
+        return total;
+    };
 
     return (
         <div className="p-5 w-full">
-            <div className="mb-6 flex justify-end items-center gap-3">
-                <ImportFile />
-                <ExportFile />
+            <div className="mb-6 flex md:flex-row md:justify-between md:items-center gap-3 flex-col justify-start">
+                <div className="flex md:items-center gap-3 justify-between md:justify-start">
+                    <ImportFile title="Import Student List" type={FileType.STUDENT_LIST} />
+                    <ExportFile title="Download Template" type={ExportType.STUDENT_LIST} />
+                </div>
+                <div className="flex md:items-center gap-3 justify-between md:justify-start">
+                    <ImportFile title="Import Grade Board" type={FileType.GRADES} />
+                    <ExportFile title="Export Grade Board" type={ExportType.GRADES} />
+                </div>
             </div>
             <Table>
                 <TableCaption>Student Transcripts</TableCaption>
@@ -51,23 +54,31 @@ const GradesTab = () => {
                         <TableHead className="w-[100px]">No.</TableHead>
                         <TableHead>Student ID</TableHead>
                         <TableHead>Full Name</TableHead>
-                        <TableHead className="text-right">Midterm</TableHead>
+                        {gradesComposition.map((grade, index) => (
+                            <TableHead key={index}>
+                                {grade.name} ({grade.scale}%)
+                            </TableHead>
+                        ))}
+                        <TableHead>Total</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {gradesBoard.map((student, index) => (
                         <TableRow key={index}>
                             <TableCell className="font-medium">{index}</TableCell>
-                            <TableCell>{student.studentId}</TableCell>
-                            <TableCell>{student.name}</TableCell>
-                            <TableCell className="text-right">{student.grade}</TableCell>
+                            <TableCell>{student?.studentId}</TableCell>
+                            <TableCell>{student?.fullName}</TableCell>
+                            {gradesComposition.map((grade, index) => (
+                                <TableCell key={index}>{student?.[grade.name]?.grade}</TableCell>
+                            ))}
+                            <TableCell>{totalGrade(student)}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
                 <TableFooter>
                     <TableRow>
-                        <TableCell colSpan={3}>Total Student</TableCell>
-                        <TableCell className="text-right">{gradesBoard.length}</TableCell>
+                        <TableCell colSpan={4 + gradesComposition.length - 1}>Total Student</TableCell>
+                        <TableCell>{gradesBoard.length}</TableCell>
                     </TableRow>
                 </TableFooter>
             </Table>

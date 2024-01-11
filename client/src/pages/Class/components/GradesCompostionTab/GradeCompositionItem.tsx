@@ -8,13 +8,19 @@ import {
     MenubarTrigger,
 } from "@src/components/ui/menubar";
 import { GradeComposition } from "@src/utils/types";
-import { Edit, MoreVertical, Terminal, Trash } from "lucide-react";
+import { Download, Edit, MoreVertical, Terminal, Trash } from "lucide-react";
 import { useState } from "react";
 import { SortableElement } from "react-sortable-hoc";
 import ModalEditGradeComposition from "./ModalEditGradeComposition";
 import ModalDeleteGradeComposition from "./ModalDeteteCompositon";
+import { exportFile } from "@src/services/grade/apiRequest";
+import { selectCurrClass } from "@src/store/reducers/classSlice";
+import { useAppSelector } from "@src/hooks/appHook";
+import { ExportType } from "@src/utils/enum";
+import { toast } from "react-toastify";
 
 const GradeCompositionItem = SortableElement(({ item }: { item: GradeComposition }) => {
+    const currClass = useAppSelector(selectCurrClass);
     const [showModalEdit, setShowModalEdit] = useState(false);
     const [showModalDelete, setShowModalDelete] = useState(false);
     const handleClickEdit = async () => {
@@ -23,6 +29,18 @@ const GradeCompositionItem = SortableElement(({ item }: { item: GradeComposition
 
     const handleClickDetete = async () => {
         setShowModalDelete(true);
+    };
+
+    const handleDownloadTemplate = async () => {
+        exportFile(String(currClass?.id), ExportType.GRADES, {
+            grade_id: item?.id,
+        }).then((res) => {
+            if (res.statusCode === 200) {
+                toast.success("Downdload successfully!");
+            } else {
+                toast.error("Download failed!");
+            }
+        });
     };
 
     return (
@@ -40,16 +58,22 @@ const GradeCompositionItem = SortableElement(({ item }: { item: GradeComposition
                                 <MoreVertical className="h-5 w-5 cursor-pointer" />
                             </MenubarTrigger>
                             <MenubarContent>
-                                <MenubarItem onClick={handleClickEdit}>
+                                <MenubarItem className="cursor-pointer" onClick={handleClickEdit}>
                                     Edit
                                     <MenubarShortcut>
                                         <Edit className="h-4 w-4" />
                                     </MenubarShortcut>
                                 </MenubarItem>
-                                <MenubarItem onClick={handleClickDetete}>
+                                <MenubarItem className="cursor-pointer" onClick={handleClickDetete}>
                                     Delete
                                     <MenubarShortcut>
                                         <Trash className="h-4 w-4" />
+                                    </MenubarShortcut>
+                                </MenubarItem>
+                                <MenubarItem className="cursor-pointer" onClick={handleDownloadTemplate}>
+                                    Download Template
+                                    <MenubarShortcut>
+                                        <Download className="h-4 w-4" />
                                     </MenubarShortcut>
                                 </MenubarItem>
                             </MenubarContent>

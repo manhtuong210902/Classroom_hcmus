@@ -1,16 +1,18 @@
 import { Button } from "@src/components/ui/button";
-import { useAppSelector } from "@src/hooks/appHook";
-import { completeUpload, uploadChunk } from "@src/services/grade/apiRequest";
+import { useAppDispatch, useAppSelector } from "@src/hooks/appHook";
+import { completeUpload, getGradeBoard, uploadChunk } from "@src/services/grade/apiRequest";
 import { selectCurrClass } from "@src/store/reducers/classSlice";
+import { FileType } from "@src/utils/enum";
 import { generateRandomString } from "@src/utils/lib";
 import { FileUp } from "lucide-react";
 import { useState } from "react";
 
-const ImportFile = () => {
+const ImportFile = ({ title, type }: { title: string; type: FileType }) => {
     const [percent, setPersent] = useState(0);
     const currClass = useAppSelector(selectCurrClass);
+    const dispatch = useAppDispatch();
     const handleImportButtonClick = () => {
-        document.getElementById("file-upload")?.click();
+        document.getElementById(`file-upload-${type}`)?.click();
     };
 
     const handleImportFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,15 +44,16 @@ const ImportFile = () => {
             const uploaded = parseFloat(((100 * (chunkIndex + 1)) / totalChunks).toFixed(2));
             setPersent(uploaded);
         }
-        await completeUpload(String(currClass?.id), randomString);
+        await completeUpload(String(currClass?.id), randomString, type);
+        await getGradeBoard(dispatch, String(currClass?.id));
     };
 
     return (
-        <label htmlFor="file-upload" className="flex flex-col gap-2">
-            <input id="file-upload" type="file" className="hidden" onChange={handleImportFileChange} />
+        <label htmlFor={`file-upload-${type}`} className="flex flex-col gap-2">
+            <input id={`file-upload-${type}`} type="file" className="hidden" onChange={handleImportFileChange} />
             <Button className="flex items-center gap-2" variant="outline" onClick={handleImportButtonClick}>
                 <FileUp size={16} />
-                <span className="font-medium">Import</span>
+                <span className="font-medium">{title}</span>
             </Button>
             {percent != 0 && percent != 100 && <div>Uploading {percent}%</div>}
         </label>
