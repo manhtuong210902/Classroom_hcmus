@@ -488,13 +488,17 @@ export class CompositionController {
     )
         : Promise<ResponseTemplate<null>>
     {
-        await this.compositionService.updateBoardOne(updateOne, classId);    
-        const response : ResponseTemplate<null>= {
-            data: null,
-            message: "Updated",
-            statusCode: HttpStatus.OK
+        try {
+            await this.compositionService.updateBoardOne(updateOne, classId);    
+            const response : ResponseTemplate<null>= {
+                data: null,
+                message: "Updated",
+                statusCode: HttpStatus.OK
+            }
+            return response;    
+        } catch (error) {
+            throw new BadRequestException();
         }
-        return response;    
     }
 
     @HttpCode(HttpStatus.OK)
