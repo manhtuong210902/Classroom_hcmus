@@ -3,7 +3,7 @@ import { Notification } from './class_notifications.entity';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { convertCamelToSnake } from 'src/lib/util/func';
 import { ClassService } from '../class/class.service';
-import { SocketService } from '../socket/socket.service';
+import { SocketService } from 'src/socket/socket.service';
 import { SOCKET_TYPE } from 'src/utils/project-constants';
 
 @Injectable()

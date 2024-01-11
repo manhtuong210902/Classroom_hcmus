@@ -3,7 +3,7 @@ import { NotificationService } from './notification.service';
 import { NotificationController } from './notification.controller';
 import { notificationProviders } from './notification.provider';
 import { ClassModule } from '../class/class.module';
-import { SocketModule } from '../socket/socket.module';
+import { SocketModule } from 'src/socket/socket.module';
 
 @Module({
   imports: [ClassModule, SocketModule],
