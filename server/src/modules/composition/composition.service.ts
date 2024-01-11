@@ -470,7 +470,7 @@ export class CompositionService {
             }
 
             // update scale
-            if(updateOne?.scale) {
+            if(updateOne?.grade) {
                 this.gradeModel.sequelize.query(
                     `
                     UPDATE student_compositions
@@ -483,7 +483,7 @@ export class CompositionService {
                     `,
                     {
                         replacements: {
-                            scale: updateOne?.scale,
+                            scale: updateOne?.grade,
                             studentId: updateOne?.studentId,
                             classId: classId,
                             gradeId: updateOne?.gradeId

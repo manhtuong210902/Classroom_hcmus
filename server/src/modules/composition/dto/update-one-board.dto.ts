@@ -26,5 +26,5 @@ export class UpdateOneBoardDto{
     @ApiProperty()
     @IsNumber()
     @IsOptional()
-    scale: number;
+    grade: number;
 }
