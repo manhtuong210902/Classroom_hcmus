@@ -109,7 +109,13 @@ export class CombineChunksProcessor {
                 DELETE 
                 FROM student_compositions
                 WHERE class_id = :classId; 
-                `   
+                `,
+                {
+                    replacements:{
+                        classId
+                    },
+                    type: sequelize.QueryTypes.DELETE
+                }   
             )
         }
     }
