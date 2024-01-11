@@ -27,8 +27,8 @@ export class SocketGateway {
   }
 
   handleConnection(socket: Socket) {
-    const authHeader = socket.handshake.headers.authorization;
-    console.log(authHeader);
+    const userId = socket.handshake.headers.authorization;
+    socket.join(userId);
   }
 
   @SubscribeMessage('message')

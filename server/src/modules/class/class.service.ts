@@ -372,4 +372,26 @@ export class ClassService {
             throw new BadRequestException(error);
         }
     }
+
+    async getAllUsersInClassForNotify(classId: string) {
+        const result = await this.classModel.sequelize.query(
+            `SELECT 
+                users.id as user_id,
+                user_classes.id as user_class_id,
+                CASE WHEN roles.role_name = 'TEACHER' THEN true ELSE false END as is_teacher,
+                CASE WHEN classes.owner_id = users.id THEN true ELSE false END as is_creator
+            FROM users
+            JOIN user_classes ON user_classes.user_id = users.id
+            JOIN classes ON classes.id = user_classes.class_id
+            JOIN user_roles ON user_roles.user_id = users.id
+            JOIN roles ON roles.id = user_classes.role_id
+            WHERE classes.id = :classId;
+            `,
+            {
+                replacements: { classId: classId },
+                type: sequelize.QueryTypes.SELECT,
+            },
+        );
+        return convertSnakeToCamel(result);
+    }
 }
