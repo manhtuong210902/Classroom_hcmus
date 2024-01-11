@@ -82,9 +82,7 @@ export class FileService {
         :Promise<Boolean>
     {
         try {
-            const uint8Array = new Uint8Array(buffer);
         
-            fs.writeFileSync(`./uploads/files/test1.xlsx`, uint8Array);
             const result = await this.chunkModel.create({
                 buffer: buffer,
                 chunk_index: chunkIndex,
@@ -109,7 +107,7 @@ export class FileService {
     )
         : Promise<any>
     {
-        this.chunksQueue.add(queue,{
+        await this.chunksQueue.add(queue,{
             random: random,
             classId: classId
         })

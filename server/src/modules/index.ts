@@ -1,3 +1,6 @@
+import { AdminModule } from "./admin/admin.module";
+import { ActiveClass } from "./admin/entities/active-class.entity";
+import { ActiveUser } from "./admin/entities/active-user.entity";
 import { AuthModule } from "./auth/auth.module";
 import { ClassModule } from "./class/class.module";
 import { Class } from "./class/entities/class.entity";
@@ -8,7 +11,9 @@ import { StudentComposition } from "./composition/entities/student-composition.e
 import { StudentId } from "./composition/entities/student-id.entity";
 import { Chunk } from "./file/entities/chunk.entity";
 import { File } from "./file/entities/file.entity";
+import { FileModule } from "./file/file.module";
 import { Notification } from "./notification/class_notifications.entity";
+import { NotificationModule } from "./notification/notification.module";
 import { CommentReview } from "./review/entities/comment-review.entity";
 import { ReviewComposition } from "./review/entities/review-compostion.entity";
 import { ReviewModule } from "./review/review.module";
@@ -31,7 +36,9 @@ export const sequelizeModules = [
     File,
     Chunk,
     StudentId,
-    Notification
+    Notification,
+    ActiveClass,
+    ActiveUser
 ]
 
 export const serviceModules = [
@@ -40,5 +47,8 @@ export const serviceModules = [
     ClassModule,
     RoleModule,
     CompositionModule,
-    ReviewModule
+    ReviewModule,
+    FileModule,
+    NotificationModule,
+    AdminModule
 ]

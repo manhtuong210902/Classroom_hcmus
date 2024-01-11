@@ -53,6 +53,20 @@ export class CombineChunksProcessor {
             }
         )
 
+        await this.studentIdModel.sequelize.query(
+            `
+            DELETE 
+            FROM student_compositions
+            WHERE class_id = :classId; 
+            `,
+            {
+                replacements:{
+                    classId
+                },
+                type: sequelize.QueryTypes.DELETE
+            }   
+        )
+
         // ignore the fist row that is a header row
         for(let i =1; i < listStudentId.length; i++){
             await this.studentIdModel.create({
