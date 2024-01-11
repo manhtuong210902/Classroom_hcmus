@@ -66,6 +66,7 @@ export class CombineChunksProcessor {
                 type: sequelize.QueryTypes.DELETE
             }   
         )
+        const gradeName = listStudentId[0][1]
 
         // ignore the fist row that is a header row
         for(let i =1; i < listStudentId.length; i++){
@@ -77,7 +78,7 @@ export class CombineChunksProcessor {
         }
 
         this.gradeQueue.add('map-student',{
-            classId
+            classId, gradeName
         });
     }
 

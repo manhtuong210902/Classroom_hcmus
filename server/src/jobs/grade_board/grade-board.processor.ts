@@ -23,6 +23,8 @@ export class GradeProcessor {
     @Process('map-student')
     async mapStudentId(job: Job) {
         const classId = job.data.classId;
+        const gradeName = job.data.gradeName;
+
         const listStudentIds : any[] = await this.studentIdModel.sequelize.query(
             `
             SELECT *
@@ -36,29 +38,27 @@ export class GradeProcessor {
                 type: sequelize.QueryTypes.SELECT
             }
         )
-        const listGrades :any[] = await this.gradeModel.sequelize.query(
+        const grades :any[] = await this.gradeModel.sequelize.query(
             `
             SELECT *
             FROM grade_compositions
-            WHERE class_id = :classId;
+            WHERE class_id = :classId AND name = :gradeName;
             `,
             {
                 replacements:{
-                    classId
+                    classId, gradeName
                 },
                 type: sequelize.QueryTypes.SELECT
             }
         )
         
         for(let i=0 ; i < listStudentIds.length; i++){
-            for(let j=0; j < listGrades.length; j++){
-                await this.studentComModel.create({
-                    student_id: listStudentIds[i].student_id,
-                    grade: null,
-                    grade_id: listGrades[j].id,
-                    class_id: classId
-                })
-            }
+            await this.studentComModel.create({
+                student_id: listStudentIds[i].student_id,
+                grade: null,
+                grade_id: grades[0].id,
+                class_id: classId
+            })
         }
 
     }
