@@ -5,11 +5,7 @@ import { Server } from 'socket.io';
 export class SocketService {
     public server: Server = null;
 
-    handleTeacherEmit() {
-        
-    }
-
-    handleStudentEmit() {
-        
+    handleEmitToUser(userId: string, event: string, data: object) {
+        this.server.to(userId).emit(event, data);
     }
 }

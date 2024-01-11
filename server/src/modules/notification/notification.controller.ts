@@ -10,7 +10,7 @@ export class NotificationController {
   @HttpCode(HttpStatus.OK)
   @Post('/')
   async test(@Body() body: CreateNotificationDto) {
-    const rs = this.notificationService.createNotifycation(body);
+    const rs = this.notificationService.createNotifycationForAllStudentInClass(body);
     return rs;
   }
 

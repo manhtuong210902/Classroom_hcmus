@@ -5,6 +5,8 @@ import { convertCamelToSnake, convertSnakeToCamel, correctStringFormat } from 's
 import sequelize from 'sequelize';
 import { GradeCompositionResponse } from './response/grade-composition.response';
 import { UpdateOneBoardDto } from './dto/update-one-board.dto';
+import { NotificationService } from '../notification/notification.service';
+import { SOCKET_MSG, SOCKET_TYPE } from 'src/utils';
 
 
 @Injectable()
@@ -12,6 +14,7 @@ export class CompositionService {
     constructor(
         @Inject('GradeCompositionRepository')
         private readonly gradeModel: typeof GradeComposition,
+        private readonly notificationService: NotificationService
     )
     {}
 
@@ -110,6 +113,13 @@ export class CompositionService {
         });
 
         const newGradeComposition = await this.gradeModel.create(convertedData);
+        
+        await this.notificationService.createNotifycationForAllStudentInClass({
+            classId: classId,
+            content: SOCKET_MSG.CREATE_NEW_GRADE_COMPOSITION,
+            type: SOCKET_TYPE.CREATE_NEW_GRADE_COMPOSITION,
+            contentUrl: 'http://createnew.com'
+        })
 
         const gradeCompositionReponse : GradeCompositionResponse = {
             classId: classId,

@@ -37,10 +37,10 @@ export class Notification extends Model {
     type: string;
 
     @Column({
-        type: DataType.UUID,
+        type: DataType.TEXT,
         allowNull: true
     })
-    entry_id: string;
+    content_url: string;
 
     @Column({
         defaultValue: DataType.NOW,
