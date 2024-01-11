@@ -66,7 +66,6 @@ export class CombineChunksProcessor {
                 type: sequelize.QueryTypes.DELETE
             }   
         )
-        const gradeName = listStudentId[0][1]
 
         // ignore the fist row that is a header row
         for(let i =1; i < listStudentId.length; i++){
@@ -78,7 +77,7 @@ export class CombineChunksProcessor {
         }
 
         this.gradeQueue.add('map-student',{
-            classId, gradeName
+            classId
         });
     }
 
@@ -97,6 +96,21 @@ export class CombineChunksProcessor {
         listGrades: any[],
         classId : string
     ){
+        const grades : any[]= await this.studentIdModel.sequelize.query(
+            `
+            SELECT * 
+            FROM grade_compositions
+            WHERE name = :gradeName;
+            `,
+            {
+                replacements:{
+                    gradeName: listGrades[0][1].toString()
+                },
+                type: sequelize.QueryTypes.SELECT  
+            }
+        )
+        console.log(grades)
+
         for(let i=1; i<listGrades.length; i++){
             const studentId = listGrades[i][0];
             const grade = listGrades[i][1];
@@ -105,13 +119,14 @@ export class CombineChunksProcessor {
                 UPDATE student_compositions
                 SET
                     grade = :grade
-                WHERE class_id = :classId AND student_id = :studentId;
+                WHERE class_id = :classId AND student_id = :studentId AND grade_id = :gradeId;
                 `,
                 {
                     replacements:{
                         classId,
                         grade,
-                        studentId
+                        studentId,
+                        gradeId: grades[0].id
                     },
                     type: sequelize.QueryTypes.UPDATE
                 }
