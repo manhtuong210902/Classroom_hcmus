@@ -17,10 +17,9 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { MailerConfigService } from './lib/configs/mailer/mailer.config';
 import { ClassRolesGuard } from './lib/security/guard/class-role.guard';
 import { sequelizeModules, serviceModules } from './modules';
-import { FileModule } from './modules/file/file.module';
 import { BullModule } from '@nestjs/bull';
-import { SocketModule } from './modules/socket/socket.module';
-import { NotificationModule } from './modules/notification/notification.module';
+import { SocketModule } from './socket/socket.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
     imports: [
@@ -41,9 +40,8 @@ import { NotificationModule } from './modules/notification/notification.module';
         BullModule,
         CloudinaryModule,
         ...serviceModules,
-        FileModule,
         SocketModule,
-        NotificationModule,
+        AdminModule,
     ],
     controllers: [AppController],
     providers: [
