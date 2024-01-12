@@ -1,10 +1,8 @@
-import axios from 'axios';
-
 import axiosClient from '../axios/axiosClient';
 
 export const authService = {
-    login: async (username, password) => {
-        const rs = await axiosClient.post(
+    login: (username, password) => {
+        return axiosClient.post(
             `/auth/login`,
             {
                 username: username,
@@ -13,9 +11,7 @@ export const authService = {
             {
                 withCredentials: false
             }
-        )
-
-        return rs;
+        );
     }
 }
 

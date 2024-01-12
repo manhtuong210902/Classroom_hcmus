@@ -12,7 +12,7 @@ import bgTwo from 'assets/images/bgs/login-2.svg';
 import axios from 'axios';
 // import { SERVER_API } from 'host';
 import Swal from 'sweetalert2';
-import { authService, setUser } from 'service';
+import { authService, classService, setUser } from 'service';
 
 function Login() {
     const [username, setUsername] = useState('');
@@ -30,13 +30,12 @@ function Login() {
     const handleLoginAdmin = async () => {
         try {
             const rs = await authService.login(username, password);
-            console.log(rs);
             if (rs.data.statusCode == 200) {
                 setUser(rs.data.data);
                 navigate('/');
             }
         } catch (err) {
-            console.log(err.message);
+            console.log(err);
             await Swal.fire(`Username or password incorrect`, ``, 'error');
         }
     };
