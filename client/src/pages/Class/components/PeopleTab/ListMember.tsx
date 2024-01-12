@@ -10,6 +10,7 @@ import { PlusIcon, UserPlusIcon } from "lucide-react";
 import ModalInviteMemmber from "@src/components/Modal/ModalInviteMember";
 import AddUserSVG from "@image/svg_add_user.svg";
 import { Button } from "@src/components/ui/button";
+import { UserType } from "@src/utils/enum";
 
 const ListMember = () => {
     const currClass = useAppSelector(selectCurrClass);
@@ -75,7 +76,7 @@ const ListMember = () => {
                             </div>
                         )}
                         {teachers.map((item) => {
-                            return <MemberItem item={item} key={item.id} />;
+                            return <MemberItem type={UserType.TEACHER} item={item} key={item.id} />;
                         })}
                     </div>
                 </div>
@@ -109,7 +110,7 @@ const ListMember = () => {
                         {classmates.length > 0 ? (
                             <>
                                 {classmates.map((item) => {
-                                    return <MemberItem item={item} key={item.id} />;
+                                    return <MemberItem type={UserType.STUDENT} item={item} key={item.id} />;
                                 })}
                             </>
                         ) : (

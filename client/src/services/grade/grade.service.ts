@@ -65,4 +65,25 @@ export const gradeService = {
             responseType: "blob",
         });
     },
+
+    updateGradeBoard: async (classId: string, params: any) => {
+        if (!classId) {
+            return;
+        }
+        return axiosClient.patch(`${COMPOSITION_API}/${classId}/management/grade-board`, params);
+    },
+
+    setFinalGrade: async (classId: string, gradeId: string) => {
+        if (!classId) {
+            return;
+        }
+        return axiosClient.post(`${COMPOSITION_API}/${classId}/management/grade/${gradeId}/set-final`);
+    },
+
+    getGradesView: async (classId: string) => {
+        if (!classId) {
+            return;
+        }
+        return axiosClient.get(`${COMPOSITION_API}/${classId}/view-grades`);
+    },
 };

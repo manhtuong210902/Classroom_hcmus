@@ -16,6 +16,7 @@ import ImportFile from "./ImportFile";
 import ExportFile from "./ExportFile";
 import { selectGradeCompositionList, selectGradeStudentList } from "@src/store/reducers/gradeSlice";
 import { ExportType, FileType } from "@src/utils/enum";
+import EditValueColumn from "./EditValueColumn";
 
 const GradesTab = () => {
     const currClass = useAppSelector(selectCurrClass);
@@ -69,7 +70,16 @@ const GradesTab = () => {
                             <TableCell>{student?.studentId}</TableCell>
                             <TableCell>{student?.fullName}</TableCell>
                             {gradesComposition.map((grade, index) => (
-                                <TableCell key={index}>{student?.[grade.name]?.grade}</TableCell>
+                                <TableCell key={index}>
+                                    <EditValueColumn
+                                        studentId={student?.studentId}
+                                        gradeId={grade?.id}
+                                        name={"grade"}
+                                        defaultValue={student?.[grade.name]?.grade}
+                                        type="number"
+                                        className="w-[100px]"
+                                    />
+                                </TableCell>
                             ))}
                             <TableCell>{totalGrade(student)}</TableCell>
                         </TableRow>

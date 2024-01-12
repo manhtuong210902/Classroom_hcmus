@@ -8,12 +8,12 @@ import {
     MenubarTrigger,
 } from "@src/components/ui/menubar";
 import { GradeComposition } from "@src/utils/types";
-import { Download, Edit, MoreVertical, Terminal, Trash } from "lucide-react";
+import { Check, Download, Edit, MoreVertical, Terminal, Trash } from "lucide-react";
 import { useState } from "react";
 import { SortableElement } from "react-sortable-hoc";
 import ModalEditGradeComposition from "./ModalEditGradeComposition";
 import ModalDeleteGradeComposition from "./ModalDeteteCompositon";
-import { exportFile } from "@src/services/grade/apiRequest";
+import { exportFile, setFinalGrade } from "@src/services/grade/apiRequest";
 import { selectCurrClass } from "@src/store/reducers/classSlice";
 import { useAppSelector } from "@src/hooks/appHook";
 import { ExportType } from "@src/utils/enum";
@@ -39,6 +39,16 @@ const GradeCompositionItem = SortableElement(({ item }: { item: GradeComposition
                 toast.success("Downdload successfully!");
             } else {
                 toast.error("Download failed!");
+            }
+        });
+    };
+
+    const handleMarkAsDone = async () => {
+        setFinalGrade(String(currClass?.id), item.id).then((res) => {
+            if (res.statusCode === 200) {
+                toast.success(res.message);
+            } else {
+                toast.error("Mark as done failed!");
             }
         });
     };
@@ -74,6 +84,12 @@ const GradeCompositionItem = SortableElement(({ item }: { item: GradeComposition
                                     Download Template
                                     <MenubarShortcut>
                                         <Download className="h-4 w-4" />
+                                    </MenubarShortcut>
+                                </MenubarItem>
+                                <MenubarItem className="cursor-pointer" onClick={handleMarkAsDone}>
+                                    Mark as Done
+                                    <MenubarShortcut>
+                                        <Check className="h-4 w-4" />
                                     </MenubarShortcut>
                                 </MenubarItem>
                             </MenubarContent>

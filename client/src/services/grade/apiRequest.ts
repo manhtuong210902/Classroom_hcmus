@@ -214,3 +214,56 @@ export const exportFile = async (classId: string, exportType: ExportType, params
         };
     }
 };
+
+export const updateGradeBoard = async (classId: string, params: any): Promise<MessageInfo> => {
+    if (!classId) {
+        return errorMessage;
+    }
+
+    try {
+        const res = await gradeService.updateGradeBoard(classId, params);
+        return {
+            statusCode: res?.data.statusCode,
+            message: res?.data.message,
+        };
+    } catch (error: any) {
+        console.log("log check export error", error);
+        return {
+            statusCode: error.response?.data.statusCode,
+            message: error.response?.data.message,
+        };
+    }
+};
+
+export const setFinalGrade = async (classId: string, params: any): Promise<MessageInfo> => {
+    if (!classId) {
+        return errorMessage;
+    }
+
+    try {
+        const res = await gradeService.setFinalGrade(classId, params);
+        return {
+            statusCode: res?.data.statusCode,
+            message: "Set final grade successfully",
+        };
+    } catch (error: any) {
+        console.log("log check export error", error);
+        return {
+            statusCode: error.response?.data.statusCode,
+            message: error.response?.data.message,
+        };
+    }
+};
+
+export const getGradesView = async (classId: string) => {
+    if (!classId) {
+        return;
+    }
+    try {
+        const res = await gradeService.getGradesView(classId);
+        console.log("log check res", res?.data);
+        return res?.data;
+    } catch (error: any) {
+        return error.response.data;
+    }
+};

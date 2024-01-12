@@ -12,6 +12,7 @@ export interface UserInfo {
     email?: string;
     address?: string;
     gender?: string;
+    studentId?: string;
 }
 
 export interface ClassInfo {
