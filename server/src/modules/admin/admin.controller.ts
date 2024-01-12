@@ -5,8 +5,10 @@ import { RoleType } from 'src/lib/util/constant';
 import { ResponseTemplate } from 'src/lib/interfaces/response.template';
 import { ActivateUserDto } from './dto/activate-user.dto';
 import { ActivateClassDto } from './dto/activate-class.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('admin')
+@ApiTags('admin')
 export class AdminController {
     constructor(
         private readonly adminService: AdminService,
