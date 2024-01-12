@@ -1,7 +1,7 @@
 // material-ui
 /* eslint-disable */
 
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import Box from '@mui/material/Box';
@@ -129,6 +129,7 @@ const Class = () => {
         <>
             <div style={{ height: 600, width: '100%', marginTop: 20 }}>
                 <DataGrid
+                    slots={{ toolbar: GridToolbar }}
                     rows={classes}
                     columns={columns}
                     initialState={{

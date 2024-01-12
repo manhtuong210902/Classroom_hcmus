@@ -40,4 +40,29 @@ export class NotificationService {
     // return newNotification;
   }
 
+  async createNotifycationForAllTeacherInClass(
+    createNotificationDto: CreateNotificationDto,
+  ): Promise<any> {
+
+    const convertedData = convertCamelToSnake({
+      ...createNotificationDto,
+    });
+
+    const users: any[] = await this.classService.getAllUsersInClassForNotify(createNotificationDto.classId);
+
+    const teachers: any[] = users.filter(e => e.isTeacher === true);
+
+    const notifications = teachers.map(e => ({ ...convertedData, user_class_id: e.userClassId, userId: e.userId }))
+
+    await Promise.all(notifications.map(e => this.notificationModel.create(e)))
+
+    for (let i of notifications) {
+      this.socketService.handleEmitToUser(i.userId, SOCKET_TYPE.STUDENT_EMIT, i)
+    }
+
+    return { message: "Success" };
+
+    // return newNotification;
+  }
+
 }

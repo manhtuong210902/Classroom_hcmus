@@ -252,6 +252,7 @@ export class ClassService {
                 users.img_url as img_url, users.fullname, 
                 classes.owner_id AS owner_id,
                 CASE WHEN roles.role_name = 'TEACHER' THEN true ELSE false END as is_teacher,
+                CASE WHEN roles.role_name = 'STUDENT' THEN user_classes.student_id ELSE null END as student_id,
                 CASE WHEN classes.owner_id = users.id THEN true ELSE false END as is_creator
             FROM users
             JOIN user_classes ON user_classes.user_id = users.id

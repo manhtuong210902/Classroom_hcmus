@@ -1,6 +1,7 @@
 import { Column, Model, DataType, Table, BelongsToMany, ForeignKey } from 'sequelize-typescript';
 import { UserClass } from '../class/entities/user-class.entity';
 import { Class } from '../class/entities/class.entity';
+import { User } from '../user/entities/user.entity';
 
 @Table({
     tableName: "class_notifications",
@@ -26,6 +27,12 @@ export class Notification extends Model {
     })
     class_id: string;
 
+    @ForeignKey(()=>User)
+    @Column({
+        type: DataType.UUID,
+    })
+    user_id: string;
+
     @Column({
         type: DataType.TEXT
     })
@@ -41,6 +48,12 @@ export class Notification extends Model {
         allowNull: true
     })
     content_url: string;
+
+    @Column({
+        type: DataType.BOOLEAN,
+        defaultValue: false
+    })
+    is_seen: boolean;
 
     @Column({
         defaultValue: DataType.NOW,
