@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ActiveClass } from './entities/active-class.entity';
 import { ActiveUser } from './entities/active-user.entity';
 import sequelize from 'sequelize';
@@ -7,6 +7,7 @@ import { RoleService } from '../role/role.service';
 import { RoleType } from 'src/lib/util/constant';
 import { ActivateUserDto } from './dto/activate-user.dto';
 import { ActivateClassDto } from './dto/activate-class.dto';
+import { convertSnakeToCamel } from 'src/lib/util/func';
 
 @Injectable()
 export class AdminService {
@@ -51,9 +52,9 @@ export class AdminService {
                     type: sequelize.QueryTypes.SELECT
                 }
             )
-            return list;
+            return convertSnakeToCamel(list);
         } catch (error) {
-            console.log(error);
+            throw new BadRequestException();
         }
     }
 
@@ -81,7 +82,7 @@ export class AdminService {
                 type: sequelize.QueryTypes.SELECT
             }
         )
-        return list;
+        return convertSnakeToCamel(list);
     }
 
 
