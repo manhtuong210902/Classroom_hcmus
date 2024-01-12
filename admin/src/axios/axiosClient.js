@@ -4,21 +4,6 @@ const SERVER_API = process.env.REACT_APP_BACKEND_SERVER;
 
 import { getUser, removeUser } from 'service';
 
-const refreshToken = async () => {
-    try {
-        const res = await axios.post(
-            `${SERVER_API}/auth/refresh`,
-            {},
-            {
-                withCredentials: true
-            }
-        );
-        return res.data;
-    } catch (err) {
-        console.log(err);
-    }
-};
-
 const axiosClient = axios.create({ withCredentials: false, baseURL: SERVER_API });
 axiosClient.interceptors.request.use(
     async (config) => {

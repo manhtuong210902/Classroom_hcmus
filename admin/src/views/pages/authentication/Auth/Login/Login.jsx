@@ -30,6 +30,7 @@ function Login() {
     const handleLoginAdmin = async () => {
         try {
             const rs = await authService.login(username, password);
+            console.log(rs);
             if (rs.data.statusCode == 200) {
                 setUser(rs.data.data);
                 navigate('/');

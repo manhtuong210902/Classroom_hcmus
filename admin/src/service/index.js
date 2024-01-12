@@ -4,7 +4,7 @@ import axiosClient from '../axios/axiosClient';
 
 export const authService = {
     login: async (username, password) => {
-        return axiosClient.post(
+        const rs = await axiosClient.post(
             `/auth/login`,
             {
                 username: username,
@@ -14,11 +14,13 @@ export const authService = {
                 withCredentials: false
             }
         )
+
+        return rs;
     }
 }
 
 export const classService = {
-    getAll: async () => {
+    getAll: () => {
         return axiosClient.get(`/admin/class`);
     }
 }
