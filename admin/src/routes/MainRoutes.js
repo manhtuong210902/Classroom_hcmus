@@ -19,9 +19,8 @@ const UtilsMaterialIcons = Loadable(lazy(() => import('views/utilities/MaterialI
 const UtilsTablerIcons = Loadable(lazy(() => import('views/utilities/TablerIcons')));
 
 // sample page routing
-const DuyetGiaSu = Loadable(lazy(() => import('views/duyet-gia-su')));
-const DuyetLop = Loadable(lazy(() => import('views/duyet-lop')));
 const Class = Loadable(lazy(() => import('views/class')));
+const User = Loadable(lazy(() => import('views/user')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 
@@ -88,12 +87,8 @@ const MainRoutes = {
             ]
         },
         {
-            path: 'duyet-gia-su',
-            element: <DuyetGiaSu />
-        },
-        {
-            path: 'duyet-lop',
-            element: <DuyetLop />
+            path: 'user',
+            element: <User />
         },
         {
             path: 'class',

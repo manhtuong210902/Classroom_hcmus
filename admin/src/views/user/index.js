@@ -17,28 +17,30 @@ import Modal from 'react-modal';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
-import { classService, getUser } from 'service';
+import { classService, getUser, userService } from 'service';
 
-const STATUS_CLASS = [
+const STATUS_USER = [
     {
-        name: "Active",
-        value: true
+        name: "Ban",
+        value: false
     },
     {
-        name: "Inactive",
-        value: false
+        name: "Unban",
+        value: true
     }
 ]
 
-const Class = () => {
-    const [classes, setClasses] = useState([]);
+const User = () => {
+    const [users, setUsers] = useState([]);
 
     const columns = [
         { field: 'id', headerName: 'Mã lớp', width: 350 },
-        { field: 'name', headerName: 'Tên lớp', width: 200 },
-        { field: 'title', headerName: 'Tiêu đề', width: 200 },
-        { field: 'subject', headerName: 'Môn học', width: 200 },
-        { field: 'description', headerName: 'Mô tả', width: 200 },
+        { field: 'username', headerName: 'Username', width: 200 },
+        { field: 'fullname', headerName: 'Họ và tên', width: 200 },
+        { field: 'address', headerName: 'Địa chỉ', width: 200 },
+        { field: 'gender', headerName: 'Giới tính', width: 200 },
+        { field: 'isVerify', headerName: 'Đã xác nhận email', width: 200 },
+        { field: 'createdAt', headerName: 'Tạo vào lúc', width: 200 },
         { field: 'isActive', headerName: 'Đang hoạt động', width: 200 },
         {
             field: 'action',
@@ -58,14 +60,14 @@ const Class = () => {
                     const { value: status } = await Swal.fire({
                         title: 'Chọn trạng thái',
                         input: 'select',
-                        inputOptions: STATUS_CLASS.reduce((acc, cur) => {
+                        inputOptions: STATUS_USER.reduce((acc, cur) => {
                             return { ...acc, [cur.value]: cur.name };
                         }, {}),
                         inputPlaceholder: 'Chọn một trạng thái',
                         showCancelButton: true
                     });
                     if (status) {
-                        const rs = await classService.banOrUnbanAClass({ classId: currentRow.id, ban: status === "true" ? true : false });
+                        const rs = await userService.banOrUnbanAUser({ userId: currentRow.id, ban: status === "true" ? true : false });
                         if (rs.status === 200) {
                             await Swal.fire('Đã cập nhật trạng thái!', '', 'success');
                             return window.location.reload(false);
@@ -114,9 +116,9 @@ const Class = () => {
     ];
 
     const getAllClass = async () => {
-        const rs = await classService.getAll();
+        const rs = await userService.getAll();
         const data = rs.data.data;
-        setClasses(data.map((e, i) => ({ ...e })));
+        setUsers(data.map((e, i) => ({ ...e })));
     };
 
     useEffect(() => {
@@ -129,7 +131,7 @@ const Class = () => {
         <>
             <div style={{ height: 600, width: '100%', marginTop: 20 }}>
                 <DataGrid
-                    rows={classes}
+                    rows={users}
                     columns={columns}
                     initialState={{
                         pagination: {
@@ -169,4 +171,4 @@ const Class = () => {
     );
 };
 
-export default Class;
+export default User;

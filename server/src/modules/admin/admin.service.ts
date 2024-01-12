@@ -14,7 +14,7 @@ export class AdminService {
 
     constructor(
         @Inject('ActiveClassRepository')
-        private readonly ativeClassModel: typeof ActiveClass,
+        private readonly activeClassModel: typeof ActiveClass,
 
         @Inject('ActiveUserRepository')
         private readonly activeUserModel: typeof ActiveUser,
@@ -23,23 +23,23 @@ export class AdminService {
 
         @Inject('UserRoleRepository')
         private readonly userRoleModle: typeof UserRole
-    ){
+    ) {
 
     }
 
 
-    async setAdmin(userId: string){
-        const role : any = await this.roleService.findOrCreate(RoleType.ADMIN);
+    async setAdmin(userId: string) {
+        const role: any = await this.roleService.findOrCreate(RoleType.ADMIN);
         this.userRoleModle.create({
             user_id: userId,
             role_id: role[0].id
         })
     }
 
-    async getClass(){
+    async getClass() {
         try {
-            
-            const list = await this.ativeClassModel.sequelize.query(
+
+            const list = await this.activeClassModel.sequelize.query(
                 `
                 SELECT classes.*,
                     CASE WHEN COUNT(ac.class_id) = 0 THEN true ELSE false END AS is_active
@@ -58,8 +58,8 @@ export class AdminService {
         }
     }
 
-    async getUser(){
-        const list = await this.activeUserModel.sequelize.query(
+    async getUser() {
+        const list: any[] = await this.activeUserModel.sequelize.query(
             `
             SELECT
                 users.id,
@@ -82,15 +82,16 @@ export class AdminService {
                 type: sequelize.QueryTypes.SELECT
             }
         )
+
         return convertSnakeToCamel(list);
     }
 
 
     async activateUser(
-        adminId: string, 
+        adminId: string,
         activateUserDto: ActivateUserDto
-    ){
-        if(activateUserDto.ban){
+    ) {
+        if (!activateUserDto.ban) {
             await this.activeUserModel.create({
                 user_id: activateUserDto.userId,
                 banned_by: adminId
@@ -113,19 +114,19 @@ export class AdminService {
     }
 
     async activateClass(
-        adminId: string, 
+        adminId: string,
         activateClassDto: ActivateClassDto
-    ){
-        if(activateClassDto.ban){
-            await this.activeUserModel.create({
-                user_id: activateClassDto.classId,
+    ) {
+        if (!activateClassDto.ban) {
+            await this.activeClassModel.create({
+                class_id: activateClassDto.classId,
                 banned_by: adminId
             })
         }
         else {
             await this.activeUserModel.sequelize.query(
                 `
-                UPDATE active_users
+                UPDATE active_classes
                 SET is_applied = FALSE
                 WHERE class_id = :classId;
                 `,

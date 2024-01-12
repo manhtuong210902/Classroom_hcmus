@@ -18,6 +18,20 @@ export const authService = {
 export const classService = {
     getAll: () => {
         return axiosClient.get(`/admin/class`);
+    },
+
+    banOrUnbanAClass: (data) => {
+        return axiosClient.post(`/admin/activate/class`, data);
+    },
+}
+
+export const userService = {
+    getAll: () => {
+        return axiosClient.get('/admin/user');
+    },
+
+    banOrUnbanAUser: (data) => {
+        return axiosClient.post('/admin/activate/user', data)
     }
 }
 

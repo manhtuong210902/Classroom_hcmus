@@ -12,19 +12,11 @@ const other = {
     type: 'group',
     children: [
         {
-            id: 'duyet-gia-su',
-            title: 'Duyệt gia sư',
+            id: 'user',
+            title: 'Người dùng',
             type: 'item',
-            url: '/duyet-gia-su',
-            icon: icons.IconSchool,
-            breadcrumbs: false
-        },
-        {
-            id: 'duyet-lop',
-            title: 'Duyệt lớp',
-            type: 'item',
-            url: '/duyet-lop',
-            icon: icons.IconBallpen,
+            url: '/user',
+            icon: icons.IconUserCircle,
             breadcrumbs: false
         },
         {

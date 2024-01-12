@@ -8,7 +8,8 @@ const axiosClient = axios.create({ withCredentials: false, baseURL: SERVER_API }
 axiosClient.interceptors.request.use(
     async (config) => {
         const user = getUser();
-        config.headers['Authorization'] = `Bearer ${user.accessToken}`;
+        if (user?.accessToken)
+            config.headers['Authorization'] = `Bearer ${user?.accessToken}`;
         return config;
     },
     (err) => {
@@ -21,7 +22,7 @@ axiosClient.interceptors.response.use(
     (error) => {
         if (error?.response?.status === 403) {
             removeUser();
-            window.location.href = '/login';
+            // window.location.href = '/login';
         }
     }
 );

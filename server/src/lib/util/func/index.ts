@@ -64,7 +64,7 @@ export function convertCamelToSnake(obj: any): any {
 }
 
 export function convertSnakeToCamel(obj: any): any {
-  if (obj !== null && typeof obj === 'object') {
+  if (obj !== null && typeof obj === 'object' && obj instanceof Date === false) {
     if (Array.isArray(obj)) {
       return obj.map(convertSnakeToCamel);
     } else {

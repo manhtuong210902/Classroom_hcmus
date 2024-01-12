@@ -29,7 +29,8 @@ export class ActiveClass extends Model<ActiveClass> {
     banned_by: string;
 
     @Column({
-        allowNull: false
+        allowNull: false,
+        defaultValue: true
     })
     is_applied: boolean;
 

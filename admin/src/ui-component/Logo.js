@@ -22,7 +22,7 @@ const Logo = () => {
          *
          */
         <>
-            <h2 style={{ marginBottom: 0 }}>GIA SƯ</h2>
+            <h2 style={{ marginBottom: 0 }}>Admin</h2>
         </>
     );
 };
