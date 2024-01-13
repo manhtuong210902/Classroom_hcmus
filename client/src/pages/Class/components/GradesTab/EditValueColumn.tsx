@@ -45,13 +45,25 @@ const EditValueColumn = ({
 
     async function onSubmit(values: z.infer<typeof schema>) {
         if (values[name].toString().trim() !== defaultValue.toString().trim()) {
+            const submitValue = {
+                newStudentId: null,
+                newFullName: null,
+                grade: null,
+            };
             await updateGradeBoard(String(currClass?.id), {
                 studentId,
                 gradeId,
+                ...submitValue,
                 [name]: type === "number" ? Number(values[name]) : values[name],
             })
-                .then(() => {
-                    setValue(values[name]);
+                .then((res) => {
+                    if (res.statusCode === 200) {
+                        setValue(values[name]);
+                        setShowEdit(false);
+                        toast.success("Update grade successfully !!");
+                    } else {
+                        toast.error("Something went wrong !!");
+                    }
                 })
                 .catch(() => {
                     toast.error("Something went wrong !!");

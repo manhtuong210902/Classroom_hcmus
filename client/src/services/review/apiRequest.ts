@@ -51,3 +51,16 @@ export const addComment = async (classId: string, params: any) => {
         return error?.response.data;
     }
 };
+
+export const updateFinalGrade = async (classId: string, params: any) => {
+    if (!classId) {
+        return;
+    }
+
+    try {
+        const res = await reviewService.updateFinalGrade(classId, params);
+        return res.data;
+    } catch (error: any) {
+        return error?.response.data;
+    }
+};
