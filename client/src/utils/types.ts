@@ -53,3 +53,16 @@ export interface GradeInfo {
     createdAt?: string;
     updatedAt?: string;
 }
+
+export interface ReviewInfo {
+    id: string;
+    classId: string;
+    gradeId: string;
+    name: string;
+    currentGrade: number;
+    expectedGrade: number;
+    explaination: string;
+    fullName: string;
+    createdAt?: string;
+    updatedAt?: string;
+}
