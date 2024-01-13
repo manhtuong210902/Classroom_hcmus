@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus, Req } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { Role } from 'src/lib/security/decorators/role.decorator';
@@ -10,6 +10,18 @@ import { ApiTags } from '@nestjs/swagger';
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) { }
 
+  //get list notify
+  @HttpCode(HttpStatus.OK)
+  @Get('/')
+  async getAllNotification(@Req() req) {
+    const rs = await this.notificationService.getAllNofitications(req.query.user_id);
+    return {
+      data: rs,
+      message: 'Success',
+      statusCode: HttpStatus.OK
+    }
+  }
+
   //test
   @HttpCode(HttpStatus.OK)
   @Post('/')
@@ -17,7 +29,6 @@ export class NotificationController {
     const rs = await this.notificationService.createNotifycationForAllStudentInClass(body);
     return rs;
   }
-
 
   @HttpCode(HttpStatus.OK)
   @Role(RoleType.USER)

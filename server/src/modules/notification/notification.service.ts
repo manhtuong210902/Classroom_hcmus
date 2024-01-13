@@ -17,7 +17,7 @@ export class NotificationService {
   ) { }
 
   async getAllNofitications(userId: string): Promise<any> {
-    await this.notificationModel.findAll({
+    return await this.notificationModel.findAll({
       where: {
         user_id: userId
       }

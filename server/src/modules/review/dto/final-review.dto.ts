@@ -1,7 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsNumber, IsString, IsUUID } from "class-validator";
 
-export class RequestReviewDto{
+export class FinalReviewDto{
     
     @ApiProperty()
     @IsNotEmpty()
@@ -11,10 +11,11 @@ export class RequestReviewDto{
     @ApiProperty()
     @IsNotEmpty()
     @IsNumber()
-    expectedGrade : number;
+    finalGrade : number;
 
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
-    explaination : string;
+    studentId : string;
+
 }

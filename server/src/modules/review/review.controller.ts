@@ -8,6 +8,7 @@ import { RequestReviewDto } from './dto/request-review.dto';
 import { ResponseTemplate } from 'src/lib/interfaces/response.template';
 import { CommentDto } from './dto/comment.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { FinalReviewDto } from './dto/final-review.dto';
 
 @ApiTags('review')
 @Controller('review')
@@ -121,6 +122,23 @@ export class ReviewController {
         const response : ResponseTemplate<Object> = {
             data: data,
             message: 'Success',
+            statusCode: HttpStatus.OK
+        }
+        return response;
+    }
+
+    @HttpCode(HttpStatus.OK)
+    @Post('/:classId/final')
+    @Role(RoleType.USER)
+    @ClassRole([ClassRoleType.TEACHER])
+    async makeReviewFinal(
+        @Param('classId') classId: string,
+        @Body() finalReviewDto : FinalReviewDto
+    ){
+        await this.reviewService.makeReviewFinal(finalReviewDto, classId);
+        const response : ResponseTemplate<null> = {
+            data: null,
+            message: "Success",
             statusCode: HttpStatus.OK
         }
         return response;

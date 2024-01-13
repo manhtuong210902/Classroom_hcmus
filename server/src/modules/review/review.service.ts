@@ -5,6 +5,7 @@ import { RequestReviewDto } from './dto/request-review.dto';
 import sequelize from 'sequelize';
 import { convertSnakeToCamel } from 'src/lib/util/func';
 import { CommentDto } from './dto/comment.dto';
+import { FinalReviewDto } from './dto/final-review.dto';
 
 @Injectable()
 export class ReviewService {
@@ -272,6 +273,30 @@ export class ReviewService {
             return convertSnakeToCamel(query);
         } catch (error) {
             return []
+        }
+    }
+
+
+    async makeReviewFinal(finalReviewDto: FinalReviewDto, classId : string){
+        try {
+            await this.reviewModel.sequelize.query(
+                `
+                UPDATE student_compositions
+                SET grade = :finalGrade
+                WHERE class_id = :classId AND grade_id = :gradeId AND student_id = :studentId;
+                `,
+                {
+                    replacements:{
+                        finalGrade: finalReviewDto.finalGrade,
+                        classId,
+                        gradeId: finalReviewDto.gradeId,
+                        studentId: finalReviewDto.studentId 
+                    },
+                    type: sequelize.QueryTypes.UPDATE
+                }
+            )
+        } catch (error) {
+            throw new BadRequestException(error)
         }
     }
 }
