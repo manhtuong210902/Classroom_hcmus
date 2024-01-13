@@ -202,7 +202,8 @@ export class ReviewService {
                     {
                         replacements: {
                             classId
-                        }
+                        },
+                        type: sequelize.QueryTypes.SELECT
                     }
                 )
 
