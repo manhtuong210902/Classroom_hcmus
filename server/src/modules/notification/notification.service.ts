@@ -51,7 +51,7 @@ export class NotificationService {
     await Promise.all(notifications.map(e => this.notificationModel.create(e)))
 
     for (let i of notifications) {
-      this.socketService.handleEmitToUser(i.userId, SOCKET_TYPE.TEACHER_EMIT, i)
+      this.socketService.handleEmitToUser(i.user_id, SOCKET_TYPE.TEACHER_EMIT, i)
     }
 
     return { message: "Success" };
@@ -66,7 +66,7 @@ export class NotificationService {
     });
 
     const users: any[] = await this.classService.getAllUsersInClassForNotify(createNotificationDto.classId);
-    
+
     let student: any = null;
     if (createNotificationDto.userId) {
       student = users.filter(e => e.userId === createNotificationDto.userId);
@@ -120,12 +120,12 @@ export class NotificationService {
 
     const teachers: any[] = users.filter(e => e.isTeacher === true);
 
-    const notifications = teachers.map(e => ({ ...convertedData, user_class_id: e.userClassId, userId: e.userId }))
+    const notifications = teachers.map(e => ({ ...convertedData, user_class_id: e.userClassId, user_id: e.userId }))
 
     await Promise.all(notifications.map(e => this.notificationModel.create(e)))
 
     for (let i of notifications) {
-      this.socketService.handleEmitToUser(i.userId, SOCKET_TYPE.STUDENT_EMIT, i)
+      this.socketService.handleEmitToUser(i.user_id, SOCKET_TYPE.STUDENT_EMIT, i)
     }
 
     return { message: "Success" };
