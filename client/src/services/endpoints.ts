@@ -3,4 +3,5 @@ export const AUTH = "auth";
 export const CLASS = "class";
 export const COMPOSITION = "composition";
 export const NOTIFICATION = "notification";
+export const REVIEW = "review";
 export const PREFIX = "v1";
