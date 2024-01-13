@@ -20,7 +20,7 @@ export class NotificationService {
     return await this.notificationModel.findAll({
       where: {
         user_id: userId
-      }
+      }, order: [['created_at', 'DESC']]
     })
   }
 
