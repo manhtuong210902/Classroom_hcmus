@@ -97,7 +97,7 @@ export class ReviewController {
         : Promise<ResponseTemplate<Object>>   
     {
         const userId = req.user.id;
-        const data = await this.reviewService.postComment(classId, userId, commentDto);
+        const data = await this.reviewService.postComment(classId, req.user, commentDto);
         const response : ResponseTemplate<Object> = {
             data: data,
             message: 'Success',

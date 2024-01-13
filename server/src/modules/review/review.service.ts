@@ -299,7 +299,7 @@ export class ReviewService {
 
     async postComment(
         classId: string,
-        userId: string,
+        user: any,
         commentDto: CommentDto
     ) {
         try {
@@ -309,14 +309,14 @@ export class ReviewService {
             }
 
             const newComment = await this.commentModel.create({
-                user_id: userId,
+                user_id: user.userId,
                 content: commentDto.content,
                 review_id: commentDto.reviewId,
             })
 
-            if (await this.checkIsTeacherFromUserClasses(classId, userId)) {
+            if (await this.checkIsTeacherFromUserClasses(classId, user.userId)) {
                 await this.notificationService.createNotifycationForOneStudent({
-                    userId: userId,
+                    userId: user.userId,
                     classId: classId,
                     content: SOCKET_MSG.TEACHER_COMMENT_REVIEW,
                     type: SOCKET_TYPE.TEACHER_COMMENT_REVIEW,
@@ -331,7 +331,11 @@ export class ReviewService {
                 })
             }
 
-            return convertSnakeToCamel(newComment.dataValues);
+            return convertSnakeToCamel({
+                ...newComment.dataValues, 
+                img_url: user.img_url, 
+                fullname: user.fullname
+            });
         } catch (error) {
             throw new BadRequestException(error);
         }
