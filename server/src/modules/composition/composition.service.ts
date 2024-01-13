@@ -17,6 +17,9 @@ import { UpdateOneBoardDto } from './dto/update-one-board.dto';
 import { NotificationService } from '../notification/notification.service';
 import { SOCKET_MSG, SOCKET_TYPE } from 'src/utils';
 import { FileService } from '../file/file.service';
+import { InjectQueue } from '@nestjs/bull';
+import {Queue} from "bull";
+
 
 @Injectable()
 export class CompositionService {
@@ -24,7 +27,10 @@ export class CompositionService {
         @Inject('GradeCompositionRepository')
         private readonly gradeModel: typeof GradeComposition,
         private readonly notificationService: NotificationService,
-        private readonly fileService: FileService
+        private readonly fileService: FileService,
+
+        @InjectQueue('grades')
+        private gradeQueue: Queue
     ) {}
 
     async getStudentId(userId, classId) {
@@ -121,6 +127,11 @@ export class CompositionService {
         });
 
         const newGradeComposition = await this.gradeModel.create(convertedData);
+
+        this.gradeQueue.add('add-composition',{
+            classId,
+            gradeId: newGradeComposition.id
+        });
 
         await this.notificationService.createNotifycationForAllStudentInClass({
             classId: classId,
