@@ -45,7 +45,7 @@ const GradesTab = () => {
                 </div>
                 <div className="flex md:items-center gap-3 justify-between md:justify-start">
                     <ImportFile title="Import Grade Board" type={FileType.GRADES} />
-                    <ExportFile title="Export Grade Board" type={ExportType.GRADES} />
+                    <ExportFile title="Export Grade Board" type={ExportType.GRADES} isExport={true} />
                 </div>
             </div>
             <Table>
@@ -68,7 +68,6 @@ const GradesTab = () => {
                         <TableRow key={index}>
                             <TableCell className="font-medium">{index}</TableCell>
                             <TableCell>
-                                {student?.studentId}
                                 <EditValueColumn
                                     studentId={student?.studentId}
                                     gradeId={student?.grade?.id}

@@ -7,4 +7,10 @@ export const notificationService = {
         const userId = LocalStorage.getUserId();
         return axiosClient.get(`${NOTIFICATION_API}?user_id=${userId}`);
     },
+
+    checkNotification: async (notificationId: string) => {
+        return axiosClient.patch(`${NOTIFICATION_API}`, {
+            id: notificationId,
+        });
+    },
 };

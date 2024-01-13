@@ -66,6 +66,16 @@ export const gradeService = {
         });
     },
 
+    exportGradeBoard: async (classId: string, exportType: ExportType, params: any) => {
+        if (!classId) {
+            return;
+        }
+        return axiosClient.get(`${COMPOSITION_API}/${classId}/export-file/${exportType}`, {
+            params,
+            responseType: "blob",
+        });
+    },
+
     updateGradeBoard: async (classId: string, params: any) => {
         if (!classId) {
             return;
