@@ -16,6 +16,24 @@ export class NotificationService {
     private readonly socketService: SocketService
   ) { }
 
+  async getAllNofitications(userId: string): Promise<any> {
+    await this.notificationModel.findAll({
+      where: {
+        user_id: userId
+      }
+    })
+  }
+
+  async updateSeenNotification(id: string): Promise<any> {
+    return await this.notificationModel.update({
+      is_seen: true
+    }, {
+      where: {
+        id: id
+      }
+    })
+  }
+
   async createNotifycationForAllStudentInClass(
     createNotificationDto: CreateNotificationDto,
   ): Promise<any> {

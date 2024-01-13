@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { TokenType } from "src/lib/util/constant";
+import { RoleType, TokenType } from "src/lib/util/constant";
 import { sign, verify } from "jsonwebtoken"
 import * as expiredTime from "../../util/constant/token-expired-time"
 
@@ -15,6 +15,7 @@ export class JwtService {
         if (tokenType === TokenType.REFRESH_TOKEN) {
             expiresIn = expiredTime.REFRESH_TOKEN_EXPIRED_TIME;
         }
+        if (roleName === RoleType.ADMIN) expiresIn = expiredTime.TOKEN_ADMIN_EXPIRED_TIME;
         return await sign({ userId, roleName, tokenType }, this.configService.get<string>('JWT_SECRET_KEY'), {
             expiresIn: expiresIn,
         });

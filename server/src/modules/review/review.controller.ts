@@ -7,7 +7,9 @@ import { ClassRoleType } from 'src/utils';
 import { RequestReviewDto } from './dto/request-review.dto';
 import { ResponseTemplate } from 'src/lib/interfaces/response.template';
 import { CommentDto } from './dto/comment.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('review')
 @Controller('review')
 export class ReviewController {
 

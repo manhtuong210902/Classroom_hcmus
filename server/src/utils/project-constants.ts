@@ -43,10 +43,10 @@ export const SOCKET_TYPE = {
     STUDENT_EMIT: 'STUDENT_EMIT',
 
     CREATE_NEW_GRADE_COMPOSITION: 'CREATE_NEW_GRADE_COMPOSITION',
-    FINAL_GRADE_COMPOSITION: 'FINAL_GRADE_COMPOSITION',
+    FINAL_A_GRADE_COMPOSITION: 'FINAL_A_GRADE_COMPOSITION',
 }
 
 export const SOCKET_MSG = {
     CREATE_NEW_GRADE_COMPOSITION: 'Teacher has created new grade composition',
-    FINAL_GRADE_COMPOSITION: 'Teacher has finalized new grade composition',
+    FINAL_A_GRADE_COMPOSITION: 'Teacher has finalized a grade composition',
 }
