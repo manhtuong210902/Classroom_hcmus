@@ -433,6 +433,21 @@ export class CompositionService {
         };
     }
 
+
+    async exportGradeBoard(classId : string){
+        const {list, countStudents} = await this.getGradeBoard(classId);
+        let columns : string[] = ["Student Id", "Fullname"]
+        const countGrades = list.length / countStudents;
+        const rows = []
+        for(let i =0 ; i <list.length ; i++){
+            if(i % countGrades === 0) {
+                rows.push([])
+                columns.push()
+            }
+            // rows[ i / countGrades].pu =
+        }
+    }
+
     async updateBoardOne(updateOne: UpdateOneBoardDto, classId: string) {
         try {
             // update studentId list

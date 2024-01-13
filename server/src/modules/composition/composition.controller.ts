@@ -540,4 +540,25 @@ export class CompositionController {
         res.set('Content-Disposition', `attachment; filename=grade.xlsx`);
         return res.send(buffer);
     }
+
+    @HttpCode(HttpStatus.OK)
+    @Get('/:classId/export-file/grade')
+    @Role(RoleType.USER)
+    @ClassRole([ClassRoleType.TEACHER])
+    @ApiOperation({ summary: 'Export File' })
+    async exportExcelFile(
+        @Res({passthrough : true}) res : Response,
+        @Param('classId') classId: string,
+    ){
+        
+    
+
+        
+        // const buffer = await this.fileService.createFile(
+            
+        // );
+        // res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        // res.set('Content-Disposition', `attachment; filename=grade.xlsx`);
+        // return res.send(buffer);
+    }
 }

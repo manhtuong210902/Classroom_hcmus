@@ -314,9 +314,9 @@ export class ReviewService {
                 review_id: commentDto.reviewId,
             })
 
-            if (await this.checkIsTeacherFromUserClasses(classId, user.dataValues.userId)) {
+            if (await this.checkIsTeacherFromUserClasses(classId, user.dataValues.id)) {
                 await this.notificationService.createNotifycationForOneStudent({
-                    userId: user.dataValues.userId,
+                    userId: user.dataValues.id,
                     classId: classId,
                     content: SOCKET_MSG.TEACHER_COMMENT_REVIEW,
                     type: SOCKET_TYPE.TEACHER_COMMENT_REVIEW,
