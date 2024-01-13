@@ -378,6 +378,7 @@ export class ClassService {
             `SELECT 
                 users.id as user_id,
                 user_classes.id as user_class_id,
+                user_classes.student_id as student_id,
                 CASE WHEN roles.role_name = 'TEACHER' THEN true ELSE false END as is_teacher,
                 CASE WHEN classes.owner_id = users.id THEN true ELSE false END as is_creator
             FROM users

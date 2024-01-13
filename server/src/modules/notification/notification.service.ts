@@ -66,7 +66,7 @@ export class NotificationService {
     });
 
     const users: any[] = await this.classService.getAllUsersInClassForNotify(createNotificationDto.classId);
-
+    
     let student: any = null;
     if (createNotificationDto.userId) {
       student = users.filter(e => e.userId === createNotificationDto.userId);

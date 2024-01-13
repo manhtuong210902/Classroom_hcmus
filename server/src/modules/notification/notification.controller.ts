@@ -26,8 +26,12 @@ export class NotificationController {
   @HttpCode(HttpStatus.OK)
   @Post('/')
   async test(@Body() body: CreateNotificationDto) {
-    const rs = await this.notificationService.createNotifycationForAllStudentInClass(body);
-    return rs;
+    // const rs = await this.notificationService.createNotifycationForAllStudentInClass(body);
+    // return rs;
+    await this.notificationService.createNotifycationForOneStudent({
+      ...body,
+      studentId: '20120612'
+    });
   }
 
   @HttpCode(HttpStatus.OK)
