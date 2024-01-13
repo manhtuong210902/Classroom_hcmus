@@ -114,10 +114,30 @@ export class ReviewService {
 
     async getASpecifyReview(userId: string, classId: string, gradeId: string) {
         try {
+
+            // get list review of all grade for student
             if (!gradeId) {
-                throw new BadRequestException({
-                    "message": "Missing required parameter."
-                })
+                const query = await this.reviewModel.sequelize.query(
+                    `
+                    SELECT rc.*, si.* , grade_compositions.name AS grade_name
+                    FROM review_compositions AS rc
+                    JOIN grade_compositions 
+                        ON grade_compositions.id = rc.grade_id AND grade_compositions.class_id = :classId
+                    JOIN student_compositions AS sc
+                        ON sc.id = rc.student_composition_id
+                    JOIN student_ids AS si
+                        ON si.student_id = sc.student_id
+                    JOIN user_classes AS uc
+                        ON uc.student_id = sc.student_id; 
+                    `,
+                    {
+                        replacements:{
+                            classId
+                        },
+                        type: sequelize.QueryTypes.SELECT
+                    }
+                )
+                return convertSnakeToCamel(query);
             }
 
             const query: any = await this.reviewModel.sequelize.query(
@@ -206,7 +226,7 @@ export class ReviewService {
             if (!gradeId) {
                 const query = await this.reviewModel.sequelize.query(
                     `
-                    SELECT rc.*, si.*
+                    SELECT rc.*, si.*, grade_compositions.name AS grade_name
                     FROM review_compositions AS rc
                     JOIN grade_compositions 
                         ON grade_compositions.id = rc.grade_id AND grade_compositions.class_id = :classId
