@@ -1,6 +1,7 @@
 import { Column, Model, DataType, Table, ForeignKey, BelongsTo } from 'sequelize-typescript';
 import { StudentComposition } from '../../composition/entities/student-composition.entity';
 import { CommentReview } from './comment-review.entity';
+import { GradeComposition } from 'src/modules/composition/entities/grade-composition.entity';
 
 
 /**
@@ -24,10 +25,16 @@ export class ReviewComposition extends Model<ReviewComposition> {
     })
     student_composition_id: string;
 
+    @ForeignKey(()=>GradeComposition)
+    @Column({
+        type: DataType.UUID,
+    })
+    grade_id : string;
+
     @Column({
         type: DataType.FLOAT
     })
-    current_grade: Float32Array;
+    current_grade: number;
 
     @Column({
         type: DataType.FLOAT

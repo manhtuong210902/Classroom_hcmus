@@ -13,7 +13,7 @@ export const profileService = {
 
     updateProfile: (params: any) => {
         const userId = LocalStorage.getUserId();
-        return axiosClient.put(UPDATE_PROFILE, {
+        return axiosClient.patch(UPDATE_PROFILE, {
             userId,
             ...params,
         });

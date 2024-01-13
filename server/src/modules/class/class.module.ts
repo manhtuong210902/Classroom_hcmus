@@ -10,6 +10,7 @@ import { ClassAuthMiddleware } from 'src/lib/security/middleware/class-auth.midd
     providers: [ClassService, ...classProviders],
     controllers: [ClassController],
     imports: [RoleModule, UserModule],
+    exports: [ClassService]
 })
 export class ClassModule {
     configure(consumer: MiddlewareConsumer) {

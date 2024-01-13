@@ -25,4 +25,7 @@ export default defineConfig({
         },
     },
     plugins: [react(), EnvironmentPlugin("all")],
+    server:{
+        host:"0.0.0.0"
+    }
 });

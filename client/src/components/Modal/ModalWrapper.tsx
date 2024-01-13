@@ -12,7 +12,13 @@ const ModalWrapper = (props: Props) => {
 
     return (
         <AlertDialog open={isOpen}>
-            <AlertDialogContent className={`max-w-[${width}px]`}>{children}</AlertDialogContent>
+            <AlertDialogContent
+                style={{
+                    maxWidth: width ? width : "100%",
+                }}
+            >
+                {children}
+            </AlertDialogContent>
         </AlertDialog>
     );
 };

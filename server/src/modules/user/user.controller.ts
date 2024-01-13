@@ -2,7 +2,7 @@ import { Controller, Body, BadRequestException} from '@nestjs/common';
 import { UserService } from './user.service';
 import { Role } from 'src/lib/security/decorators/role.decorator';
 import { HttpStatus } from '@nestjs/common/enums';
-import { Get, HttpCode, Param, Post, Put, UploadedFile, UseInterceptors } from '@nestjs/common/decorators';
+import { Get, HttpCode, Param, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common/decorators';
 import { ResponseTemplate } from 'src/lib/interfaces/response.template';
 import { convertCamelToSnake } from "../../lib/util/func"
 import { RoleType } from 'src/lib/util/constant';
@@ -15,7 +15,6 @@ import { UpdateAvatarResponse } from './response/update-avatar.response';
 import { ApiConsumes, ApiExtraModels, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { UUID } from 'crypto';
 import { UserProfileResponse } from './response/user-profile.response';
-import { multerOptions } from 'src/lib/configs/multer/multer.config';
 import { ErrorMessage } from 'src/utils';
 import {ERROR_CODE, ERROR_MSG} from 'src/utils/project-constants';
  
@@ -72,7 +71,7 @@ export class UserController {
 
 
     @HttpCode(HttpStatus.OK)
-    @Put('/profile')
+    @Patch('/profile')
     @Role(RoleType.USER)
     @ApiResponse({
         status: HttpStatus.OK,

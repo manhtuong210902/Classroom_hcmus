@@ -94,3 +94,11 @@ export const createClassSchema = z.object({
     description: z.string(),
     subject: z.string(),
 });
+
+export const addGradeCompositionSchema = z.object({
+    name: z.string().min(1, { message: "Name is required field" }),
+    scale: z.coerce
+        .number()
+        .min(1, { message: "Scale must be greater than 0" })
+        .max(100, { message: "Scale must be less than 100" }),
+});

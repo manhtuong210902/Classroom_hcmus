@@ -22,6 +22,7 @@ import { ConfigService } from '@nestjs/config';
 import { MailerService } from '@nestjs-modules/mailer';
 import { INVITE_CLASS } from 'src/lib/util/constant';
 import { ListUserOfClassResponse } from './response/users-of-class.response';
+import { DataType } from 'sequelize-typescript';
 
 @Injectable()
 export class ClassService {
@@ -251,6 +252,7 @@ export class ClassService {
                 users.img_url as img_url, users.fullname, 
                 classes.owner_id AS owner_id,
                 CASE WHEN roles.role_name = 'TEACHER' THEN true ELSE false END as is_teacher,
+                CASE WHEN roles.role_name = 'STUDENT' THEN user_classes.student_id ELSE null END as student_id,
                 CASE WHEN classes.owner_id = users.id THEN true ELSE false END as is_creator
             FROM users
             JOIN user_classes ON user_classes.user_id = users.id
@@ -334,6 +336,60 @@ export class ClassService {
                 replacements: {
                     userId: userId,
                 },
+                type: sequelize.QueryTypes.SELECT,
+            },
+        );
+        return convertSnakeToCamel(result);
+    }
+
+    async updateStudentId(
+        userId: string,
+        classId: string,
+        studentId: string
+    )
+        : Promise<Boolean> {
+        try {
+            const result = await this.classModel.sequelize.query(
+                `
+                UPDATE user_classes
+                SET student_id = :studentId
+                WHERE user_classes.class_id = :classId AND user_classes.user_id = :userId;
+                `,
+                {
+                    replacements: {
+                        userId,
+                        classId,
+                        studentId
+                    },
+                    type: sequelize.QueryTypes.UPDATE
+                }
+            )
+            if (result.length > 0) {
+                return true;
+            }
+            return false;
+        } catch (error) {
+            throw new BadRequestException(error);
+        }
+    }
+
+    async getAllUsersInClassForNotify(classId: string) {
+        const result = await this.classModel.sequelize.query(
+            `SELECT 
+                users.id as user_id,
+                user_classes.id as user_class_id,
+                user_classes.student_id as student_id,
+                CASE WHEN roles.role_name = 'TEACHER' THEN true ELSE false END as is_teacher,
+                CASE WHEN classes.owner_id = users.id THEN true ELSE false END as is_creator
+            FROM users
+            JOIN user_classes ON user_classes.user_id = users.id
+            JOIN classes ON classes.id = user_classes.class_id
+            JOIN user_roles ON user_roles.user_id = users.id
+            JOIN roles ON roles.id = user_classes.role_id
+            WHERE classes.id = :classId;
+            `,
+            {
+                replacements: { classId: classId },
                 type: sequelize.QueryTypes.SELECT,
             },
         );

@@ -12,13 +12,14 @@ import { Role } from 'src/lib/security/decorators/role.decorator';
 import { RoleType } from 'src/lib/util/constant';
 import { CreateClassResponse } from './response/create-class.response';
 import { ResponseTemplate } from 'src/lib/interfaces/response.template';
-import { AddUserToClassDto } from './dto/add-user.dto';
 import { ClassRole } from 'src/lib/security/decorators/class-role.decorator';
 import { ClassRoleType } from 'src/utils';
 import { ClassOfUserResponse } from './response/classes-of-user.response';
 import { ListUserOfClassResponse } from './response/users-of-class.response';
 import { SendMailInviteDto } from './dto/send-mail-invite.dto';
 import { VerifyMailInviteDto } from './dto/verify-mail-invite.dto';
+import { StudentIdDto } from './dto/student-id.dto';
+import { IsSucccessResponse } from './response/is-success.response';
 
 @Controller('class')
 @ApiTags('class')
@@ -261,7 +262,10 @@ export class ClassController {
             return response;   
         }
 
-        let data: any[] = await this.classService.getClassByClassIdAndUserId(verifyMailInviteDto.userId, verifyMailInviteDto.classId);
+        let data: any[] = await this.classService.getClassByClassIdAndUserId(
+            verifyMailInviteDto.userId, 
+            verifyMailInviteDto.classId
+        );
 
         const response: ResponseTemplate<Object> = {
             data: { class: data, isSuccess },
@@ -270,4 +274,34 @@ export class ClassController {
         };
         return response;
     }
+
+    @HttpCode(HttpStatus.OK)
+    @Post('/:classId/student-id')
+    @Role(RoleType.USER)
+    @ClassRole([ClassRoleType.STUDENT])
+    @ApiExtraModels(IsSucccessResponse)
+    @ApiResponse({
+        status: HttpStatus.OK,
+        schema: {
+            $ref: getSchemaPath(IsSucccessResponse)
+        }
+    })
+    async updateStudentId(
+        @Body() studentIdDto : StudentIdDto,
+        @Param('classId') classId: string,
+        @Req() req 
+    )
+        : Promise<ResponseTemplate<IsSucccessResponse>>
+    {
+        const result = await this.classService.updateStudentId(req.user.id, classId, studentIdDto.studentId)
+        const response: ResponseTemplate<IsSucccessResponse> = {
+            data: {
+                isSuccess: result
+            },
+            message: result === true ? "Success" : "Failure",
+            statusCode: HttpStatus.OK
+        }  
+        return response;
+    }
+
 }

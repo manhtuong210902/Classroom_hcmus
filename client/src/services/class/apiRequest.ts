@@ -117,3 +117,12 @@ export const checkHasClass = async (classId: string, userId: string) => {
         return error.response.data;
     }
 };
+
+export const updateStudentId = async (classId: string, params: any) => {
+    try {
+        const res = await classService.updateStudentId(classId, params);
+        return res.data;
+    } catch (error: any) {
+        return error.response.data;
+    }
+};

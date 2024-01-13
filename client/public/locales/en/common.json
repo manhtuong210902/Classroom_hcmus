@@ -1,0 +1,131 @@
+{
+    "navbar": {
+        "home": "Home",
+        "about": "About us",
+        "class": "Class"
+    },
+
+    "class": {
+        "title_1": "Mathematics",
+        "description_1": "Explore the world of numbers, equations, and mathematical concepts.",
+        "title_2": "Science",
+        "description_2": "Discover the wonders of the natural world through scientific exploration.",
+        "title_3": "History",
+        "description_3": "Uncover the events and stories that shaped our past and influence our present.",
+        "title_4": "Literature",
+        "description_4": "Dive into the world of books, poems, and literary masterpieces.",
+        "title_5": "Art",
+        "description_5": "Express yourself through the creation of visual and performing arts.",
+        "title_6": "Music",
+        "description_6": "Explore the world of music through singing, playing instruments, and listening."
+    },
+
+    "authen": {
+        "login": "Log In",
+        "register": "Sign Up"
+    },
+
+    "language": {
+        "title": "Language",
+        "en": "English",
+        "vi": "Vietnamese"
+    },
+
+    "banner": {
+        "title": "Welcome To Education",
+        "description": "Education Classroom helps educators create engaging learning experiences they can personalize, manage, and measure. Part of Education Workspace for Education, it empowers educators to enhance their impact and prepare students for the future.",
+        "button": "Get Started"
+    },
+
+    "section_content_1": {
+        "title": "150M people worldwide use Education Classroom",
+        "description": "Education Classroom is designed with feedback from the educational community, influencing the development of new features that let educators focus on teaching and students focus on learning.",
+        "feature_1": "Personalize learning",
+        "feature_2": "Simplify everyday tasks",
+        "feature_3": "Gain insights and visibility"
+    },
+
+    "section_content_2": {
+        "title": "Enrich and personalize learning",
+        "description": "Drive student agency with tools that meet students where they are – and build skills for their future.",
+        "sologan_1": "Premium features",
+        "sologan_2": "that inspire new ways of",
+        "sologan_3": "teaching and learning",
+        "feature_1": {
+            "title": "Help students develop literacy skills",
+            "description": "Use Read Along, a fun, speech-based tool, to help students independently build their reading skills, while giving educators insight into their progress."
+        },
+        "feature_2": {
+            "title": "Reinforce concepts with self-paced learning",
+            "description": "Assign interactive questions for YouTube videos, giving students real-time feedback as they move through a lesson, while viewing insights into their performance."
+        },
+        "feature_3": {
+            "title": "Power student potential",
+            "description": "Create interactive assignments, even from existing PDFs, that provide real-time feedback and individual guidance with prompts and hints with the help of AI."
+        }
+    },
+
+    "section_content_3": {
+        "title": "Amplify instruction with tools that simplify everyday tasks",
+        "description": "Boost instructional time with tools purpose-built for teaching, productivity, and collaboration",
+        "sologan_1": "Premium features",
+        "sologan_2": "that elevate teaching",
+        "feature_1": {
+            "title": "Inform instruction with data-driven insights",
+            "description": "Classroom analytics provide educators with insights and visibility into how students turn in, perform on, and engage with assignments, so educators can make informed decisions about the best way to provide support."
+        },
+        "feature_2": {
+            "title": "Streamline lesson planning",
+            "description": "Create a link to your class, then share it with peers in your organization, so they can easily preview, select, and import high-quality classwork into their classes."
+        },
+        "feature_3": {
+            "title": "Support originality with plagiarism detection",
+            "description": "Help students integrate citations and avoid unintentional plagiarism with unlimited originality reports and a school-owned repository of past work."
+        }
+    },
+
+    "section_content_4": {
+        "title": "Operate with solutions designed to gain visibility, insights, and control",
+        "description": "Create learning environments that are easier to manage and support educators and students with connected, safer tools.",
+        "sologan_1": "Premium features",
+        "sologan_2": "to support your organization and",
+        "sologan_3": "foster stronger learning outcomes",
+        "feature_1": {
+            "title": "Make data-driven decisions",
+            "description": "Gain visibility into everything from class performance to individual student assignment completion with Classroom analytics (coming soon)"
+        },
+        "feature_2": {
+            "title": "Distribute high-quality class templates to educators",
+            "description": "Easily share high-quality class templates so educators in your organization can preview and import classwork into their own classes."
+        },
+        "feature_3": {
+            "title": "Virtually visit classes to support teachers and students",
+            "description": "Designated education leaders and staff can temporarily access classes to support educators, manage substitute teachers, see information for guardian conversations, and more."
+        }
+    },
+
+    "footer": {
+        "products": {
+            "title": "Products"
+        },
+
+        "our_team": {
+            "title": "Our Team",
+            "member_1": "Nguyen Lam Truong",
+            "member_2": "Nguyen Thanh Tung",
+            "member_3": "Nguyen Manh Tuong"
+        },
+
+        "about": {
+            "title": "About for Education",
+            "link_1": "Our commitment",
+            "link_2": "Schools",
+            "link_3": "For higher ed",
+            "link_4": "Privacy & security"
+        },
+
+        "social": {
+            "title": "Socials"
+        }
+    }
+}

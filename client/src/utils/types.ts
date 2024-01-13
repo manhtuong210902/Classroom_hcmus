@@ -12,6 +12,7 @@ export interface UserInfo {
     email?: string;
     address?: string;
     gender?: string;
+    studentId?: string;
 }
 
 export interface ClassInfo {
@@ -30,4 +31,50 @@ export interface ClassInfo {
 export interface MessageInfo {
     statusCode: number;
     message: string;
+}
+
+export interface GradeComposition {
+    id: string;
+    classId: string;
+    isFinal: boolean;
+    name: string;
+    scale: number;
+}
+
+export interface GradeInfo {
+    id: string;
+    classId: string;
+    gradeId: string;
+    name: string;
+    studentId: string;
+    fullName: string;
+    grade: number;
+    scale: number;
+    createdAt?: string;
+    updatedAt?: string;
+}
+
+export interface ReviewInfo {
+    id: string;
+    classId: string;
+    gradeId: string;
+    gradeName: string;
+    currentGrade: number;
+    expectedGrade: number;
+    explaination: string;
+    fullName: string;
+    createdAt?: string;
+    updatedAt?: string;
+    studentId: string;
+}
+
+export interface CommentInfo {
+    id: string;
+    reviewId: string;
+    userId: string;
+    fullName: string;
+    imgUrl: string;
+    content: string;
+    createdAt?: string;
+    updatedAt?: string;
 }

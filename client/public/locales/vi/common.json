@@ -1,0 +1,131 @@
+{
+    "navbar": {
+        "home": "Trang chủ",
+        "about": "Về chúng tôi",
+        "class": "Lớp học"
+    },
+
+    "class": {
+        "title_1": "Toán học",
+        "description_1": "Khám phá thế giới của số, phương trình và các khái niệm toán học.",
+        "title_2": "Khoa học",
+        "description_2": "Khám phá những kỳ diệu của thế giới tự nhiên qua sự khám phá khoa học.",
+        "title_3": "Lịch sử",
+        "description_3": "Khám phá những sự kiện và câu chuyện đã định hình quá khứ của chúng ta và ảnh hưởng đến hiện tại.",
+        "title_4": "Văn học",
+        "description_4": "Đắm chìm trong thế giới của sách, thơ và các kiệt tác văn học.",
+        "title_5": "Nghệ thuật",
+        "description_5": "Thể hiện bản thân qua sự sáng tạo của nghệ thuật hình sự và biểu diễn.",
+        "title_6": "Âm nhạc",
+        "description_6": "Khám phá thế giới âm nhạc qua việc hát, chơi nhạc cụ và lắng nghe."
+    },
+
+    "authen": {
+        "login": "Đăng nhập",
+        "register": "Đăng ký"
+    },
+
+    "banner": {
+        "title": "Chào mừng đến với Education",
+        "description": "Education Classroom giúp giáo viên tạo ra những trải nghiệm học tập hấp dẫn mà họ có thể cá nhân hóa, quản lý và đánh giá. Là một phần của không gian Giáo dục cho Giáo dục, nó giúp giáo viên tăng cường tác động của họ và chuẩn bị cho học sinh cho tương lai.",
+        "button": "Bắt đầu"
+    },
+
+    "section_content_1": {
+        "title": "150 triệu người trên toàn thế giới sử dụng Education Classroom",
+        "description": "Education Classroom được thiết kế dựa trên phản hồi từ cộng đồng giáo dục, ảnh hưởng đến việc phát triển các tính năng mới giúp giáo viên tập trung vào việc giảng dạy và học sinh tập trung vào việc học.",
+        "feature_1": "Cá nhân hóa quá trình học",
+        "feature_2": "Đơn giản hóa các nhiệm vụ hàng ngày",
+        "feature_3": "Nhận thông tin chi tiết và quan sát"
+    },
+
+    "section_content_2": {
+        "title": "Bổ sung và cá nhân hóa quá trình học",
+        "description": "Thúc đẩy sự tích cực của học sinh với các công cụ đáp ứng nơi học sinh đang ở và xây dựng kỹ năng cho tương lai của họ.",
+        "sologan_1": "Các tính năng cao cấp",
+        "sologan_2": "truyền cảm hứng cho những cách mới",
+        "sologan_3": "giảng dạy và học tập",
+        "feature_1": {
+            "title": "Hỗ trợ học sinh phát triển kỹ năng đọc",
+            "description": "Sử dụng Read Along, một công cụ vui vẻ dựa trên lời nói, để giúp học sinh xây dựng kỹ năng đọc một cách độc lập, đồng thời mang lại cái nhìn sâu sắc cho giáo viên về sự tiến bộ của họ."
+        },
+        "feature_2": {
+            "title": "Củng cố khái niệm với học tự chủ",
+            "description": "Giao các câu hỏi tương tác cho video YouTube, mang lại phản hồi thời gian thực khi học sinh tiến qua một bài học, đồng thời xem thông tin về hiệu suất của họ."
+        },
+        "feature_3": {
+            "title": "Nâng cao tiềm năng của học sinh",
+            "description": "Tạo các bài tập tương tác, ngay cả từ các tệp PDF hiện có, mang lại phản hồi thời gian thực và hướng dẫn cá nhân với các gợi ý và gợi ý với sự giúp đỡ của trí tuệ nhân tạo."
+        }
+    },
+
+    "section_content_3": {
+        "title": "Tăng cường hướng dẫn với các công cụ giúp đơn giản hóa các nhiệm vụ hàng ngày",
+        "description": "Tăng cường thời gian hướng dẫn bằng các công cụ được xây dựng đặc biệt cho giảng dạy, năng suất và sự cộng tác",
+        "sologan_1": "Các tính năng cao cấp",
+        "sologan_2": "nâng cao chất lượng giảng dạy",
+        "feature_1": {
+            "title": "Thông tin hướng dẫn dựa trên thông tin dữ liệu",
+            "description": "Phân tích lớp học cung cấp thông tin chi tiết và quan sát cho giáo viên về cách học sinh nộp bài, thực hiện và tương tác với bài tập, giúp giáo viên đưa ra quyết định thông tin về cách tốt nhất để hỗ trợ."
+        },
+        "feature_2": {
+            "title": "Tối ưu hóa kế hoạch giảng dạy",
+            "description": "Tạo liên kết đến lớp học của bạn, sau đó chia sẻ nó với đồng nghiệp trong tổ chức của bạn, để họ có thể dễ dàng xem trước, chọn lựa và nhập công việc lớp học chất lượng cao vào lớp học của họ."
+        },
+        "feature_3": {
+            "title": "Hỗ trợ tính độc đáo với phát hiện sao chép",
+            "description": "Hỗ trợ học sinh tích hợp trích dẫn và tránh sao chép không cố ý với báo cáo tính độc đáo không giới hạn và kho lưu trữ công trình đã làm thuộc sở hữu của trường."
+        }
+    },
+
+    "section_content_4": {
+        "title": "Vận hành với các giải pháp được thiết kế để có cái nhìn, hiểu biết và kiểm soát",
+        "description": "Tạo ra môi trường học tập dễ quản lý hơn và hỗ trợ giáo viên và học sinh bằng các công cụ kết nối, an toàn hơn.",
+        "sologan_1": "Các tính năng cao cấp",
+        "sologan_2": "để hỗ trợ tổ chức của bạn và",
+        "sologan_3": "tạo ra kết quả học tập mạnh mẽ hơn",
+        "feature_1": {
+            "title": "Ra quyết định dựa trên dữ liệu",
+            "description": "Có cái nhìn vào mọi thứ từ hiệu suất lớp học đến hoàn thành nhiệm vụ của học sinh cá nhân với phân tích lớp học (sẽ ra mắt sớm)"
+        },
+        "feature_2": {
+            "title": "Phân phối mẫu lớp học chất lượng cao cho giáo viên",
+            "description": "Dễ dàng chia sẻ mẫu lớp học chất lượng cao để giáo viên trong tổ chức của bạn có thể xem trước và nhập công việc lớp học vào lớp học của họ."
+        },
+        "feature_3": {
+            "title": "Thăm lớp học ảo để hỗ trợ giáo viên và học sinh",
+            "description": "Các nhà lãnh đạo giáo dục được chỉ định và nhân viên có thể tạm thời truy cập vào lớp học để hỗ trợ giáo viên, quản lý giáo viên thay thế, xem thông tin cho cuộc trò chuyện với phụ huynh và nhiều hơn nữa."
+        }
+    },
+
+    "language": {
+        "title": "Ngôn ngữ",
+        "en": "Tiếng Anh",
+        "vi": "Tiếng Việt"
+    },
+
+    "footer": {
+        "products": {
+            "title": "Sản phẩm"
+        },
+
+        "our_team": {
+            "title": "Đội ngũ",
+            "member_1": "Nguyễn Lam Trường",
+            "member_2": "Nguyễn Thanh Tùng",
+            "member_3": "Nguyễn Mạnh Tường"
+        },
+
+        "about": {
+            "title": "Về chúng tôi",
+            "link_1": "Cam kết",
+            "link_2": "Trường học",
+            "link_3": "Giáo dục đại học",
+            "link_4": "Riêng tư & bảo mật"
+        },
+
+        "social": {
+            "title": "Mạng xã hội"
+        }
+    }
+}

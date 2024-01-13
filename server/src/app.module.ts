@@ -1,4 +1,4 @@
-import { Module, RequestMethod} from '@nestjs/common';
+import { Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -6,7 +6,6 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { SequelizeConfigService } from './lib/configs/database/database.config';
 import { LoggerModule } from './lib/configs/logger/logger.module';
 import { ConfigurationModule } from './lib/configs/env/env.module';
-import { AuthModule } from './modules/auth/auth.module';
 import { MiddlewareConsumer } from '@nestjs/common/interfaces';
 import { AuthMiddleware } from './lib/security/middleware/auth.middleware';
 import { JwtModule } from './lib/security/jwt/jwt.module';
@@ -18,6 +17,9 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { MailerConfigService } from './lib/configs/mailer/mailer.config';
 import { ClassRolesGuard } from './lib/security/guard/class-role.guard';
 import { sequelizeModules, serviceModules } from './modules';
+import { BullModule } from '@nestjs/bull';
+import { SocketModule } from './socket/socket.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
     imports: [
@@ -35,9 +37,11 @@ import { sequelizeModules, serviceModules } from './modules';
         MulterModule.register(),
         LoggerModule,
         JwtModule,
-        AuthModule,
+        BullModule,
         CloudinaryModule,
-        ...serviceModules
+        ...serviceModules,
+        SocketModule,
+        AdminModule,
     ],
     controllers: [AppController],
     providers: [

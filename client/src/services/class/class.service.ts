@@ -1,5 +1,6 @@
 import {
     CHECK_HAS_CLASS_API,
+    CLASS_API,
     CREATE_CLASS_API,
     GET_CLASS_DETAIL,
     GET_INVITE_URL_API,
@@ -46,5 +47,9 @@ export const classService = {
 
     checkHasClass: (classId: string, userId: string) => {
         return axiosClient.get(`${CHECK_HAS_CLASS_API}?class_id=${classId}&user_id=${userId}`);
+    },
+
+    updateStudentId: (classId: string, params: any) => {
+        return axiosClient.post(`${CLASS_API}/${classId}/student-id`, params);
     },
 };
