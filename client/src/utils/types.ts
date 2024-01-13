@@ -40,3 +40,16 @@ export interface GradeComposition {
     name: string;
     scale: number;
 }
+
+export interface GradeInfo {
+    id: string;
+    classId: string;
+    gradeId: string;
+    name: string;
+    studentId: string;
+    fullName: string;
+    grade: number;
+    scale: number;
+    createdAt?: string;
+    updatedAt?: string;
+}

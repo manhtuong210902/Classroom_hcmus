@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertDialogCancel } from "@radix-ui/react-alert-dialog";
 import ModalWrapper from "@src/components/Modal/ModalWrapper";
 import { AlertDialogFooter } from "@src/components/ui/alert-dialog";
 import { Button } from "@src/components/ui/button";

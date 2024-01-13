@@ -6,6 +6,7 @@ import { selectCurrClass } from "@src/store/reducers/classSlice";
 import GradesTab from "./components/GradesTab/GradesTab";
 import GradeCompositionTab from "./components/GradesCompostionTab/GradeCompositionTab";
 import GradesStudentTab from "./components/GradesStudentTab/GradesStudentTab";
+import ReviewTab from "./components/ReviewTab/ReviewTab";
 
 const ClassPage = () => {
     const currClass = useAppSelector(selectCurrClass);
@@ -38,6 +39,11 @@ const ClassPage = () => {
             content: <GradesStudentTab />,
             isStudent: true,
         },
+        {
+            id: 6,
+            title: "To Review",
+            content: <ReviewTab />,
+        },
     ];
 
     return (
@@ -49,6 +55,7 @@ const ClassPage = () => {
                     {currClass?.isTeacher && <TabsTrigger value={tabs[2]?.title}>{tabs[2]?.title}</TabsTrigger>}
                     {currClass?.isTeacher && <TabsTrigger value={tabs[3]?.title}>{tabs[3]?.title}</TabsTrigger>}
                     {!currClass?.isTeacher && <TabsTrigger value={tabs[4]?.title}>{tabs[4]?.title}</TabsTrigger>}
+                    <TabsTrigger value={tabs[5]?.title}>{tabs[5]?.title}</TabsTrigger>
                 </TabsList>
                 {tabs.map((tab) => {
                     if (tab.isTeacher && !currClass?.isTeacher) return null;

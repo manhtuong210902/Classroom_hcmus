@@ -1,4 +1,4 @@
-import { BookUserIcon, Calendar, GraduationCapIcon, HomeIcon, ListTodo, SettingsIcon } from "lucide-react";
+import { BookUserIcon, GraduationCapIcon, HomeIcon, ListTodo, SettingsIcon } from "lucide-react";
 import { AccordionContent, Accordion, AccordionItem, AccordionTrigger } from "../ui/accordion";
 import SettingSidebar from "@src/pages/Setting/components/SettingSidebar/SettingSidebar";
 import routes from "@src/configs/router";
@@ -14,13 +14,6 @@ const Sidebar = ({ isShowSideBar }: { isShowSideBar: boolean }) => {
             icon: <HomeIcon />,
             title: "Home",
             path: routes.HOME,
-        },
-
-        {
-            id: 2,
-            icon: <Calendar />,
-            title: "Calendar",
-            path: "#Calendar",
         },
     ];
 
