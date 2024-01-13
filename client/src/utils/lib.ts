@@ -24,3 +24,15 @@ export const generateRandomString = () => {
 
     return result;
 };
+
+export function convertTimestampToFormattedDate(timestampStr: string) {
+    if (!timestampStr) return;
+    // Convert the timestamp to a Date object
+    var timestamp = new Date(timestampStr);
+
+    // Format the Date object as "MMM DD, YYYY"
+    var options: any = { year: "numeric", month: "short", day: "numeric" };
+    var formattedDate = timestamp.toLocaleDateString("en-US", options);
+
+    return formattedDate;
+}

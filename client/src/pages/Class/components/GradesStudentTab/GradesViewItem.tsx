@@ -2,13 +2,14 @@ import { Button } from "@src/components/ui/button";
 import { GradeInfo } from "@src/utils/types";
 import ReviewRequestModal from "./ReviewRequestModal";
 import { useState } from "react";
+import { convertTimestampToFormattedDate } from "@src/utils/lib";
 
 const GradesViewItem = ({ data }: { data: GradeInfo }) => {
     const [isOpen, setIsOpen] = useState(false);
     return (
         <>
             <div className="flex flex-col gap-3 p-4 rounded-lg border border-border">
-                <p className="text-xl text-center font-bold mb-2">Grades {data?.name}</p>
+                <p className="text-xl text-center font-bold mb-2">{data?.name} Grade</p>
                 <p className="text-sm">
                     Student ID: <span className="font-bold">{data?.studentId}</span>
                 </p>
@@ -19,7 +20,8 @@ const GradesViewItem = ({ data }: { data: GradeInfo }) => {
                     Grade: <span className="font-bold">{data?.grade}</span>
                 </p>
                 <p className="text-sm">
-                    Created At: <span className="font-bold">{data?.createdAt}</span>
+                    Created At:{" "}
+                    <span className="font-bold">{convertTimestampToFormattedDate(data?.createdAt || "")}</span>
                 </p>
                 {data?.updatedAt && (
                     <p className="text-sm">
@@ -31,7 +33,7 @@ const GradesViewItem = ({ data }: { data: GradeInfo }) => {
                         setIsOpen(true);
                     }}
                 >
-                    Request Review
+                    Make Review Request
                 </Button>
             </div>
             <ReviewRequestModal

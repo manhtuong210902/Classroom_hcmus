@@ -11,7 +11,7 @@ const ReviewTab = () => {
     const [loading, setLoading] = useState(false);
     useEffect(() => {
         setLoading(true);
-        getReview(String(currClass?.id)).then((res) => {
+        getReview(String(currClass?.id), Boolean(currClass?.isTeacher)).then((res) => {
             if (res.statusCode === 200) {
                 setReview(res.data);
                 setLoading(false);

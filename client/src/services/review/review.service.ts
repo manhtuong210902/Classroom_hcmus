@@ -6,8 +6,8 @@ export const reviewService = {
         return axiosClient.post(`${REVIEW_API}/${classId}/request`, params);
     },
 
-    getReview: async (classId: string) => {
-        return axiosClient.get(`${REVIEW_API}/${classId}/list`);
+    getReview: async (classId: string, isTeacher: boolean) => {
+        return axiosClient.get(`${REVIEW_API}/${classId}${isTeacher ? "/list" : ""}`);
     },
 
     addComment: async (classId: string, params: any) => {

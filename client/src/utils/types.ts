@@ -58,11 +58,23 @@ export interface ReviewInfo {
     id: string;
     classId: string;
     gradeId: string;
-    name: string;
+    gradeName: string;
     currentGrade: number;
     expectedGrade: number;
     explaination: string;
     fullName: string;
+    createdAt?: string;
+    updatedAt?: string;
+    studentId: string;
+}
+
+export interface CommentInfo {
+    id: string;
+    reviewId: string;
+    userId: string;
+    fullName: string;
+    imgUrl: string;
+    content: string;
     createdAt?: string;
     updatedAt?: string;
 }

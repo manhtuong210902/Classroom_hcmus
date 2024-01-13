@@ -13,13 +13,13 @@ export const requestReview = async (classId: string, params: any) => {
     }
 };
 
-export const getReview = async (classId: string) => {
+export const getReview = async (classId: string, isTeacher: boolean) => {
     if (!classId) {
         return;
     }
 
     try {
-        const res = await reviewService.getReview(classId);
+        const res = await reviewService.getReview(classId, isTeacher);
         return res.data;
     } catch (error: any) {
         return error?.response.data;
