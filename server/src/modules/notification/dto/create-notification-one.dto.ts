@@ -4,8 +4,11 @@ import { IsEmpty, IsNotEmpty, IsString } from "class-validator";
 export class CreateNotificationOneDto {
     @ApiProperty()
     @IsString()
-    @IsNotEmpty({ "message": "userClassId is required" })
-    userClassId: string;
+    userId?: string;
+
+    @ApiProperty()
+    @IsString()
+    studentId?: string;
 
     @ApiProperty()
     @IsString()

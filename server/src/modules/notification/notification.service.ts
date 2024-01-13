@@ -67,9 +67,18 @@ export class NotificationService {
 
     const users: any[] = await this.classService.getAllUsersInClassForNotify(createNotificationDto.classId);
 
-    const student: any = users.filter(e => e.id === createNotificationDto.userClassId);
+    let student: any = null;
+    if (createNotificationDto.userId) {
+      student = users.filter(e => e.userId === createNotificationDto.userId);
+      student = student[0];
+    }
 
-    const notification = { ...convertedData, user_class_id: createNotificationDto.userClassId, user_id: student.userId }
+    if (createNotificationDto.studentId) {
+      student = users.filter(e => e.studentId === createNotificationDto.studentId);
+      student = student[0];
+    }
+
+    const notification = { ...convertedData, user_class_id: student.userClassId, user_id: student.userId }
 
     await this.notificationModel.create(notification)
 
@@ -88,9 +97,9 @@ export class NotificationService {
 
     const users: any[] = await this.classService.getAllUsersInClassForNotify(createNotificationDto.classId);
 
-    const teacher: any = users.filter(e => e.id === createNotificationDto.userClassId);
+    const teacher: any = users.filter(e => e.id === createNotificationDto.userId);
 
-    const notification = { ...convertedData, user_class_id: createNotificationDto.userClassId, user_id: teacher.userId }
+    const notification = { ...convertedData, user_class_id: teacher.userClassId, user_id: teacher.userId }
 
     await this.notificationModel.create(notification)
 
