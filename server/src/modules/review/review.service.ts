@@ -194,7 +194,7 @@ export class ReviewService {
             if (!gradeId){
                 const query = await this.reviewModel.sequelize.query(
                     `
-                    SELECT rc.*
+                    SELECT rc.*, si.*
                     FROM review_compositions AS rc
                     JOIN grade_compositions 
                         ON grade_compositions.id = rc.grade_id AND grade_compositions.class_id = :classId
