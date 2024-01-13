@@ -8,6 +8,10 @@ export class CreateNotificationOneDto {
 
     @ApiProperty()
     @IsString()
+    studentId?: string;
+
+    @ApiProperty()
+    @IsString()
     @IsNotEmpty({ "message": "classId is required" })
     classId: string;
 

@@ -67,7 +67,16 @@ export class NotificationService {
 
     const users: any[] = await this.classService.getAllUsersInClassForNotify(createNotificationDto.classId);
 
-    const student: any = users.filter(e => e.id === createNotificationDto.userId);
+    let student: any = null;
+    if (createNotificationDto.userId) {
+      student = users.filter(e => e.userId === createNotificationDto.userId);
+      student = student[0];
+    }
+
+    if (createNotificationDto.studentId) {
+      student = users.filter(e => e.studentId === createNotificationDto.studentId);
+      student = student[0];
+    }
 
     const notification = { ...convertedData, user_class_id: student.userClassId, user_id: student.userId }
 

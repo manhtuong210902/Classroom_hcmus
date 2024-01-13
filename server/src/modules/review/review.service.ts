@@ -97,6 +97,13 @@ export class ReviewService {
                 grade_id: requestReview.gradeId
             })
 
+            await this.notificationService.createNotifycationForAllTeacherInClass({
+                classId: classId,
+                content: SOCKET_MSG.STUDENT_REQUEST_REVIEW,
+                type: SOCKET_TYPE.STUDENT_REQUEST_REVIEW,
+                contentUrl: 'http://requestreviewnew.com'
+            })
+
             return convertSnakeToCamel(newReview.dataValues);
         } catch (error) {
             throw new BadRequestException(error);
@@ -324,6 +331,15 @@ export class ReviewService {
                     type: sequelize.QueryTypes.UPDATE
                 }
             )
+
+            await this.notificationService.createNotifycationForOneStudent({
+                studentId: finalReviewDto.studentId,
+                classId: classId,
+                content: SOCKET_MSG.TEACHER_FINAL_REVIEW,
+                type: SOCKET_TYPE.TEACHER_FINAL_REVIEW,
+                contentUrl: 'http://aaa.a'
+            })
+
         } catch (error) {
             throw new BadRequestException(error)
         }
