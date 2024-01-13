@@ -3,8 +3,9 @@ import { LocalStorage } from "@src/utils/LocalStorage";
 import { profileService } from "../profile/profile.service";
 import { UserInfo } from "@src/utils/types";
 import { authService } from "./auth.service";
+import { toast } from "react-toastify";
 
-export const loaderUser = async (dispatch: any) => {
+export const loaderUser = async (dispatch: any, navigate: any) => {
     const userId = LocalStorage.getUserId();
     console.log("Log check userId: ", userId);
     if (!userId) {
@@ -17,9 +18,11 @@ export const loaderUser = async (dispatch: any) => {
         const user: UserInfo = res.data.data;
 
         dispatch(loadUserSuccess(user));
-    } catch (error) {
+    } catch (error: any) {
         LocalStorage.clearToken();
         dispatch(loadUserFail());
+        navigate("/landing");
+        toast.error(error?.response?.data?.message);
     }
 };
 

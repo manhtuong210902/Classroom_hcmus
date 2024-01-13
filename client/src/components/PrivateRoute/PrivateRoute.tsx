@@ -16,7 +16,7 @@ const PrivateRoute = () => {
     useEffect(() => {
         const accessToken = LocalStorage.getAccessToken();
         if (!user) {
-            loaderUser(dispatch);
+            loaderUser(dispatch, navigate);
         }
 
         if (!accessToken) {

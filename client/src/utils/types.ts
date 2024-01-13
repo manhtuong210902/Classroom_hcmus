@@ -26,6 +26,7 @@ export interface ClassInfo {
     avatar?: string;
     isTeacher: boolean;
     isCreator: boolean;
+    isActive?: boolean;
 }
 
 export interface MessageInfo {

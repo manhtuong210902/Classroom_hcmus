@@ -46,6 +46,7 @@ export const createClass = async (params: any, dispatch: any, currentUser: UserI
                     avatar: currentUser.imgUrl,
                     isTeacher: true,
                     isCreator: true,
+                    isActive: true,
                 })
             );
         }

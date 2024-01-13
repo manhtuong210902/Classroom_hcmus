@@ -27,11 +27,11 @@ const ListNotification = () => {
                 notifications.map((item: any) => {
                     return (
                         <div
-                            className="flex items-center cursor-pointer justify-between gap-4"
+                            className="flex items-center cursor-pointer justify-between gap-4 rounded-lg py-1 px-2 border border-border"
                             key={item.id}
                             onClick={() => handleClickNotification(item)}
                         >
-                            <div className="flex flex-col gap-1 rounded-lg py-1 px-2 border border-border">
+                            <div className="flex flex-col gap-1">
                                 <p className="font-semibold text-sm">
                                     <span className="font-normal text-xs text-gray-700">
                                         {convertTimestampToFormattedDate(item?.created_at || "")}
