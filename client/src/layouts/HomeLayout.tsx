@@ -1,10 +1,12 @@
 import Header from "@src/components/Header/Header";
 import Sidebar from "@src/components/Sidebar/Sidebar";
 import routes from "@src/configs/router";
+import socket from "@src/configs/socket";
 import { useAppDispatch, useAppSelector } from "@src/hooks/appHook";
 import { getClassDetail, getListClass } from "@src/services/class/apiRequest";
 import { getGradeCompositions } from "@src/services/grade/apiRequest";
 import { selectCurrClass, setCurrClass } from "@src/store/reducers/classSlice";
+import { LocalStorage } from "@src/utils/LocalStorage";
 import { CLASS_URL_REGEX } from "@src/utils/regex";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -57,6 +59,19 @@ const HomeLayout = ({ children }: Props) => {
             dispatch(setCurrClass(null));
         }
     }, [location]);
+
+    useEffect(() => {
+        const handleEmit = (data: any) => {
+            toast.info(data.content);
+        };
+        socket.on("TEACHER_EMIT", handleEmit);
+        socket.on("STUDENT_EMIT", handleEmit);
+
+        return () => {
+            socket.off("TEACHER_EMIT", handleEmit);
+            socket.off("STUDENT_EMIT", handleEmit);
+        };
+    }, []);
 
     return (
         <div>

@@ -67,7 +67,17 @@ const GradesTab = () => {
                     {gradesBoard.map((student, index) => (
                         <TableRow key={index}>
                             <TableCell className="font-medium">{index}</TableCell>
-                            <TableCell>{student?.studentId}</TableCell>
+                            <TableCell>
+                                {student?.studentId}
+                                <EditValueColumn
+                                    studentId={student?.studentId}
+                                    gradeId={student?.grade?.id}
+                                    name={"newStudentId"}
+                                    defaultValue={student?.studentId}
+                                    type="text"
+                                    className="w-[100px]"
+                                />
+                            </TableCell>
                             <TableCell>{student?.fullName}</TableCell>
                             {gradesComposition.map((grade, index) => (
                                 <TableCell key={index}>
