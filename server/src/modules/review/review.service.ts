@@ -309,14 +309,14 @@ export class ReviewService {
             }
 
             const newComment = await this.commentModel.create({
-                user_id: user.userId,
+                user_id: user.dataValues.id,
                 content: commentDto.content,
                 review_id: commentDto.reviewId,
             })
 
-            if (await this.checkIsTeacherFromUserClasses(classId, user.userId)) {
+            if (await this.checkIsTeacherFromUserClasses(classId, user.dataValues.userId)) {
                 await this.notificationService.createNotifycationForOneStudent({
-                    userId: user.userId,
+                    userId: user.dataValues.userId,
                     classId: classId,
                     content: SOCKET_MSG.TEACHER_COMMENT_REVIEW,
                     type: SOCKET_TYPE.TEACHER_COMMENT_REVIEW,
@@ -333,8 +333,8 @@ export class ReviewService {
 
             return convertSnakeToCamel({
                 ...newComment.dataValues, 
-                img_url: user.img_url, 
-                fullname: user.fullname
+                img_url: user.dataValues.img_url, 
+                fullname: user.dataValues.fullname
             });
         } catch (error) {
             throw new BadRequestException(error);
@@ -361,7 +361,7 @@ export class ReviewService {
                 SELECT cr.*, users.fullname, users.img_url
                 FROM comment_reviews AS cr
                 JOIN users 
-                ON users.id = cr.user_id 
+                    ON users.id = cr.user_id 
                 WHERE cr.review_id = :reviewId;
                 `,
                 {
