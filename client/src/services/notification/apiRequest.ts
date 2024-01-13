@@ -1,8 +1,8 @@
 import { notificationService } from "./notification.service";
 
-export const createNotification = async (params: any) => {
+export const getNotification = async () => {
     try {
-        const res = await notificationService.pushNotiMessage(params);
+        const res = await notificationService.getNotification();
         return res.data;
     } catch (error: any) {
         return {

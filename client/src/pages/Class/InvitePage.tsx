@@ -81,7 +81,9 @@ const InvitePage = () => {
 
                         <span className="text-sm">{user?.fullname}</span>
                     </div>
-                    <span className="text-xs">You are joining the class as a {isTeacher ? "teacher" : "student"}.</span>
+                    <span className="text-xs">
+                        You are joining the class as a {isTeacher === "true" ? "teacher" : "student"}.
+                    </span>
                     <Button onClick={handleJoinClass}>Join class</Button>
                 </div>
             </div>
