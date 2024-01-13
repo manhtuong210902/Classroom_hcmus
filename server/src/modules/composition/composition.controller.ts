@@ -550,15 +550,11 @@ export class CompositionController {
         @Res({passthrough : true}) res : Response,
         @Param('classId') classId: string,
     ){
-        
-    
 
-        
-        // const buffer = await this.fileService.createFile(
-            
-        // );
-        // res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        // res.set('Content-Disposition', `attachment; filename=grade.xlsx`);
-        // return res.send(buffer);
+        const buffer = await this.compositionService.exportGradeBoard(classId);
+
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.set('Content-Disposition', `attachment; filename=grade.xlsx`);
+        return res.send(buffer);
     }
 }

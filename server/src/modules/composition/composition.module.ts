@@ -11,7 +11,7 @@ import { NotificationModule } from '../notification/notification.module';
 @Module({
   providers: [CompositionService,...compositionProviders],
   controllers: [CompositionController],
-  imports: [UserModule, FileModule, ChunkQueueModule, NotificationModule]
+  imports: [UserModule, FileModule, ChunkQueueModule, NotificationModule, FileModule]
 })
 export class CompositionModule {
   configure(consumer: MiddlewareConsumer) {
