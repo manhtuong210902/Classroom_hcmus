@@ -44,9 +44,11 @@ export const SOCKET_TYPE = {
 
     CREATE_NEW_GRADE_COMPOSITION: 'CREATE_NEW_GRADE_COMPOSITION',
     FINAL_A_GRADE_COMPOSITION: 'FINAL_A_GRADE_COMPOSITION',
+    TEACHER_COMMENT_REVIEW: 'TEACHER_COMMENT_REVIEW',
 }
 
 export const SOCKET_MSG = {
     CREATE_NEW_GRADE_COMPOSITION: 'Teacher has created new grade composition',
     FINAL_A_GRADE_COMPOSITION: 'Teacher has finalized a grade composition',
+    TEACHER_COMMENT_REVIEW: 'Teacher has comment your request review',
 }
