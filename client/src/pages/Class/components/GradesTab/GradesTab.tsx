@@ -71,14 +71,18 @@ const GradesTab = () => {
                             <TableCell>{student?.fullName}</TableCell>
                             {gradesComposition.map((grade, index) => (
                                 <TableCell key={index}>
-                                    <EditValueColumn
-                                        studentId={student?.studentId}
-                                        gradeId={grade?.id}
-                                        name={"grade"}
-                                        defaultValue={student?.[grade.name]?.grade}
-                                        type="number"
-                                        className="w-[100px]"
-                                    />
+                                    {grade.isFinal ? (
+                                        <span>{student?.[grade.name]?.grade}</span>
+                                    ) : (
+                                        <EditValueColumn
+                                            studentId={student?.studentId}
+                                            gradeId={grade?.id}
+                                            name={"grade"}
+                                            defaultValue={student?.[grade.name]?.grade}
+                                            type="number"
+                                            className="w-[100px]"
+                                        />
+                                    )}
                                 </TableCell>
                             ))}
                             <TableCell>{totalGrade(student)}</TableCell>

@@ -1,22 +1,29 @@
-import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+    BadRequestException,
+    Inject,
+    Injectable,
+    Logger,
+} from '@nestjs/common';
 import { GradeComposition } from './entities/grade-composition.entity';
 import { GradeCompositionDto } from './dto/grade-composition.dto';
-import { convertCamelToSnake, convertSnakeToCamel, correctStringFormat } from 'src/lib/util/func';
+import {
+    convertCamelToSnake,
+    convertSnakeToCamel,
+    correctStringFormat,
+} from 'src/lib/util/func';
 import sequelize from 'sequelize';
 import { GradeCompositionResponse } from './response/grade-composition.response';
 import { UpdateOneBoardDto } from './dto/update-one-board.dto';
 import { NotificationService } from '../notification/notification.service';
 import { SOCKET_MSG, SOCKET_TYPE } from 'src/utils';
 
-
 @Injectable()
 export class CompositionService {
     constructor(
         @Inject('GradeCompositionRepository')
         private readonly gradeModel: typeof GradeComposition,
-        private readonly notificationService: NotificationService
-    ) { }
-
+        private readonly notificationService: NotificationService,
+    ) {}
 
     async getStudentId(userId, classId) {
         try {
@@ -29,20 +36,18 @@ export class CompositionService {
                 {
                     replacements: {
                         userId,
-                        classId
+                        classId,
                     },
-                    type: sequelize.QueryTypes.SELECT
-                }
-            )
+                    type: sequelize.QueryTypes.SELECT,
+                },
+            );
             return studentId[0].student_id;
-
         } catch (error) {
             return null;
         }
     }
 
-    async checkIsExistName(classId: string, name: string)
-        : Promise<Boolean> {
+    async checkIsExistName(classId: string, name: string): Promise<Boolean> {
         try {
             const isExist = await this.gradeModel.sequelize.query(
                 `
@@ -52,9 +57,9 @@ export class CompositionService {
                 `,
                 {
                     replacements: { classId, name },
-                    type: sequelize.QueryTypes.SELECT
-                }
-            )
+                    type: sequelize.QueryTypes.SELECT,
+                },
+            );
             if (isExist.length > 0) {
                 return true;
             }
@@ -74,9 +79,9 @@ export class CompositionService {
                 `,
                 {
                     replacements: { classId },
-                    type: sequelize.QueryTypes.SELECT
-                }
-            )
+                    type: sequelize.QueryTypes.SELECT,
+                },
+            );
 
             return lastPosition[0].last;
         } catch (error) {
@@ -87,13 +92,17 @@ export class CompositionService {
     async createNewGradeComposition(
         gradeCompositionDto: GradeCompositionDto,
         classId: string,
-    )
-        : Promise<GradeCompositionResponse> {
+    ): Promise<GradeCompositionResponse> {
         let position = 0;
 
-        gradeCompositionDto.name = correctStringFormat(gradeCompositionDto.name);
+        gradeCompositionDto.name = correctStringFormat(
+            gradeCompositionDto.name,
+        );
 
-        const isExist = await this.checkIsExistName(classId, gradeCompositionDto.name);
+        const isExist = await this.checkIsExistName(
+            classId,
+            gradeCompositionDto.name,
+        );
         if (isExist) {
             throw new BadRequestException();
         }
@@ -106,7 +115,7 @@ export class CompositionService {
         const convertedData = convertCamelToSnake({
             ...gradeCompositionDto,
             classId,
-            position
+            position,
         });
 
         const newGradeComposition = await this.gradeModel.create(convertedData);
@@ -115,53 +124,50 @@ export class CompositionService {
             classId: classId,
             content: SOCKET_MSG.CREATE_NEW_GRADE_COMPOSITION,
             type: SOCKET_TYPE.CREATE_NEW_GRADE_COMPOSITION,
-            contentUrl: 'http://createnew.com'
-        })
+            contentUrl: 'http://createnew.com',
+        });
 
         const gradeCompositionReponse: GradeCompositionResponse = {
             classId: classId,
             name: newGradeComposition.name,
             isFinal: newGradeComposition.is_final,
             scale: newGradeComposition.scale,
-            id: newGradeComposition.id
-        }
+            id: newGradeComposition.id,
+        };
         return gradeCompositionReponse;
     }
 
-    async getGradeComposition(
-        classId: string,
-        gradeId: string
-    ) {
+    async getGradeComposition(classId: string, gradeId: string) {
         try {
-            const gradeComposition: any = (await this.gradeModel.sequelize.query(
-                `
+            const gradeComposition: any = (
+                await this.gradeModel.sequelize.query(
+                    `
                 SELECT name, class_id, scale, is_final, id
                 FROM grade_compositions
                 WHERE class_id = :classId AND id = :gradeId;
                 `,
-                {
-                    type: sequelize.QueryTypes.SELECT,
-                    replacements: { classId, gradeId }
-                }
-            ))[0]
+                    {
+                        type: sequelize.QueryTypes.SELECT,
+                        replacements: { classId, gradeId },
+                    },
+                )
+            )[0];
 
             const gradeCompositionReponse: GradeCompositionResponse = {
                 classId: classId,
                 name: gradeComposition.name,
                 isFinal: gradeComposition.is_final,
                 scale: gradeComposition.scale,
-                id: gradeComposition.id
-            }
+                id: gradeComposition.id,
+            };
             return gradeCompositionReponse;
         } catch (error) {
-            console.log(error)
+            console.log(error);
             return null;
         }
     }
 
-    async getListGradeCompositions(
-        classId: string,
-    ) {
+    async getListGradeCompositions(classId: string) {
         try {
             const gradeCompositions = await this.gradeModel.sequelize.query(
                 `
@@ -172,19 +178,21 @@ export class CompositionService {
                 `,
                 {
                     type: sequelize.QueryTypes.SELECT,
-                    replacements: { classId }
-                }
-            )
-            const grades: GradeCompositionResponse[] = gradeCompositions.map((grade: any) => {
-                const gradeCompositionReponse: GradeCompositionResponse = {
-                    classId: classId,
-                    name: grade.name,
-                    isFinal: grade.is_final,
-                    scale: grade.scale,
-                    id: grade.id,
-                }
-                return gradeCompositionReponse;
-            })
+                    replacements: { classId },
+                },
+            );
+            const grades: GradeCompositionResponse[] = gradeCompositions.map(
+                (grade: any) => {
+                    const gradeCompositionReponse: GradeCompositionResponse = {
+                        classId: classId,
+                        name: grade.name,
+                        isFinal: grade.is_final,
+                        scale: grade.scale,
+                        id: grade.id,
+                    };
+                    return gradeCompositionReponse;
+                },
+            );
             return grades;
         } catch (error) {
             console.log(error);
@@ -197,8 +205,7 @@ export class CompositionService {
         gradeId: string,
         name: string,
         scale: number,
-    )
-        : Promise<Boolean> {
+    ): Promise<Boolean> {
         try {
             const listUpdated = await this.gradeModel.sequelize.query(
                 `
@@ -216,16 +223,15 @@ export class CompositionService {
                         classId,
                         gradeId,
                         name,
-                        scale
-                    }
-                }
-            )
+                        scale,
+                    },
+                },
+            );
 
             if (listUpdated.length > 0) {
                 return true;
             }
             return false;
-
         } catch (error) {
             console.log(error);
             return false;
@@ -235,17 +241,14 @@ export class CompositionService {
     async deleteGradeComposition(
         classId: string,
         gradeId: string,
-    )
-        : Promise<Boolean> {
+    ): Promise<Boolean> {
         try {
-            const amountDeleted: number = await this.gradeModel.destroy(
-                {
-                    where: {
-                        class_id: classId,
-                        id: gradeId
-                    }
-                }
-            )
+            const amountDeleted: number = await this.gradeModel.destroy({
+                where: {
+                    class_id: classId,
+                    id: gradeId,
+                },
+            });
             if (amountDeleted === 0) {
                 return false;
             }
@@ -259,8 +262,7 @@ export class CompositionService {
     async updatePostitionOfCompositions(
         classId: string,
         listCompositions: string[],
-    )
-        : Promise<Boolean> {
+    ): Promise<Boolean> {
         try {
             const listCurrent: any = await this.gradeModel.sequelize.query(
                 `
@@ -272,11 +274,11 @@ export class CompositionService {
                 {
                     type: sequelize.QueryTypes.SELECT,
                     replacements: {
-                        classId
-                    }
-                }
-            )
-            Logger.log(listCompositions, listCurrent)
+                        classId,
+                    },
+                },
+            );
+            Logger.log(listCompositions, listCurrent);
             if (listCompositions.length !== listCurrent.length) {
                 throw new BadRequestException();
             }
@@ -292,27 +294,21 @@ export class CompositionService {
                             replacements: {
                                 classId,
                                 position: i,
-                                gradeId: listCompositions[i]
-                            }
-                        }
-                    )
+                                gradeId: listCompositions[i],
+                            },
+                        },
+                    );
                 }
             }
 
             return true;
-
-
         } catch (error) {
             Logger.error(error);
             return false;
         }
     }
 
-    async setFinal(
-        classId: string,
-        gradeId: string,
-    )
-        : Promise<Boolean> {
+    async setFinal(classId: string, gradeId: string): Promise<Boolean> {
         try {
             const isFinal = true;
             const updated: number[] = await this.gradeModel.sequelize.query(
@@ -325,22 +321,24 @@ export class CompositionService {
                     replacements: {
                         isFinal,
                         classId,
-                        gradeId
+                        gradeId,
                     },
-                    type: sequelize.QueryTypes.UPDATE
-                }
+                    type: sequelize.QueryTypes.UPDATE,
+                },
             );
 
             if (updated.length === 0) {
                 return false;
             }
-            
-            await this.notificationService.createNotifycationForAllStudentInClass({
-                classId: classId,
-                content: SOCKET_MSG.FINAL_A_GRADE_COMPOSITION,
-                type: SOCKET_TYPE.FINAL_A_GRADE_COMPOSITION,
-                contentUrl: 'http://createnew.com'
-            })
+
+            await this.notificationService.createNotifycationForAllStudentInClass(
+                {
+                    classId: classId,
+                    content: SOCKET_MSG.FINAL_A_GRADE_COMPOSITION,
+                    type: SOCKET_TYPE.FINAL_A_GRADE_COMPOSITION,
+                    contentUrl: 'http://createnew.com',
+                },
+            );
 
             return true;
         } catch (error) {
@@ -349,13 +347,12 @@ export class CompositionService {
         }
     }
 
-
     // if isTeacher === true: return all list
     // else  return grades set final
     async getGradesByStudentId(
         classId: string,
         studentId: string,
-        isTeacher: boolean = false
+        isTeacher: boolean = false,
     ) {
         const listGrades = await this.gradeModel.sequelize.query(
             `
@@ -374,20 +371,16 @@ export class CompositionService {
                 replacements: {
                     classId,
                     studentId,
-                    isTeacher
+                    isTeacher,
                 },
-                type: sequelize.QueryTypes.SELECT
-            }
-        )
+                type: sequelize.QueryTypes.SELECT,
+            },
+        );
         return convertSnakeToCamel(listGrades);
     }
 
-
     // get all grade of students by grade_composition
-    async getStudentsbyGradeId(
-        classId: string,
-        gradeId: string
-    ) {
+    async getStudentsbyGradeId(classId: string, gradeId: string) {
         const listStudents = await this.gradeModel.sequelize.query(
             `
             SELECT *
@@ -399,27 +392,25 @@ export class CompositionService {
             {
                 replacements: {
                     classId,
-                    gradeId
+                    gradeId,
                 },
-                type: sequelize.QueryTypes.SELECT
-            }
-        )
+                type: sequelize.QueryTypes.SELECT,
+            },
+        );
         return convertSnakeToCamel(listStudents);
     }
 
     // get all students and grades in grade board
-    async getGradeBoard(
-        classId: string
-    ) {
+    async getGradeBoard(classId: string) {
         const countStudents: any = await this.gradeModel.sequelize.query(
             `
             SELECT COUNT(1)
             FROM student_ids;
             `,
             {
-                type: sequelize.QueryTypes.SELECT
-            }
-        )
+                type: sequelize.QueryTypes.SELECT,
+            },
+        );
 
         const gradeBoard = await this.gradeModel.sequelize.query(
             `
@@ -431,21 +422,18 @@ export class CompositionService {
             `,
             {
                 replacements: {
-                    classId
+                    classId,
                 },
-                type: sequelize.QueryTypes.SELECT
-            }
-        )
+                type: sequelize.QueryTypes.SELECT,
+            },
+        );
         return {
             list: convertSnakeToCamel(gradeBoard),
-            countStudents: parseInt(countStudents[0]?.count) || 0
+            countStudents: parseInt(countStudents[0]?.count) || 0,
         };
     }
 
-    async updateBoardOne(
-        updateOne: UpdateOneBoardDto,
-        classId: string,
-    ) {
+    async updateBoardOne(updateOne: UpdateOneBoardDto, classId: string) {
         try {
             // update studentId list
             if (updateOne?.newFullName || updateOne?.studentId) {
@@ -462,11 +450,11 @@ export class CompositionService {
                             newStudentId: updateOne?.newStudentId,
                             newFullName: updateOne?.newFullName,
                             studentId: updateOne.studentId,
-                            classId
+                            classId,
                         },
-                        type: sequelize.QueryTypes.UPDATE
-                    }
-                )
+                        type: sequelize.QueryTypes.UPDATE,
+                    },
+                );
             }
 
             // update scale
@@ -475,7 +463,7 @@ export class CompositionService {
                     `
                     UPDATE student_compositions
                     SET 
-                        scale = :scale
+                        grade = :grade
                     WHERE
                         student_id = :studentId
                         AND class_id = :classId
@@ -483,18 +471,17 @@ export class CompositionService {
                     `,
                     {
                         replacements: {
-                            scale: updateOne?.grade,
+                            grade: updateOne?.grade,
                             studentId: updateOne?.studentId,
                             classId: classId,
-                            gradeId: updateOne?.gradeId
+                            gradeId: updateOne?.gradeId,
                         },
-                        type: sequelize.QueryTypes.UPDATE
-                    }
-                )
+                        type: sequelize.QueryTypes.UPDATE,
+                    },
+                );
             }
         } catch (error) {
             throw new BadRequestException(error);
         }
-
     }
 }
