@@ -194,7 +194,24 @@ export class ReviewService {
 
     async getListReviewsOfAGrade(classId, gradeId) {
         try {
+            // get all review in class
+            if (!gradeId){
+                const query = await this.reviewModel.sequelize.query(
+                    `
+                    SELECT rc.*
+                    FROM review_compositions AS rc
+                    JOIN grade_compositions 
+                        ON grade_compositions.id = rc.grade_id AND grade_compositions.class_id = :classId;
+                    `,
+                    {
+                        replacements: {
+                            classId
+                        }
+                    }
+                )
 
+                return convertSnakeToCamel(query);
+            }
             const check = await this.checkGradeInClass(classId, gradeId);
             if (!check) {
                 return [];
