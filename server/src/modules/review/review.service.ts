@@ -8,6 +8,7 @@ import { CommentDto } from './dto/comment.dto';
 import { FinalReviewDto } from './dto/final-review.dto';
 import { NotificationService } from '../notification/notification.service';
 import { SOCKET_MSG, SOCKET_TYPE } from 'src/utils';
+import { ClassService } from '../class/class.service';
 
 @Injectable()
 export class ReviewService {
@@ -202,7 +203,7 @@ export class ReviewService {
     async getListReviewsOfAGrade(classId, gradeId) {
         try {
             // get all review in class
-            if (!gradeId){
+            if (!gradeId) {
                 const query = await this.reviewModel.sequelize.query(
                     `
                     SELECT rc.*
@@ -249,6 +250,33 @@ export class ReviewService {
         }
     }
 
+    async checkIsTeacherFromUserClasses(classId: string, userId: string): Promise<boolean> {
+        try {
+            const query: any = await this.reviewModel.sequelize.query(
+                `
+                SELECT *,
+                CASE WHEN roles.role_name = 'TEACHER' THEN true ELSE false END as is_teacher,
+                FROM user_classes
+                JOIN roles ON roles.id = user_classes.role_id
+                WHERE user_classes.class_id = :classId AND user_classes.user_id = :userId;
+                `,
+                {
+                    replacements: {
+                        classId,
+                        userId
+                    },
+                    type: sequelize.QueryTypes.SELECT
+                }
+            )
+
+            if (query[0].is_teacher)
+                return true
+            return false;
+        } catch (error) {
+            return false;
+        }
+    }
+
     async postComment(
         classId: string,
         userId: string,
@@ -266,13 +294,22 @@ export class ReviewService {
                 review_id: commentDto.reviewId,
             })
 
-            await this.notificationService.createNotifycationForOneStudent({
-                userId: userId,
-                classId: classId,
-                content: SOCKET_MSG.TEACHER_COMMENT_REVIEW,
-                type: SOCKET_TYPE.TEACHER_COMMENT_REVIEW,
-                contentUrl: ''
-            })
+            if (await this.checkIsTeacherFromUserClasses(classId, userId)) {
+                await this.notificationService.createNotifycationForOneStudent({
+                    userId: userId,
+                    classId: classId,
+                    content: SOCKET_MSG.TEACHER_COMMENT_REVIEW,
+                    type: SOCKET_TYPE.TEACHER_COMMENT_REVIEW,
+                    contentUrl: ''
+                })
+            } else {
+                await this.notificationService.createNotifycationForAllTeacherInClass({
+                    classId: classId,
+                    content: SOCKET_MSG.STUDENT_COMMENT_REVIEW,
+                    type: SOCKET_TYPE.STUDENT_COMMENT_REVIEW,
+                    contentUrl: ''
+                })
+            }
 
             return convertSnakeToCamel(newComment.dataValues);
         } catch (error) {

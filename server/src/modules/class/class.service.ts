@@ -343,12 +343,11 @@ export class ClassService {
     }
 
     async updateStudentId(
-        userId : string,
-        classId : string,
+        userId: string,
+        classId: string,
         studentId: string
     )
-        : Promise<Boolean>
-    {
+        : Promise<Boolean> {
         try {
             const result = await this.classModel.sequelize.query(
                 `
@@ -357,7 +356,7 @@ export class ClassService {
                 WHERE user_classes.class_id = :classId AND user_classes.user_id = :userId;
                 `,
                 {
-                    replacements:{
+                    replacements: {
                         userId,
                         classId,
                         studentId
@@ -365,7 +364,7 @@ export class ClassService {
                     type: sequelize.QueryTypes.UPDATE
                 }
             )
-            if (result.length > 0){
+            if (result.length > 0) {
                 return true;
             }
             return false;
