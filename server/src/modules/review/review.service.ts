@@ -208,12 +208,17 @@ export class ReviewService {
                     SELECT rc.*
                     FROM review_compositions AS rc
                     JOIN grade_compositions 
-                        ON grade_compositions.id = rc.grade_id AND grade_compositions.class_id = :classId;
+                        ON grade_compositions.id = rc.grade_id AND grade_compositions.class_id = :classId
+                    JOIN student_compositions AS sc
+                        ON sc.id = rc.student_composition_id
+                    JOIN student_ids AS si
+                        ON si.student_id = sc.student_id;
                     `,
                     {
                         replacements: {
                             classId
-                        }
+                        },
+                        type: sequelize.QueryTypes.SELECT
                     }
                 )
 
