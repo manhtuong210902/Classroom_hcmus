@@ -34,12 +34,12 @@ export class ReviewComposition extends Model<ReviewComposition> {
     @Column({
         type: DataType.FLOAT
     })
-    current_grade: Float32Array;
+    current_grade: number;
 
     @Column({
         type: DataType.FLOAT
     })
-    expected_grade: Float32Array;
+    expected_grade: number;
 
     @Column({
         type: DataType.TEXT

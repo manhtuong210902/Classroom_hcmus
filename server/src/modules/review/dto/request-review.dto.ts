@@ -11,7 +11,7 @@ export class RequestReviewDto{
     @ApiProperty()
     @IsNotEmpty()
     @IsNumber()
-    expectedGrade : Float32Array;
+    expectedGrade : number;
 
     @ApiProperty()
     @IsNotEmpty()
