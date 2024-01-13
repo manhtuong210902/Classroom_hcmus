@@ -139,4 +139,22 @@ export class AdminService {
         }
     }
 
+    async isBannedUser(userId: string){
+        const isBanned : any[]= await this.activeClassModel.sequelize.query(
+            `
+            SELECT
+                CASE WHEN COUNT(au.user_id) = 0 THEN true ELSE false END AS is_active
+            FROM active_users AS au 
+            WHERE au.user_id = :userId AND au.is_applied = true;
+            `,
+            {
+                replacements:{
+                    userId
+                },
+                type: sequelize.QueryTypes.SELECT
+            }
+        )
+        return isBanned[0].is_active
+    }
+
 }
