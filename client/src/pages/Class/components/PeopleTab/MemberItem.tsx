@@ -49,8 +49,8 @@ const MemberItem = ({ item, type }: { item: UserInfo; type: UserType }) => {
 
     return (
         <>
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 py-4 px-6 border-b border-border">
+            <div className="flex items-center justify-between border-b border-border">
+                <div className="flex items-center gap-3 py-4 px-6">
                     <Avatar className="w-[35px] h-[35px]">
                         <AvatarImage src={item?.imgUrl} alt="" />
                         <AvatarFallback className="font-semibold text-sm">
