@@ -430,24 +430,6 @@ export class CompositionService {
             },
         );
 
-        // list default
-        if(gradeBoard.length === 0){
-            gradeBoard = await this.gradeModel.sequelize.query(
-                `
-                SELECT *
-                FROM student_compositions as sc
-                JOIN student_ids as si ON si.student_id = sc.student_id
-                JOIN grade_compositions as gc ON gc.id = sc.grade_id
-                WHERE sc.class_id = :classId;
-                `,
-                {
-                    replacements: {
-                        
-                    },
-                    type: sequelize.QueryTypes.SELECT
-                }
-            )
-        }
 
         return {
             list: convertSnakeToCamel(gradeBoard),
