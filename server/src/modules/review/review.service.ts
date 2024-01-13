@@ -125,11 +125,12 @@ export class ReviewService {
                     JOIN student_ids AS si
                         ON si.student_id = sc.student_id
                     JOIN user_classes AS uc
-                        ON uc.student_id = sc.student_id; 
+                        ON uc.student_id = sc.student_id AND uc.student_id = sc.student_id AND uc.user_id = :userId; 
                     `,
                     {
                         replacements: {
                             classId,
+                            userId
                         },
                         type: sequelize.QueryTypes.SELECT,
                     },
