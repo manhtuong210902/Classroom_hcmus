@@ -5,11 +5,13 @@ import { RootState } from "../store";
 interface GradeState {
     gradeCompositionList: GradeComposition[];
     gradeStudentList: any[];
+    loadingStudentList: boolean;
 }
 
 const initialState = {
     gradeCompositionList: [],
     gradeStudentList: [],
+    loadingStudentList: false,
 } as GradeState;
 
 const gradeSlice = createSlice({
@@ -22,6 +24,10 @@ const gradeSlice = createSlice({
 
         addGradeComposition: (state, action) => {
             state.gradeCompositionList.push(action.payload);
+        },
+
+        setLoadingStudentList: (state, action) => {
+            state.loadingStudentList = action.payload;
         },
 
         setGradeStudentList: (state, action) => {
@@ -47,8 +53,16 @@ const gradeSlice = createSlice({
 });
 
 const { actions, reducer } = gradeSlice;
-export const { setGradeCompositionList, addGradeComposition, updateGrade, deleteGrade, setGradeStudentList } = actions;
+export const {
+    setGradeCompositionList,
+    addGradeComposition,
+    updateGrade,
+    deleteGrade,
+    setGradeStudentList,
+    setLoadingStudentList,
+} = actions;
 export default reducer;
 
 export const selectGradeCompositionList = (state: RootState) => state.grade.gradeCompositionList;
 export const selectGradeStudentList = (state: RootState) => state.grade.gradeStudentList;
+export const selectLoadingStudentList = (state: RootState) => state.grade.loadingStudentList;

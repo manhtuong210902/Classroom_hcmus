@@ -85,7 +85,7 @@ const HeaderHome = ({ setIsShowSideBar, isShowSideBar }: { setIsShowSideBar: any
                                     <Bell width={32} />
                                 </div>
                             </PopoverTrigger>
-                            <PopoverContent>
+                            <PopoverContent className="w-[320px]">
                                 <ListNotification />
                             </PopoverContent>
                         </Popover>
