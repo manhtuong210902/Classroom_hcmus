@@ -100,6 +100,7 @@ export class CompositionService {
     async createNewGradeComposition(
         gradeCompositionDto: GradeCompositionDto,
         classId: string,
+        senderId: string
     ): Promise<GradeCompositionResponse> {
         let position = 0;
 
@@ -134,10 +135,10 @@ export class CompositionService {
         });
 
         await this.notificationService.createNotifycationForAllStudentInClass({
+            senderId: senderId,
             classId: classId,
             content: SOCKET_MSG.CREATE_NEW_GRADE_COMPOSITION,
-            type: SOCKET_TYPE.CREATE_NEW_GRADE_COMPOSITION,
-            contentUrl: 'http://createnew.com',
+            type: SOCKET_TYPE.CREATE_NEW_GRADE_COMPOSITION
         });
 
         const gradeCompositionReponse: GradeCompositionResponse = {
@@ -321,7 +322,7 @@ export class CompositionService {
         }
     }
 
-    async setFinal(classId: string, gradeId: string): Promise<Boolean> {
+    async setFinal(classId: string, gradeId: string, senderId: string): Promise<Boolean> {
         try {
             const isFinal = true;
             const updated: number[] = await this.gradeModel.sequelize.query(
@@ -346,10 +347,10 @@ export class CompositionService {
 
             await this.notificationService.createNotifycationForAllStudentInClass(
                 {
+                    senderId,
                     classId: classId,
                     content: SOCKET_MSG.FINAL_A_GRADE_COMPOSITION,
-                    type: SOCKET_TYPE.FINAL_A_GRADE_COMPOSITION,
-                    contentUrl: 'http://createnew.com',
+                    type: SOCKET_TYPE.FINAL_A_GRADE_COMPOSITION
                 },
             );
 

@@ -43,11 +43,11 @@ export class Notification extends Model {
     })
     type: string;
 
+    @ForeignKey(()=>User)
     @Column({
-        type: DataType.TEXT,
-        allowNull: true
+        type: DataType.UUID
     })
-    content_url: string;
+    sender_id: string;
 
     @Column({
         type: DataType.BOOLEAN,

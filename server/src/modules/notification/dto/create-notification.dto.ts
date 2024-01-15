@@ -9,6 +9,10 @@ export class CreateNotificationDto {
 
     @ApiProperty()
     @IsString()
+    senderId: string;
+
+    @ApiProperty()
+    @IsString()
     @IsNotEmpty({ "message": "classId is required" })
     classId: string;
 
@@ -21,8 +25,4 @@ export class CreateNotificationDto {
     @IsString()
     @IsNotEmpty({ "message": "Type is required" })
     type: string;
-
-    @ApiProperty()
-    @IsString()
-    contentUrl: string;
 }

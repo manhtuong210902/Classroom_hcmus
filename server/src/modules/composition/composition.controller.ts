@@ -1,14 +1,14 @@
-import { 
-    BadRequestException, 
-    Body, 
-    Controller, 
-    Delete, 
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    Delete,
     Get,
-    HttpCode, 
-    HttpStatus, 
-    Logger, 
-    Param, 
-    Patch, 
+    HttpCode,
+    HttpStatus,
+    Logger,
+    Param,
+    Patch,
     Post,
     Query,
     Req,
@@ -42,7 +42,7 @@ export class CompositionController {
     constructor(
         private readonly compositionService: CompositionService,
         private readonly fileService: FileService
-    ){}   
+    ) { }
 
     @Post('/:classId/management')
     @HttpCode(HttpStatus.CREATED)
@@ -56,15 +56,15 @@ export class CompositionController {
         }
     })
     async createGradeComposition(
-        @Body() gradeCompositionDto : GradeCompositionDto,
-        @Param('classId') classId : string
+        @Body() gradeCompositionDto: GradeCompositionDto,
+        @Req() req,
+        @Param('classId') classId: string
     )
-        : Promise<ResponseTemplate<GradeCompositionResponse>>
-    {
-        const newGradeComposition : GradeCompositionResponse
-            = await this.compositionService.createNewGradeComposition(gradeCompositionDto, classId);
+        : Promise<ResponseTemplate<GradeCompositionResponse>> {
+        const newGradeComposition: GradeCompositionResponse
+            = await this.compositionService.createNewGradeComposition(gradeCompositionDto, classId, req.user.id);
 
-        const response : ResponseTemplate<GradeCompositionResponse> = {
+        const response: ResponseTemplate<GradeCompositionResponse> = {
             data: newGradeComposition,
             message: 'Success',
             statusCode: HttpStatus.CREATED
@@ -80,26 +80,25 @@ export class CompositionController {
     @ApiExtraModels(GradeCompositionResponse)
     @ApiResponse({
         status: HttpStatus.OK,
-        schema:{
+        schema: {
             type: 'array',
             items: {
-                $ref : getSchemaPath(GradeCompositionResponse)
+                $ref: getSchemaPath(GradeCompositionResponse)
             }
         }
     })
     async getListGradeCompositions(
         @Param('classId') classId: string,
     )
-      : Promise<ResponseTemplate<GradeCompositionResponse[]>>
-    {
+        : Promise<ResponseTemplate<GradeCompositionResponse[]>> {
 
-        const gradeCompositions : GradeCompositionResponse[] = await this.compositionService.getListGradeCompositions(classId);
-        
-        if(!gradeCompositions){
+        const gradeCompositions: GradeCompositionResponse[] = await this.compositionService.getListGradeCompositions(classId);
+
+        if (!gradeCompositions) {
             throw new BadRequestException();
         }
 
-        const response : ResponseTemplate<GradeCompositionResponse[]> = {
+        const response: ResponseTemplate<GradeCompositionResponse[]> = {
             data: gradeCompositions,
             message: 'success',
             statusCode: HttpStatus.OK
@@ -115,7 +114,7 @@ export class CompositionController {
     @ApiExtraModels(GradeCompositionResponse)
     @ApiResponse({
         status: HttpStatus.OK,
-        schema:{
+        schema: {
             $ref: getSchemaPath(GradeCompositionResponse)
         }
     })
@@ -123,14 +122,13 @@ export class CompositionController {
         @Param('classId') classId: string,
         @Param('gradeCompositionId') gradeCompositionId: string
     )
-        : Promise<ResponseTemplate<GradeCompositionResponse>>
-    {
+        : Promise<ResponseTemplate<GradeCompositionResponse>> {
         try {
-            const gradeComposition : GradeCompositionResponse 
-            = await this.compositionService.getGradeComposition(classId,gradeCompositionId);
+            const gradeComposition: GradeCompositionResponse
+                = await this.compositionService.getGradeComposition(classId, gradeCompositionId);
 
-            if (gradeComposition){
-                const response : ResponseTemplate<GradeCompositionResponse> = {
+            if (gradeComposition) {
+                const response: ResponseTemplate<GradeCompositionResponse> = {
                     data: gradeComposition,
                     message: 'Success',
                     statusCode: HttpStatus.OK
@@ -152,31 +150,30 @@ export class CompositionController {
     @ApiExtraModels(IsSucccessResponse)
     @ApiResponse({
         status: HttpStatus.OK,
-        schema:{
+        schema: {
             $ref: getSchemaPath(IsSucccessResponse)
-        }        
+        }
     })
     async updateGradeComposition(
         @Param('classId') classId: string,
         @Param('gradeId') gradeId: string,
         @Body() gradeCompositionDto: GradeCompositionDto
     )
-        : Promise<ResponseTemplate<IsSucccessResponse>>
-    {
+        : Promise<ResponseTemplate<IsSucccessResponse>> {
         try {
-            const isSuccess : Boolean= 
+            const isSuccess: Boolean =
                 await this.compositionService.updateGradeComposition(
                     classId,
                     gradeId,
                     gradeCompositionDto.name,
                     gradeCompositionDto.scale
                 )
-            if(!isSuccess){
+            if (!isSuccess) {
                 throw new BadRequestException();
             }
 
-            const response : ResponseTemplate<IsSucccessResponse> = {
-                data: {isSuccess},
+            const response: ResponseTemplate<IsSucccessResponse> = {
+                data: { isSuccess },
                 message: 'Update grade composition successfully.',
                 statusCode: HttpStatus.OK
             }
@@ -195,7 +192,7 @@ export class CompositionController {
     @ApiExtraModels(IsSucccessResponse)
     @ApiResponse({
         status: HttpStatus.OK,
-        schema:{
+        schema: {
             $ref: getSchemaPath(IsSucccessResponse)
         }
     })
@@ -203,17 +200,16 @@ export class CompositionController {
         @Param('gradeId') gradeId: string,
         @Param('classId') classId: string,
     )
-        : Promise<ResponseTemplate<IsSucccessResponse>>
-    {
+        : Promise<ResponseTemplate<IsSucccessResponse>> {
         try {
-            const isSuccess : Boolean = await this.compositionService.deleteGradeComposition(classId,gradeId);
-            
-            if(!isSuccess) {
+            const isSuccess: Boolean = await this.compositionService.deleteGradeComposition(classId, gradeId);
+
+            if (!isSuccess) {
                 throw new BadRequestException();
             }
 
-            const response : ResponseTemplate<IsSucccessResponse> = {
-                data: {isSuccess},
+            const response: ResponseTemplate<IsSucccessResponse> = {
+                data: { isSuccess },
                 message: 'Grade composition deleted successfully',
                 statusCode: HttpStatus.OK
             }
@@ -222,7 +218,7 @@ export class CompositionController {
             Logger.error(error);
             throw new BadRequestException(error);
         }
-    } 
+    }
 
     @HttpCode(HttpStatus.OK)
     @Post('/:classId/management/positions')
@@ -231,7 +227,7 @@ export class CompositionController {
     @ApiExtraModels(IsSucccessResponse)
     @ApiResponse({
         status: HttpStatus.OK,
-        schema:{
+        schema: {
             $ref: getSchemaPath(IsSucccessResponse)
         }
     })
@@ -239,15 +235,14 @@ export class CompositionController {
         @Param('classId') classId: string,
         @Body() updateComposition: UpdatePositionDto
     )
-        : Promise<ResponseTemplate<IsSucccessResponse>>
-    {
+        : Promise<ResponseTemplate<IsSucccessResponse>> {
         try {
-            
-            const isSuccess : Boolean = 
-                    await this.compositionService.updatePostitionOfCompositions(classId, updateComposition.listCompositions);
-            
-            if(isSuccess){
-                const response : ResponseTemplate<IsSucccessResponse> = {
+
+            const isSuccess: Boolean =
+                await this.compositionService.updatePostitionOfCompositions(classId, updateComposition.listCompositions);
+
+            if (isSuccess) {
+                const response: ResponseTemplate<IsSucccessResponse> = {
                     data: {
                         isSuccess: isSuccess,
                     },
@@ -276,19 +271,19 @@ export class CompositionController {
     })
     async setFinalComposition(
         @Param('classId') classId: string,
-        @Param('gradeId') gradeId: string
+        @Param('gradeId') gradeId: string,
+        @Req() req,
     )
-        : Promise<ResponseTemplate<IsSucccessResponse>>
-    {
+        : Promise<ResponseTemplate<IsSucccessResponse>> {
         try {
-            const isSuccess = await this.compositionService.setFinal(classId,gradeId);
+            const isSuccess = await this.compositionService.setFinal(classId, gradeId, req.user.id);
 
-            if(!isSuccess){
+            if (!isSuccess) {
                 throw new BadRequestException();
             }
 
-            const response : ResponseTemplate<IsSucccessResponse> = {
-                data: {isSuccess},
+            const response: ResponseTemplate<IsSucccessResponse> = {
+                data: { isSuccess },
                 message: 'Success',
                 statusCode: HttpStatus.OK
             }
@@ -307,15 +302,15 @@ export class CompositionController {
     @ClassRole([ClassRoleType.TEACHER])
     @ApiOperation({ summary: 'Download File' })
     async getDefaultStudentListExcelFile(
-        @Res({passthrough : true}) res : Response 
-    ){
+        @Res({ passthrough: true }) res: Response
+    ) {
         const buffer = await this.fileService.findOrCreateFile("list-students", "sheet 1", ["StudendId", "Full name"]);;
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.set('Content-Disposition', `attachment; filename=student-list.xlsx`);
         return res.send(buffer);
     }
 
-    
+
     @HttpCode(HttpStatus.OK)
     @Post('/:classId/file/upload')
     @UseInterceptors(FileInterceptor('file'))
@@ -323,7 +318,7 @@ export class CompositionController {
     @Role(RoleType.USER)
     @ClassRole([ClassRoleType.TEACHER])
     @ApiExtraModels(IsSucccessResponse)
-    @ApiOperation({summary: 'Upload a file'})
+    @ApiOperation({ summary: 'Upload a file' })
     @ApiBody({
         schema: {
             type: 'object',
@@ -343,27 +338,29 @@ export class CompositionController {
     })
     async uploadFiles(
         @UploadedFile() file: Express.Multer.File,
-        @Body() uploadDto : UploadFileDto,
+        @Body() uploadDto: UploadFileDto,
         @Req() req,
 
-    ){
-        const fileBuffer : Buffer = file.buffer;
-        
+    ) {
+        const fileBuffer: Buffer = file.buffer;
+
         const isStored = await this.fileService.storeChunkFile(
-                            fileBuffer,
-                            parseInt(uploadDto.chunkIndex),
-                            req.userClassId,
-                            file.originalname,
-                            `${req.user.id}:${uploadDto.random}`
-                        )
-        const response : ResponseTemplate<IsSucccessResponse> = {
+            fileBuffer,
+            parseInt(uploadDto.chunkIndex),
+            req.userClassId,
+            file.originalname,
+            `${req.user.id}:${uploadDto.random}`
+        )
+        const response: ResponseTemplate<IsSucccessResponse> = {
             data: {
                 isSuccess: isStored
             },
-            message: isStored? "Success" : "Failed",
+            message: isStored ? "Success" : "Failed",
             statusCode: 200
         }
-        return response;
+        setTimeout(() => {
+            return response;
+        }, 5000)
     }
 
     @HttpCode(HttpStatus.OK)
@@ -375,18 +372,17 @@ export class CompositionController {
         @Req() req,
         @Body() completeUploadDto: CompleteUploadDto,
     )
-        : Promise<ResponseTemplate<null>>
-    {
+        : Promise<ResponseTemplate<null>> {
         const random = `${req.user.id}:${completeUploadDto.random}`;
-        const fileType =completeUploadDto.fileType;
-        if(!fileType || (fileType != FileType.STUDENT && fileType != FileType.GRADE)){
+        const fileType = completeUploadDto.fileType;
+        if (!fileType || (fileType != FileType.STUDENT && fileType != FileType.GRADE)) {
             throw new BadRequestException();
         }
-        
-        
+
+
         this.fileService.mergeChunksToFinalFile(random, classId, fileType);
-        
-        const response : ResponseTemplate<null> = {
+
+        const response: ResponseTemplate<null> = {
             data: null,
             message: "Success",
             statusCode: HttpStatus.OK
@@ -402,7 +398,7 @@ export class CompositionController {
     @ApiExtraModels(GradeBoardResponse)
     @ApiResponse({
         status: HttpStatus.OK,
-        schema:{
+        schema: {
             type: 'array',
             items: {
                 $ref: getSchemaPath(GradeBoardResponse)
@@ -412,10 +408,10 @@ export class CompositionController {
     async getGradesBuStudentId(
         @Param('classId') classId: string,
         @Req() req,
-    ){
+    ) {
         const studentId = await this.compositionService.getStudentId(req.user.id, classId);
-        const data = await this.compositionService.getGradesByStudentId(classId,studentId, false);
-        const response : ResponseTemplate<GradeBoardResponse> = {
+        const data = await this.compositionService.getGradesByStudentId(classId, studentId, false);
+        const response: ResponseTemplate<GradeBoardResponse> = {
             data: data,
             message: "Success",
             statusCode: HttpStatus.OK
@@ -431,7 +427,7 @@ export class CompositionController {
     @ApiExtraModels(GradeBoardResponse)
     @ApiResponse({
         status: HttpStatus.OK,
-        schema:{
+        schema: {
             type: 'array',
             items: {
                 $ref: getSchemaPath(GradeBoardResponse)
@@ -443,20 +439,19 @@ export class CompositionController {
         @Param('classId') classId: string,
         @Query() query
     )
-        : Promise<ResponseTemplate<Object>> 
-    {
+        : Promise<ResponseTemplate<Object>> {
         const studentId = query?.student_id || null;
         const gradeId = query?.grade_id || null;
-        
+
         let data = null;
 
         // case: get a grade of a student
         // this case is not supported
-        if(studentId && gradeId) {
+        if (studentId && gradeId) {
             throw new BadRequestException();
         }
         // case: get list of students for a grade
-        else if (!studentId && gradeId ){
+        else if (!studentId && gradeId) {
             data = await this.compositionService.getStudentsbyGradeId(classId, gradeId)
         }
         // case: get list of grades for a student
@@ -465,10 +460,10 @@ export class CompositionController {
         }
         // case: get all board
         // Priority is given based on grade
-        else{
-            data = await this.compositionService.getGradeBoard(classId);   
+        else {
+            data = await this.compositionService.getGradeBoard(classId);
         }
-        const response : ResponseTemplate<Object> = {
+        const response: ResponseTemplate<Object> = {
             data: data,
             message: "Success",
             statusCode: HttpStatus.OK
@@ -483,19 +478,18 @@ export class CompositionController {
     @ClassRole([ClassRoleType.TEACHER])
     async updateGradeBoardOne(
         @Req() req,
-        @Param('classId') classId : string,
-        @Body() updateOne : UpdateOneBoardDto
+        @Param('classId') classId: string,
+        @Body() updateOne: UpdateOneBoardDto
     )
-        : Promise<ResponseTemplate<null>>
-    {
+        : Promise<ResponseTemplate<null>> {
         try {
-            await this.compositionService.updateBoardOne(updateOne, classId);    
-            const response : ResponseTemplate<null>= {
+            await this.compositionService.updateBoardOne(updateOne, classId);
+            const response: ResponseTemplate<null> = {
                 data: null,
                 message: "Updated",
                 statusCode: HttpStatus.OK
             }
-            return response;    
+            return response;
         } catch (error) {
             throw new BadRequestException();
         }
@@ -507,31 +501,31 @@ export class CompositionController {
     @ClassRole([ClassRoleType.TEACHER])
     @ApiOperation({ summary: 'Download File' })
     async getDefaultGradeExcelFile(
-        @Res({passthrough : true}) res : Response,
+        @Res({ passthrough: true }) res: Response,
         @Param('classId') classId: string,
-        @Query() query 
-    ){
-        const gradeId : string | null= query?.grade_id;
+        @Query() query
+    ) {
+        const gradeId: string | null = query?.grade_id;
 
-        if (!gradeId){
+        if (!gradeId) {
             throw new BadRequestException();
         }
-        
+
         const listStudentId = await this.compositionService.getStudentsbyGradeId(classId, gradeId);;
 
-        if(listStudentId.length ===0){
+        if (listStudentId.length === 0) {
             throw new BadRequestException();
         }
-        
-        const rows = listStudentId.map(student =>{
+
+        const rows = listStudentId.map(student => {
             return [student.studentId, ''];
-        }) 
-        
-        const gradeName : string = listStudentId[0].name;
-        
+        })
+
+        const gradeName: string = listStudentId[0].name;
+
         const buffer = await this.fileService.createFile(
-            "grade", 
-            "sheet 1", 
+            "grade",
+            "sheet 1",
             ["StudendId", gradeName],
             rows,
             false
@@ -547,9 +541,9 @@ export class CompositionController {
     @ClassRole([ClassRoleType.TEACHER])
     @ApiOperation({ summary: 'Export File' })
     async exportExcelFile(
-        @Res({passthrough : true}) res : Response,
+        @Res({ passthrough: true }) res: Response,
         @Param('classId') classId: string,
-    ){
+    ) {
 
         const buffer = await this.compositionService.exportGradeBoard(classId);
 

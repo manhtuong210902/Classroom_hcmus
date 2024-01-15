@@ -8,6 +8,10 @@ export class CreateNotificationOneDto {
 
     @ApiProperty()
     @IsString()
+    senderId: string;
+
+    @ApiProperty()
+    @IsString()
     studentId?: string;
 
     @ApiProperty()
@@ -24,8 +28,4 @@ export class CreateNotificationOneDto {
     @IsString()
     @IsNotEmpty({ "message": "Type is required" })
     type: string;
-
-    @ApiProperty()
-    @IsString()
-    contentUrl: string;
 }
