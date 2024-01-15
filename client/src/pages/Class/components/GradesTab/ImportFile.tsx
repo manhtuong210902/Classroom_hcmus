@@ -45,9 +45,7 @@ const ImportFile = ({ title, type }: { title: string; type: FileType }) => {
             setPersent(uploaded);
         }
         await completeUpload(String(currClass?.id), randomString, type);
-        setTimeout(async () => {
-            await getGradeBoard(dispatch, String(currClass?.id));
-        }, 5000);
+        await getGradeBoard(dispatch, String(currClass?.id));
     };
 
     return (

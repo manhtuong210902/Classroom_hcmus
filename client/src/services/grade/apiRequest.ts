@@ -7,6 +7,7 @@ import {
     deleteGrade,
     setGradeCompositionList,
     setGradeStudentList,
+    setLoadingStudentList,
     updateGrade,
 } from "@src/store/reducers/gradeSlice";
 import { ExportType, FileType } from "@src/utils/enum";
@@ -119,6 +120,7 @@ export const deleteGradeComposition = async (dispatch: any, classId: string, gra
 };
 
 export const getGradeBoard = async (dispatch: any, classId: string): Promise<MessageInfo> => {
+    dispatch(setLoadingStudentList(true));
     if (!classId) {
         return errorMessage;
     }
@@ -143,6 +145,7 @@ export const getGradeBoard = async (dispatch: any, classId: string): Promise<Mes
         );
 
         dispatch(setGradeStudentList(listGrade));
+        dispatch(setLoadingStudentList(false));
 
         return {
             statusCode: res?.data.statusCode,

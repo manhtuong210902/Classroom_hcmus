@@ -1,12 +1,11 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@src/components/ui/avatar";
 import { checkNotification, getNotification } from "@src/services/notification/apiRequest";
-import { convertTimestampToFormattedDate } from "@src/utils/lib";
+import { convertTimestampToFormattedDate, getFirstCharacter } from "@src/utils/lib";
 import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const ListNotification = () => {
     const [notifications, setNotifications] = useState<any>([]);
-    const naviagate = useNavigate();
     useEffect(() => {
         getNotification().then((res) => {
             setNotifications(res.data);
@@ -15,7 +14,7 @@ const ListNotification = () => {
 
     const handleClickNotification = async (item: any) => {
         await checkNotification(item?.id);
-        naviagate(`/class/${item?.class_id}`);
+        window.open(`/class/${item?.class_id}`);
     };
 
     return (
@@ -27,17 +26,27 @@ const ListNotification = () => {
                 notifications.map((item: any) => {
                     return (
                         <div
-                            className="flex items-center cursor-pointer justify-between gap-4 rounded-lg py-1 px-2 border border-border"
+                            className="flex items-center cursor-pointer justify-between gap-4 rounded-lg py-2 px-4 border border-border"
                             key={item.id}
                             onClick={() => handleClickNotification(item)}
                         >
-                            <div className="flex flex-col gap-1">
-                                <p className="font-semibold text-sm">
-                                    <span className="font-normal text-xs text-gray-700">
-                                        {convertTimestampToFormattedDate(item?.created_at || "")}
-                                    </span>
-                                </p>
-                                <span className="text-sm">{item?.content}</span>
+                            <div className="flex gap-3">
+                                <Avatar>
+                                    <AvatarImage src={item?.sender_img} className="rounded-full" />
+                                    <AvatarFallback className="font-semibold rounded-full flex items-center justify-center">
+                                        {getFirstCharacter(item?.sender_fullname || item?.sender_username)}
+                                    </AvatarFallback>
+                                </Avatar>
+                                <div className="flex flex-col gap-1">
+                                    <p className="font-semibold text-sm">
+                                        <span className="font-normal text-xs text-gray-700">
+                                            {convertTimestampToFormattedDate(item?.created_at || "")}
+                                        </span>
+                                    </p>
+                                    <div className="text-sm">
+                                        <span className="font-bold">{item?.sender_fullname}</span> {item?.content}
+                                    </div>
+                                </div>
                             </div>
                             <div>{item?.is_seen && <Check size={12} />}</div>
                         </div>
