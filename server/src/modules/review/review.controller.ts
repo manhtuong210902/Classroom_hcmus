@@ -40,7 +40,7 @@ export class ReviewController {
         return response;
     }
 
-    @HttpCode(HttpStatus.CREATED)
+    @HttpCode(HttpStatus.OK)
     @Get('/:classId')
     @Role(RoleType.USER)
     @ClassRole([ClassRoleType.STUDENT])

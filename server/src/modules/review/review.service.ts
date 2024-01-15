@@ -123,9 +123,12 @@ export class ReviewService {
                     JOIN student_compositions AS sc
                         ON sc.id = rc.student_composition_id
                     JOIN student_ids AS si
-                        ON si.student_id = sc.student_id
+                        ON si.student_id = sc.student_id AND si.class_id = :classId
                     JOIN user_classes AS uc
-                        ON uc.student_id = sc.student_id AND uc.student_id = sc.student_id AND uc.user_id = :userId; 
+                        ON uc.student_id = sc.student_id 
+                            AND uc.student_id = sc.student_id 
+                            AND uc.user_id = :userId
+                            AND uc.class_id = :classId; 
                     `,
                     {
                         replacements: {
@@ -227,9 +230,9 @@ export class ReviewService {
                     JOIN grade_compositions 
                         ON grade_compositions.id = rc.grade_id AND grade_compositions.class_id = :classId
                     JOIN student_compositions AS sc
-                        ON sc.id = rc.student_composition_id
+                        ON sc.id = rc.student_composition_id AND sc.class_id = :classId
                     JOIN student_ids AS si
-                        ON si.student_id = sc.student_id;
+                        ON si.student_id = sc.student_id AND si.class_id = :classId;
                     `,
                     {
                         replacements: {
