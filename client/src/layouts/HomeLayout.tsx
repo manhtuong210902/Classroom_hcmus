@@ -6,7 +6,6 @@ import { useAppDispatch, useAppSelector } from "@src/hooks/appHook";
 import { getClassDetail, getListClass } from "@src/services/class/apiRequest";
 import { getGradeCompositions } from "@src/services/grade/apiRequest";
 import { selectCurrClass, setCurrClass } from "@src/store/reducers/classSlice";
-import { LocalStorage } from "@src/utils/LocalStorage";
 import { CLASS_URL_REGEX } from "@src/utils/regex";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
