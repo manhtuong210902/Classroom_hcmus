@@ -6,14 +6,19 @@ import { getFirstCharacter } from "@src/utils/lib";
 import { ClassInfo } from "@src/utils/types";
 import { MoreVertical } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const ClassItem = ({ item }: { item: ClassInfo }) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
     const handleClickClassItem = () => {
-        dispatch(setCurrClass(item));
-        navigate(`/class/${item.id}`);
+        if (item?.isActive) {
+            navigate(`/class/${item.id}`);
+            dispatch(setCurrClass(item));
+        } else {
+            toast.error("This class is locked");
+        }
     };
 
     return (

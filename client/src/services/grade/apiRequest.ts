@@ -7,6 +7,7 @@ import {
     deleteGrade,
     setGradeCompositionList,
     setGradeStudentList,
+    setLoadingStudentList,
     updateGrade,
 } from "@src/store/reducers/gradeSlice";
 import { ExportType, FileType } from "@src/utils/enum";
@@ -119,6 +120,7 @@ export const deleteGradeComposition = async (dispatch: any, classId: string, gra
 };
 
 export const getGradeBoard = async (dispatch: any, classId: string): Promise<MessageInfo> => {
+    dispatch(setLoadingStudentList(true));
     if (!classId) {
         return errorMessage;
     }
@@ -135,7 +137,7 @@ export const getGradeBoard = async (dispatch: any, classId: string): Promise<Mes
                 }
                 acc[student?.studentId][student?.name] = {
                     gradeId: student?.gradeId,
-                    grade: student?.grade,
+                    grade: student?.grade || 0,
                     scale: student?.scale,
                 };
                 return acc;
@@ -143,6 +145,7 @@ export const getGradeBoard = async (dispatch: any, classId: string): Promise<Mes
         );
 
         dispatch(setGradeStudentList(listGrade));
+        dispatch(setLoadingStudentList(false));
 
         return {
             statusCode: res?.data.statusCode,
@@ -194,13 +197,23 @@ export const completeUpload = async (
     }
 };
 
-export const exportFile = async (classId: string, exportType: ExportType, params: any): Promise<MessageInfo> => {
+export const exportFile = async (
+    classId: string,
+    exportType: ExportType,
+    isExport: boolean,
+    params: any
+): Promise<MessageInfo> => {
     if (!classId) {
         return errorMessage;
     }
 
     try {
-        const res = await gradeService.exportFile(classId, exportType, params);
+        let res = null;
+        if (!isExport) {
+            res = await gradeService.exportFile(classId, exportType, params);
+        } else {
+            res = await gradeService.exportGradeBoard(classId, exportType, params);
+        }
         saveAs(res?.data, "export.xlsx");
         return {
             statusCode: 200,

@@ -5,6 +5,7 @@ import { getFirstCharacter } from "@src/utils/lib";
 import { useAppDispatch, useAppSelector } from "@src/hooks/appHook";
 import { selectCurrClass, setCurrClass } from "@src/store/reducers/classSlice";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 type Props = {
     item: ClassInfo;
@@ -18,8 +19,12 @@ const ClassSidebarItem = (props: Props) => {
     const navigate = useNavigate();
 
     const handleClickTabClass = () => {
-        navigate(`/class/${item.id}`);
-        dispatch(setCurrClass(item));
+        if (item?.isActive) {
+            navigate(`/class/${item.id}`);
+            dispatch(setCurrClass(item));
+        } else {
+            toast.error("This class is locked");
+        }
     };
 
     return (

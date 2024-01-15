@@ -1,5 +1,5 @@
 import BookImg from "@image/img_book.png";
-import { ChevronRight, LogOutIcon, MenuIcon, PlusIcon } from "lucide-react";
+import { Bell, ChevronRight, LogOutIcon, MenuIcon, PlusIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { useAppDispatch, useAppSelector } from "@src/hooks/appHook";
@@ -12,6 +12,7 @@ import { useState } from "react";
 import ModalCreateClass from "../Modal/ModalCreateClass";
 import { selectCurrClass } from "@src/store/reducers/classSlice";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+import ListNotification from "../Notification/ListNotification";
 
 const HeaderHome = ({ setIsShowSideBar, isShowSideBar }: { setIsShowSideBar: any; isShowSideBar: boolean }) => {
     const user = useAppSelector(selectUserInfo);
@@ -78,6 +79,17 @@ const HeaderHome = ({ setIsShowSideBar, isShowSideBar }: { setIsShowSideBar: any
                     </div>
 
                     <div className="flex items-center gap-3">
+                        <Popover>
+                            <PopoverTrigger>
+                                <div className="rounded-full bg-muted w-[40px] h-[40px] flex items-center justify-center cursor-pointer">
+                                    <Bell width={32} />
+                                </div>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-[320px]">
+                                <ListNotification />
+                            </PopoverContent>
+                        </Popover>
+
                         <TooltipProvider>
                             <Tooltip>
                                 <TooltipTrigger>

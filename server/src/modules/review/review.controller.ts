@@ -40,7 +40,7 @@ export class ReviewController {
         return response;
     }
 
-    @HttpCode(HttpStatus.CREATED)
+    @HttpCode(HttpStatus.OK)
     @Get('/:classId')
     @Role(RoleType.USER)
     @ClassRole([ClassRoleType.STUDENT])
@@ -133,9 +133,10 @@ export class ReviewController {
     @ClassRole([ClassRoleType.TEACHER])
     async makeReviewFinal(
         @Param('classId') classId: string,
-        @Body() finalReviewDto : FinalReviewDto
+        @Body() finalReviewDto : FinalReviewDto,
+        @Req() req
     ){
-        await this.reviewService.makeReviewFinal(finalReviewDto, classId);
+        await this.reviewService.makeReviewFinal(finalReviewDto, classId, req.user.id);
         const response : ResponseTemplate<null> = {
             data: null,
             message: "Success",

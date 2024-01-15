@@ -317,7 +317,7 @@ export class ClassService {
     }
 
     async getAllClassesOfUSer(userId: string) {
-        const result = await this.classModel.sequelize.query(
+        let result : any[] = await this.classModel.sequelize.query(
             `
             SELECT 
                 classes.id, classes.title, classes.name, classes.subject, classes.description, classes.owner_id as owner_id,
@@ -339,6 +339,24 @@ export class ClassService {
                 type: sequelize.QueryTypes.SELECT,
             },
         );
+
+        for(let i =0 ; i < result.length; i++){
+            const isBanned : any[]= await this.classModel.sequelize.query(
+                `
+                SELECT
+                    CASE WHEN COUNT(ac.class_id) = 0 THEN true ELSE false END AS is_active
+                FROM active_classes AS ac 
+                WHERE ac.class_id = :classId AND ac.is_applied = true;
+                `,
+                {
+                    replacements:{
+                        classId: result[i].id
+                    },
+                    type: sequelize.QueryTypes.SELECT
+                }
+            )
+            result[i].is_active =isBanned[0].is_active
+        }
         return convertSnakeToCamel(result);
     }
 

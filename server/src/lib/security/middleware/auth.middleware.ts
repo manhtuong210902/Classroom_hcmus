@@ -1,8 +1,9 @@
-import { NestMiddleware, Injectable, ForbiddenException } from '@nestjs/common';
+import { NestMiddleware, Injectable, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { JwtService } from '../jwt/jwt.service';
 import { RoleType, TokenType } from 'src/lib/util/constant';
 import { UserService } from 'src/modules/user/user.service';
+import { AdminService } from 'src/modules/admin/admin.service';
 
 /** The AuthMiddleware is used to
  * (1) read the request header bearer token/user access token
@@ -13,6 +14,7 @@ export class AuthMiddleware implements NestMiddleware {
     constructor(
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
+        private readonly banService: AdminService
     ) {}
 
     async use(req: Request | any, res: Response, next: () => void) {
@@ -39,6 +41,15 @@ export class AuthMiddleware implements NestMiddleware {
             roles = user.roles
         } catch (error) {
             throw new ForbiddenException('Please register or sign in.');
+        }
+
+        const isActiveUser = await this.banService.isBannedUser(user.id)
+
+        if(!isActiveUser){
+            throw new BadRequestException({
+                errorCode: 'BANNED',
+                message: 'Your account is banned.',
+            });
         }
         
         if (user) {

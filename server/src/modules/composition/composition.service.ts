@@ -16,6 +16,10 @@ import { GradeCompositionResponse } from './response/grade-composition.response'
 import { UpdateOneBoardDto } from './dto/update-one-board.dto';
 import { NotificationService } from '../notification/notification.service';
 import { SOCKET_MSG, SOCKET_TYPE } from 'src/utils';
+import { FileService } from '../file/file.service';
+import { InjectQueue } from '@nestjs/bull';
+import {Queue} from "bull";
+
 
 @Injectable()
 export class CompositionService {
@@ -23,6 +27,10 @@ export class CompositionService {
         @Inject('GradeCompositionRepository')
         private readonly gradeModel: typeof GradeComposition,
         private readonly notificationService: NotificationService,
+        private readonly fileService: FileService,
+
+        @InjectQueue('grades')
+        private gradeQueue: Queue
     ) {}
 
     async getStudentId(userId, classId) {
@@ -92,6 +100,7 @@ export class CompositionService {
     async createNewGradeComposition(
         gradeCompositionDto: GradeCompositionDto,
         classId: string,
+        senderId: string
     ): Promise<GradeCompositionResponse> {
         let position = 0;
 
@@ -120,11 +129,16 @@ export class CompositionService {
 
         const newGradeComposition = await this.gradeModel.create(convertedData);
 
+        this.gradeQueue.add('add-composition',{
+            classId,
+            gradeId: newGradeComposition.id
+        });
+
         await this.notificationService.createNotifycationForAllStudentInClass({
+            senderId: senderId,
             classId: classId,
             content: SOCKET_MSG.CREATE_NEW_GRADE_COMPOSITION,
-            type: SOCKET_TYPE.CREATE_NEW_GRADE_COMPOSITION,
-            contentUrl: 'http://createnew.com',
+            type: SOCKET_TYPE.CREATE_NEW_GRADE_COMPOSITION
         });
 
         const gradeCompositionReponse: GradeCompositionResponse = {
@@ -308,7 +322,7 @@ export class CompositionService {
         }
     }
 
-    async setFinal(classId: string, gradeId: string): Promise<Boolean> {
+    async setFinal(classId: string, gradeId: string, senderId: string): Promise<Boolean> {
         try {
             const isFinal = true;
             const updated: number[] = await this.gradeModel.sequelize.query(
@@ -333,10 +347,10 @@ export class CompositionService {
 
             await this.notificationService.createNotifycationForAllStudentInClass(
                 {
+                    senderId,
                     classId: classId,
                     content: SOCKET_MSG.FINAL_A_GRADE_COMPOSITION,
-                    type: SOCKET_TYPE.FINAL_A_GRADE_COMPOSITION,
-                    contentUrl: 'http://createnew.com',
+                    type: SOCKET_TYPE.FINAL_A_GRADE_COMPOSITION
                 },
             );
 
@@ -402,7 +416,7 @@ export class CompositionService {
 
     // get all students and grades in grade board
     async getGradeBoard(classId: string) {
-        const countStudents: any = await this.gradeModel.sequelize.query(
+        let countStudents: any = await this.gradeModel.sequelize.query(
             `
             SELECT COUNT(1)
             FROM student_ids;
@@ -412,7 +426,7 @@ export class CompositionService {
             },
         );
 
-        const gradeBoard = await this.gradeModel.sequelize.query(
+        let gradeBoard = await this.gradeModel.sequelize.query(
             `
             SELECT *
             FROM student_compositions as sc
@@ -427,6 +441,8 @@ export class CompositionService {
                 type: sequelize.QueryTypes.SELECT,
             },
         );
+
+
         return {
             list: convertSnakeToCamel(gradeBoard),
             countStudents: parseInt(countStudents[0]?.count) || 0,
@@ -435,16 +451,27 @@ export class CompositionService {
 
 
     async exportGradeBoard(classId : string){
-        const {list, countStudents} = await this.getGradeBoard(classId);
-        let columns : string[] = ["Student Id", "Fullname"]
-        const countGrades = list.length / countStudents;
-        const rows = []
-        for(let i =0 ; i <list.length ; i++){
-            if(i % countGrades === 0) {
-                rows.push([])
-                columns.push()
+        try {
+            const {list, countStudents} = await this.getGradeBoard(classId);
+            let columns : string[] = ["Student Id", "Fullname"]
+            const countGrades = list.length / countStudents;
+            const rows : any[][] = Array.from({ length: countStudents }, () => []);
+    
+            for(let i =0 ; i< countStudents; i++){
+                rows[Math.floor(i )].push(list[i ].studentId)
+                rows[Math.floor(i )].push(list[i].fullName)
             }
-            // rows[ i / countGrades].pu =
+            for(let i =0 ; i <list.length ; i++){
+                if(i % countStudents === 0) {
+                    columns.push(list[i].name)
+                }
+                rows[Math.floor(i / countGrades)].push(list[i].grade)
+            }
+            
+            const buffer = await this.fileService.createFile("", "grade", columns, rows, false);
+            return buffer;
+        } catch (error) {
+            throw new BadRequestException()
         }
     }
 

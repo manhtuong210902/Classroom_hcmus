@@ -32,7 +32,7 @@ const GradeCompositionItem = SortableElement(({ item }: { item: GradeComposition
     };
 
     const handleDownloadTemplate = async () => {
-        exportFile(String(currClass?.id), ExportType.GRADES, {
+        exportFile(String(currClass?.id), ExportType.GRADES, false, {
             grade_id: item?.id,
         }).then((res) => {
             if (res.statusCode === 200) {
@@ -86,12 +86,14 @@ const GradeCompositionItem = SortableElement(({ item }: { item: GradeComposition
                                         <Download className="h-4 w-4" />
                                     </MenubarShortcut>
                                 </MenubarItem>
-                                <MenubarItem className="cursor-pointer" onClick={handleMarkAsDone}>
-                                    Mark as Done
-                                    <MenubarShortcut>
-                                        <Check className="h-4 w-4" />
-                                    </MenubarShortcut>
-                                </MenubarItem>
+                                {!item?.isFinal && (
+                                    <MenubarItem className="cursor-pointer" onClick={handleMarkAsDone}>
+                                        Mark as Done
+                                        <MenubarShortcut>
+                                            <Check className="h-4 w-4" />
+                                        </MenubarShortcut>
+                                    </MenubarItem>
+                                )}
                             </MenubarContent>
                         </MenubarMenu>
                     </Menubar>

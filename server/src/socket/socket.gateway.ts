@@ -1,39 +1,40 @@
 import { SocketService } from './socket.service';
 import {
-  MessageBody,
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-  ConnectedSocket,
-  WsResponse,
+    MessageBody,
+    SubscribeMessage,
+    WebSocketGateway,
+    WebSocketServer,
+    ConnectedSocket,
+    WsResponse,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
-  cors: {
-    origin: '*',
-  },
+    cors: {
+        origin: '*',
+    },
 })
 export class SocketGateway {
-  @WebSocketServer()
-  server: Server;
+    @WebSocketServer()
+    server: Server;
 
-  constructor(private readonly socketService: SocketService) { }
+    constructor(private readonly socketService: SocketService) {}
 
-  onModuleInit(socket: Socket) { }
+    onModuleInit(socket: Socket) {}
 
-  afterInit(server: Server) {
-    this.socketService.server = server;
-  }
+    afterInit(server: Server) {
+        this.socketService.server = server;
+    }
 
-  handleConnection(socket: Socket) {
-    const userId = socket.handshake.headers.authorization;
-    socket.join(userId);
-  }
+    handleConnection(socket: Socket) {
+        const userId = socket.handshake.headers.authorization;
+        console.log('userId', userId);
+        socket.join(userId);
+    }
 
-  @SubscribeMessage('message')
-  handleMessage(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
-    this.server.emit('server', { 'server': true })
-    return data;
-  }
+    @SubscribeMessage('message')
+    handleMessage(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+        this.server.emit('server', { server: true });
+        return data;
+    }
 }

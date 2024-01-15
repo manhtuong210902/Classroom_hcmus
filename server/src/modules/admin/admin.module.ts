@@ -7,7 +7,8 @@ import { RoleModule } from '../role/role.module';
 @Module({
   providers: [AdminService, ...AdminProvider],
   controllers: [AdminController],
-  imports: [RoleModule]
+  imports: [RoleModule],
+  exports: [AdminService]
 })
 export class AdminModule {
 

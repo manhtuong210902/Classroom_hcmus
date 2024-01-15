@@ -6,10 +6,10 @@ import { ExportType } from "@src/utils/enum";
 import { Download, FileDown } from "lucide-react";
 import { toast } from "react-toastify";
 
-const ExportFile = ({ title, type }: { title: string; type: ExportType }) => {
+const ExportFile = ({ title, type, isExport = false }: { title: string; type: ExportType; isExport?: boolean }) => {
     const currClass = useAppSelector(selectCurrClass);
     const handleExport = async () => {
-        exportFile(String(currClass?.id), type, {}).then((res) => {
+        exportFile(String(currClass?.id), type, isExport, {}).then((res) => {
             if (res.statusCode === 200) {
                 toast.success("Export successfully!");
             } else {

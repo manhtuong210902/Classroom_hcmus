@@ -12,7 +12,6 @@ import { ClassService } from '../class/class.service';
 
 @Injectable()
 export class ReviewService {
-
     constructor(
         @Inject('CommentRepository')
         private readonly commentModel: typeof CommentReview,
@@ -20,8 +19,8 @@ export class ReviewService {
         @Inject('ReviewRepository')
         private readonly reviewModel: typeof ReviewComposition,
 
-        private readonly notificationService: NotificationService
-    ) { }
+        private readonly notificationService: NotificationService,
+    ) {}
 
     async isExistedReview(studentCompositionId: string): Promise<boolean> {
         try {
@@ -33,11 +32,11 @@ export class ReviewService {
                 `,
                 {
                     replacements: {
-                        studentCompositionId
+                        studentCompositionId,
                     },
-                    type: sequelize.QueryTypes.SELECT
-                }
-            )
+                    type: sequelize.QueryTypes.SELECT,
+                },
+            );
 
             if (query.length > 0) {
                 return true;
@@ -48,13 +47,11 @@ export class ReviewService {
         }
     }
 
-
     async createReview(
         userId: string,
         classId: string,
         requestReview: RequestReviewDto
     ) {
-
         try {
             const query: any = await this.reviewModel.sequelize.query(
                 `
@@ -74,47 +71,47 @@ export class ReviewService {
                     replacements: {
                         userId,
                         classId,
-                        gradeId: requestReview.gradeId
+                        gradeId: requestReview.gradeId,
                     },
-                    type: sequelize.QueryTypes.SELECT
-                }
-            )
+                    type: sequelize.QueryTypes.SELECT,
+                },
+            );
             const studentCompositionId = query[0].id;
 
-            const isExist = await this.isExistedReview(studentCompositionId)
+            const isExist = await this.isExistedReview(studentCompositionId);
             if (isExist) {
                 throw new BadRequestException({
-                    "message": "Review already exists",
-                })
+                    message: 'Review already exists',
+                });
             }
 
-            const currentGrade = query[0].grade
+            const currentGrade = query[0].grade;
 
             const newReview = await this.reviewModel.create({
                 student_composition_id: studentCompositionId,
                 current_grade: currentGrade,
                 expected_grade: requestReview.expectedGrade,
                 explaination: requestReview.explaination,
-                grade_id: requestReview.gradeId
-            })
+                grade_id: requestReview.gradeId,
+            });
 
-            await this.notificationService.createNotifycationForAllTeacherInClass({
-                classId: classId,
-                content: SOCKET_MSG.STUDENT_REQUEST_REVIEW,
-                type: SOCKET_TYPE.STUDENT_REQUEST_REVIEW,
-                contentUrl: 'http://requestreviewnew.com'
-            })
+            await this.notificationService.createNotifycationForAllTeacherInClass(
+                {
+                    senderId: userId,
+                    classId: classId,
+                    content: SOCKET_MSG.STUDENT_REQUEST_REVIEW,
+                    type: SOCKET_TYPE.STUDENT_REQUEST_REVIEW
+                },
+            );
 
             return convertSnakeToCamel(newReview.dataValues);
         } catch (error) {
             throw new BadRequestException(error);
         }
-
     }
 
     async getASpecifyReview(userId: string, classId: string, gradeId: string) {
         try {
-
             // get list review of all grade for student
             if (!gradeId) {
                 const query = await this.reviewModel.sequelize.query(
@@ -126,17 +123,21 @@ export class ReviewService {
                     JOIN student_compositions AS sc
                         ON sc.id = rc.student_composition_id
                     JOIN student_ids AS si
-                        ON si.student_id = sc.student_id
+                        ON si.student_id = sc.student_id AND si.class_id = :classId
                     JOIN user_classes AS uc
-                        ON uc.student_id = sc.student_id; 
+                        ON uc.student_id = sc.student_id 
+                            AND uc.student_id = sc.student_id 
+                            AND uc.user_id = :userId
+                            AND uc.class_id = :classId; 
                     `,
                     {
-                        replacements:{
-                            classId
+                        replacements: {
+                            classId,
+                            userId
                         },
-                        type: sequelize.QueryTypes.SELECT
-                    }
-                )
+                        type: sequelize.QueryTypes.SELECT,
+                    },
+                );
                 return convertSnakeToCamel(query);
             }
 
@@ -151,25 +152,26 @@ export class ReviewService {
                         userId,
                         classId,
                     },
-                    type: sequelize.QueryTypes.SELECT
-                }
-            )
+                    type: sequelize.QueryTypes.SELECT,
+                },
+            );
             const studentId = query[0].student_id;
 
-            const queryStudentComp: any = await this.reviewModel.sequelize.query(
-                `
+            const queryStudentComp: any =
+                await this.reviewModel.sequelize.query(
+                    `
                 SELECT * 
                 FROM student_compositions
                 WHERE student_id = :studentId AND grade_id = :gradeId; 
                 `,
-                {
-                    replacements: {
-                        studentId,
-                        gradeId: gradeId
+                    {
+                        replacements: {
+                            studentId,
+                            gradeId: gradeId,
+                        },
+                        type: sequelize.QueryTypes.SELECT,
                     },
-                    type: sequelize.QueryTypes.SELECT
-                }
-            )
+                );
 
             const querySelectReview = await this.reviewModel.sequelize.query(
                 `
@@ -179,21 +181,18 @@ export class ReviewService {
                 `,
                 {
                     replacements: {
-                        studentCompId: queryStudentComp[0].id
+                        studentCompId: queryStudentComp[0].id,
                     },
-                    type: sequelize.QueryTypes.SELECT
-                }
-            )
+                    type: sequelize.QueryTypes.SELECT,
+                },
+            );
             const review: any = querySelectReview[0];
 
-
             return convertSnakeToCamel(review);
-
         } catch (error) {
             throw new BadRequestException(error);
         }
     }
-
 
     private async checkGradeInClass(gradeId, classId) {
         try {
@@ -205,11 +204,11 @@ export class ReviewService {
                 {
                     replacements: {
                         gradeId,
-                        classId
+                        classId,
                     },
-                    type: sequelize.QueryTypes.SELECT
-                }
-            )
+                    type: sequelize.QueryTypes.SELECT,
+                },
+            );
 
             if (check.length < 0) {
                 return false;
@@ -231,17 +230,17 @@ export class ReviewService {
                     JOIN grade_compositions 
                         ON grade_compositions.id = rc.grade_id AND grade_compositions.class_id = :classId
                     JOIN student_compositions AS sc
-                        ON sc.id = rc.student_composition_id
+                        ON sc.id = rc.student_composition_id AND sc.class_id = :classId
                     JOIN student_ids AS si
-                        ON si.student_id = sc.student_id;
+                        ON si.student_id = sc.student_id AND si.class_id = :classId;
                     `,
                     {
                         replacements: {
-                            classId
+                            classId,
                         },
-                        type: sequelize.QueryTypes.SELECT
-                    }
-                )
+                        type: sequelize.QueryTypes.SELECT,
+                    },
+                );
 
                 return convertSnakeToCamel(query);
             }
@@ -260,9 +259,9 @@ export class ReviewService {
                     replacements: {
                         gradeId: gradeId,
                     },
-                    type: sequelize.QueryTypes.SELECT
-                }
-            )
+                    type: sequelize.QueryTypes.SELECT,
+                },
+            );
 
             return convertSnakeToCamel(query);
         } catch (error) {
@@ -270,12 +269,15 @@ export class ReviewService {
         }
     }
 
-    async checkIsTeacherFromUserClasses(classId: string, userId: string): Promise<boolean> {
+    async checkIsTeacherFromUserClasses(
+        classId: string,
+        userId: string,
+    ): Promise<boolean> {
         try {
             const query: any = await this.reviewModel.sequelize.query(
                 `
                 SELECT *,
-                CASE WHEN roles.role_name = 'TEACHER' THEN true ELSE false END as is_teacher,
+                CASE WHEN roles.role_name = 'TEACHER' THEN true ELSE false END as is_teacher
                 FROM user_classes
                 JOIN roles ON roles.id = user_classes.role_id
                 WHERE user_classes.class_id = :classId AND user_classes.user_id = :userId;
@@ -283,27 +285,27 @@ export class ReviewService {
                 {
                     replacements: {
                         classId,
-                        userId
+                        userId,
                     },
-                    type: sequelize.QueryTypes.SELECT
-                }
-            )
+                    type: sequelize.QueryTypes.SELECT,
+                },
+            );
 
-            if (query[0].is_teacher)
-                return true
+            console.log('is_teacher: ', query);
+
+            if (query[0].is_teacher) return true;
             return false;
         } catch (error) {
             return false;
         }
     }
 
-    async postComment(
-        classId: string,
-        user: any,
-        commentDto: CommentDto
-    ) {
+    async postComment(classId: string, user: any, commentDto: CommentDto) {
         try {
-            const check = await this.checkGradeInClass(classId, commentDto.gradeId);
+            const check = await this.checkGradeInClass(
+                classId,
+                commentDto.gradeId,
+            );
             if (!check) {
                 throw new BadRequestException();
             }
@@ -312,45 +314,50 @@ export class ReviewService {
                 user_id: user.dataValues.id,
                 content: commentDto.content,
                 review_id: commentDto.reviewId,
-            })
+            });
 
-            if (await this.checkIsTeacherFromUserClasses(classId, user.dataValues.id)) {
-                await this.notificationService.createNotifycationForOneStudent({
-                    userId: user.dataValues.id,
-                    classId: classId,
-                    content: SOCKET_MSG.TEACHER_COMMENT_REVIEW,
-                    type: SOCKET_TYPE.TEACHER_COMMENT_REVIEW,
-                    contentUrl: ''
-                })
+            const isTeacher = await this.checkIsTeacherFromUserClasses(
+                classId,
+                user.dataValues.id,
+            );
+
+            console.log('isTeacher: ', isTeacher);
+
+            if (isTeacher) {
+                await this.notificationService.createNotifycationForAllStudentInClass(
+                    {
+                        senderId: user.id,
+                        classId: classId,
+                        content: SOCKET_MSG.TEACHER_COMMENT_REVIEW,
+                        type: SOCKET_TYPE.TEACHER_COMMENT_REVIEW
+                    },
+                );
             } else {
-                await this.notificationService.createNotifycationForAllTeacherInClass({
-                    classId: classId,
-                    content: SOCKET_MSG.STUDENT_COMMENT_REVIEW,
-                    type: SOCKET_TYPE.STUDENT_COMMENT_REVIEW,
-                    contentUrl: ''
-                })
+                await this.notificationService.createNotifycationForAllTeacherInClass(
+                    {
+                        senderId: user.id,
+                        classId: classId,
+                        content: SOCKET_MSG.STUDENT_COMMENT_REVIEW,
+                        type: SOCKET_TYPE.STUDENT_COMMENT_REVIEW
+                    },
+                );
             }
 
             return convertSnakeToCamel({
-                ...newComment.dataValues, 
-                img_url: user.dataValues.img_url, 
-                fullname: user.dataValues.fullname
+                ...newComment.dataValues,
+                img_url: user.dataValues.img_url,
+                fullname: user.dataValues.fullname,
             });
         } catch (error) {
             throw new BadRequestException(error);
         }
     }
 
-
-    async getComments(
-        classId: string,
-        gradeId: string,
-        reviewId: string
-    ) {
+    async getComments(classId: string, gradeId: string, reviewId: string) {
         if (!reviewId || !gradeId) {
             throw new BadRequestException({
-                "message": "Missing required parameter"
-            })
+                message: 'Missing required parameter',
+            });
         }
 
         // check many things here
@@ -366,20 +373,19 @@ export class ReviewService {
                 `,
                 {
                     replacements: {
-                        reviewId
+                        reviewId,
                     },
-                    type: sequelize.QueryTypes.SELECT
-                }
-            )
+                    type: sequelize.QueryTypes.SELECT,
+                },
+            );
 
             return convertSnakeToCamel(query);
         } catch (error) {
-            return []
+            return [];
         }
     }
 
-
-    async makeReviewFinal(finalReviewDto: FinalReviewDto, classId: string) {
+    async makeReviewFinal(finalReviewDto: FinalReviewDto, classId: string, senderId: string) {
         try {
             await this.reviewModel.sequelize.query(
                 `
@@ -392,22 +398,21 @@ export class ReviewService {
                         finalGrade: finalReviewDto.finalGrade,
                         classId,
                         gradeId: finalReviewDto.gradeId,
-                        studentId: finalReviewDto.studentId
+                        studentId: finalReviewDto.studentId,
                     },
-                    type: sequelize.QueryTypes.UPDATE
-                }
-            )
+                    type: sequelize.QueryTypes.UPDATE,
+                },
+            );
 
             await this.notificationService.createNotifycationForOneStudent({
+                senderId,
                 studentId: finalReviewDto.studentId,
                 classId: classId,
                 content: SOCKET_MSG.TEACHER_FINAL_REVIEW,
-                type: SOCKET_TYPE.TEACHER_FINAL_REVIEW,
-                contentUrl: 'http://aaa.a'
-            })
-
+                type: SOCKET_TYPE.TEACHER_FINAL_REVIEW
+            });
         } catch (error) {
-            throw new BadRequestException(error)
+            throw new BadRequestException(error);
         }
     }
 }

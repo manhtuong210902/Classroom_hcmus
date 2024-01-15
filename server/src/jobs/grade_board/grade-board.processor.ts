@@ -17,7 +17,7 @@ export class GradeProcessor {
         private readonly gradeModel: typeof GradeComposition,
 
         @Inject('StudentCompositionsRepository')
-        private readonly studentComModel: typeof StudentComposition
+        private readonly studentComModel: typeof StudentComposition,
     ){}
 
     @Process('map-student')
@@ -72,7 +72,28 @@ export class GradeProcessor {
 
     @Process('add-composition')
     async handleAddComposition(job: Job){
-
+        const {classId, gradeId} = job.data;
+        const listStudentIds : any[] = await this.studentIdModel.sequelize.query(
+            `
+            SELECT *
+            FROM student_ids
+            WHERE class_id = :classId;
+            `,
+            {
+                replacements:{
+                    classId
+                },
+                type: sequelize.QueryTypes.SELECT
+            }
+        )
+        for(let i =0 ;i < listStudentIds.length; i++){
+            await this.studentComModel.create({
+                student_id: listStudentIds[i].student_id,
+                grade: null,
+                grade_id: gradeId,
+                class_id: classId  
+            })
+        }
     }
 
 

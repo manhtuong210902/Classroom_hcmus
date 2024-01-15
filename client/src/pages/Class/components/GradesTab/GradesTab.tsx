@@ -14,7 +14,11 @@ import { selectCurrClass } from "@src/store/reducers/classSlice";
 import { useEffect } from "react";
 import ImportFile from "./ImportFile";
 import ExportFile from "./ExportFile";
-import { selectGradeCompositionList, selectGradeStudentList } from "@src/store/reducers/gradeSlice";
+import {
+    selectGradeCompositionList,
+    selectGradeStudentList,
+    selectLoadingStudentList,
+} from "@src/store/reducers/gradeSlice";
 import { ExportType, FileType } from "@src/utils/enum";
 import EditValueColumn from "./EditValueColumn";
 
@@ -22,6 +26,7 @@ const GradesTab = () => {
     const currClass = useAppSelector(selectCurrClass);
     const gradesComposition = useAppSelector(selectGradeCompositionList);
     const gradesBoard = useAppSelector(selectGradeStudentList);
+    const loading = useAppSelector(selectLoadingStudentList);
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -45,57 +50,74 @@ const GradesTab = () => {
                 </div>
                 <div className="flex md:items-center gap-3 justify-between md:justify-start">
                     <ImportFile title="Import Grade Board" type={FileType.GRADES} />
-                    <ExportFile title="Export Grade Board" type={ExportType.GRADES} />
+                    <ExportFile title="Export Grade Board" type={ExportType.GRADES} isExport={true} />
                 </div>
             </div>
-            <Table>
-                <TableCaption>Student Transcripts</TableCaption>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead className="w-[100px]">No.</TableHead>
-                        <TableHead>Student ID</TableHead>
-                        <TableHead>Full Name</TableHead>
-                        {gradesComposition.map((grade, index) => (
-                            <TableHead key={index}>
-                                {grade.name} ({grade.scale}%)
-                            </TableHead>
-                        ))}
-                        <TableHead>Total</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {gradesBoard.map((student, index) => (
-                        <TableRow key={index}>
-                            <TableCell className="font-medium">{index}</TableCell>
-                            <TableCell>{student?.studentId}</TableCell>
-                            <TableCell>{student?.fullName}</TableCell>
-                            {gradesComposition.map((grade, index) => (
-                                <TableCell key={index}>
-                                    {grade.isFinal ? (
-                                        <span>{student?.[grade.name]?.grade}</span>
-                                    ) : (
+            {loading ? (
+                <>
+                    <p>Loading...</p>
+                </>
+            ) : (
+                <>
+                    <Table>
+                        <TableCaption>Student Transcripts</TableCaption>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead className="w-[100px]">No.</TableHead>
+                                <TableHead>Student ID</TableHead>
+                                <TableHead>Full Name</TableHead>
+                                {gradesComposition.map((grade, index) => (
+                                    <TableHead key={index}>
+                                        {grade.name} ({grade.scale}%)
+                                    </TableHead>
+                                ))}
+                                <TableHead>Total</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {gradesBoard.map((student, index) => (
+                                <TableRow key={index}>
+                                    <TableCell className="font-medium">{index}</TableCell>
+                                    <TableCell>
                                         <EditValueColumn
                                             studentId={student?.studentId}
-                                            gradeId={grade?.id}
-                                            name={"grade"}
-                                            defaultValue={student?.[grade.name]?.grade}
-                                            type="number"
+                                            gradeId={student?.grade?.id}
+                                            name={"newStudentId"}
+                                            defaultValue={student?.studentId}
+                                            type="text"
                                             className="w-[100px]"
                                         />
-                                    )}
-                                </TableCell>
+                                    </TableCell>
+                                    <TableCell>{student?.fullName}</TableCell>
+                                    {gradesComposition.map((grade, index) => (
+                                        <TableCell key={index}>
+                                            {grade.isFinal ? (
+                                                <span>{student?.[grade.name]?.grade}</span>
+                                            ) : (
+                                                <EditValueColumn
+                                                    studentId={student?.studentId}
+                                                    gradeId={grade?.id}
+                                                    name={"grade"}
+                                                    defaultValue={student?.[grade.name]?.grade}
+                                                    type="number"
+                                                    className="w-[100px]"
+                                                />
+                                            )}
+                                        </TableCell>
+                                    ))}
+                                    <TableCell>{totalGrade(student)}</TableCell>
+                                </TableRow>
                             ))}
-                            <TableCell>{totalGrade(student)}</TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-                <TableFooter>
-                    <TableRow>
-                        <TableCell colSpan={4 + gradesComposition.length - 1}>Total Student</TableCell>
-                        <TableCell>{gradesBoard.length}</TableCell>
-                    </TableRow>
-                </TableFooter>
-            </Table>
+                        </TableBody>
+                        <TableFooter>
+                            <TableRow>
+                                <TableCell colSpan={4 + gradesComposition.length - 1}>Total Student</TableCell>
+                                <TableCell>{gradesBoard.length}</TableCell>
+                            </TableRow>
+                        </TableFooter>
+                    </Table>
+                </>
+            )}
         </div>
     );
 };
