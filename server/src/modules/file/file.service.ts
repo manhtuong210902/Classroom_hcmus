@@ -1,5 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import * as ExcelJs from 'ExcelJs';
+import * as ExcelJs from 'exceljs';
 import * as fs from 'fs'; 
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
