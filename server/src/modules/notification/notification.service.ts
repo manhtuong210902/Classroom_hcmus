@@ -6,6 +6,8 @@ import { ClassService } from '../class/class.service';
 import { SocketService } from 'src/socket/socket.service';
 import { SOCKET_TYPE } from 'src/utils/project-constants';
 import { CreateNotificationOneDto } from './dto/create-notification-one.dto';
+import { User } from '../user/entities/user.entity';
+import sequelize from 'sequelize';
 
 @Injectable()
 export class NotificationService {
@@ -17,11 +19,36 @@ export class NotificationService {
   ) { }
 
   async getAllNofitications(userId: string): Promise<any> {
-    return await this.notificationModel.findAll({
-      where: {
-        user_id: userId
-      }, order: [['created_at', 'DESC']]
-    })
+    const notifications: any[] = await this.notificationModel.sequelize.query(
+      `
+      SELECT 
+      class_notifications.*, 
+      users.fullname as sender_fullname,
+      users.img_url as sender_img, 
+      users.username as sender_username
+    FROM class_notifications
+    JOIN users ON class_notifications.sender_id = users.id
+    WHERE class_notifications.user_id = :userId
+    ORDER BY class_notifications.created_at DESC;
+      `,
+      {
+        replacements: {
+          userId
+        },
+        type: sequelize.QueryTypes.SELECT
+      }
+    )
+    return notifications;
+    // return await this.notificationModel.findAll({
+    //   where: {
+    //     user_id: userId
+    //   },
+    //   order: [['created_at', 'DESC']],
+    //   include: [{
+    //     model: User,
+    //     attributes: ['id', 'fullname', 'img_url', 'username']
+    //   }]
+    // })
   }
 
   async updateSeenNotification(id: string): Promise<any> {

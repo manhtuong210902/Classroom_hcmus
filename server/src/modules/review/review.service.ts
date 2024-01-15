@@ -50,7 +50,7 @@ export class ReviewService {
     async createReview(
         userId: string,
         classId: string,
-        requestReview: RequestReviewDto,
+        requestReview: RequestReviewDto
     ) {
         try {
             const query: any = await this.reviewModel.sequelize.query(
@@ -97,10 +97,10 @@ export class ReviewService {
 
             await this.notificationService.createNotifycationForAllTeacherInClass(
                 {
+                    senderId: userId,
                     classId: classId,
                     content: SOCKET_MSG.STUDENT_REQUEST_REVIEW,
-                    type: SOCKET_TYPE.STUDENT_REQUEST_REVIEW,
-                    contentUrl: 'http://requestreviewnew.com',
+                    type: SOCKET_TYPE.STUDENT_REQUEST_REVIEW
                 },
             );
 
@@ -326,19 +326,19 @@ export class ReviewService {
             if (isTeacher) {
                 await this.notificationService.createNotifycationForAllStudentInClass(
                     {
+                        senderId: user.id,
                         classId: classId,
                         content: SOCKET_MSG.TEACHER_COMMENT_REVIEW,
-                        type: SOCKET_TYPE.TEACHER_COMMENT_REVIEW,
-                        contentUrl: '',
+                        type: SOCKET_TYPE.TEACHER_COMMENT_REVIEW
                     },
                 );
             } else {
                 await this.notificationService.createNotifycationForAllTeacherInClass(
                     {
+                        senderId: user.id,
                         classId: classId,
                         content: SOCKET_MSG.STUDENT_COMMENT_REVIEW,
-                        type: SOCKET_TYPE.STUDENT_COMMENT_REVIEW,
-                        contentUrl: '',
+                        type: SOCKET_TYPE.STUDENT_COMMENT_REVIEW
                     },
                 );
             }
@@ -385,7 +385,7 @@ export class ReviewService {
         }
     }
 
-    async makeReviewFinal(finalReviewDto: FinalReviewDto, classId: string) {
+    async makeReviewFinal(finalReviewDto: FinalReviewDto, classId: string, senderId: string) {
         try {
             await this.reviewModel.sequelize.query(
                 `
@@ -405,11 +405,11 @@ export class ReviewService {
             );
 
             await this.notificationService.createNotifycationForOneStudent({
+                senderId,
                 studentId: finalReviewDto.studentId,
                 classId: classId,
                 content: SOCKET_MSG.TEACHER_FINAL_REVIEW,
-                type: SOCKET_TYPE.TEACHER_FINAL_REVIEW,
-                contentUrl: 'http://aaa.a',
+                type: SOCKET_TYPE.TEACHER_FINAL_REVIEW
             });
         } catch (error) {
             throw new BadRequestException(error);
