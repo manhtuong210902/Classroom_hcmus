@@ -300,7 +300,6 @@ export class ClassService {
             FROM classes
             JOIN user_classes ON classes.id = user_classes.class_id
             JOIN users ON users.id = user_classes.user_id
-            JOIN user_roles ON user_roles.user_id = users.id
             JOIN roles ON roles.id = user_classes.role_id
             JOIN users AS owner ON owner.id = classes.owner_id
             WHERE classes.id = user_classes.class_id AND users.id = :userId AND classes.id = :classId;
@@ -327,7 +326,6 @@ export class ClassService {
             FROM classes
             JOIN user_classes ON classes.id = user_classes.class_id
             JOIN users ON users.id = user_classes.user_id
-            JOIN user_roles ON user_roles.user_id = users.id
             JOIN roles ON roles.id = user_classes.role_id
             JOIN users AS owner ON owner.id = classes.owner_id
             WHERE classes.id = user_classes.class_id AND users.id = :userId;
@@ -402,7 +400,6 @@ export class ClassService {
             FROM users
             JOIN user_classes ON user_classes.user_id = users.id
             JOIN classes ON classes.id = user_classes.class_id
-            JOIN user_roles ON user_roles.user_id = users.id
             JOIN roles ON roles.id = user_classes.role_id
             WHERE classes.id = :classId;
             `,
