@@ -399,7 +399,7 @@ export class CompositionService {
             `
             SELECT *
             FROM student_compositions as sc
-            JOIN student_ids as si ON si.student_id = sc.student_id
+            JOIN student_ids as si ON si.student_id = sc.student_id AND si.class_id = :classId 
             JOIN grade_compositions as gc ON gc.id = sc.grade_id
             WHERE sc.class_id = :classId AND sc.grade_id= :gradeId;
             `,
@@ -430,7 +430,7 @@ export class CompositionService {
             `
             SELECT *
             FROM student_compositions as sc
-            JOIN student_ids as si ON si.student_id = sc.student_id
+            JOIN student_ids as si ON si.student_id = sc.student_id AND si.class_id = :classId
             JOIN grade_compositions as gc ON gc.id = sc.grade_id
             WHERE sc.class_id = :classId;
             `,
